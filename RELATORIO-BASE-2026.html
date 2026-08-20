@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Relatório Anual · LETS Marketing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!--
+╔══════════════════════════════════════════════════════════════════════════╗
+║  RELATÓRIO ANUAL · LETS MARKETING                                        ║
+║  Guia rápido para quem for editar este arquivo (humano ou Claude)        ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║  1. EDITE APENAS os blocos SECOES e DADOS, mais abaixo.                  ║
+║     Tudo fora deles é estrutura e não deve ser alterado.                 ║
+║                                                                          ║
+║  2. IDENTIDADE LETS — variáveis CSS já definidas em :root                ║
+║     --red   #D10A11   destaque, ênfase, palavras em itálico              ║
+║     --ink   #1D1D1B   texto e seções escuras                             ║
+║     --cream #EEE7D6   seções claras de respiro                           ║
+║     Tipografia: Figtree. Títulos em peso 300. Nunca use outra fonte.     ║
+║                                                                          ║
+║  3. LAYOUT — menu lateral fixo à esquerda (.side) + conteúdo (.main).    ║
+║     Em telas menores o menu vira barra superior automaticamente.        ║
+║     O logo da LETS aparece UMA única vez, no topo do menu lateral.       ║
+║                                                                          ║
+║  4. GRAMÁTICA VISUAL — toda seção segue este padrão:                     ║
+║     <section class="sec [sec--cream|sec--ink]" id="...">                 ║
+║       <div class="wrap">                                                 ║
+║         <div class="sec-head reveal">                                    ║
+║           <div class="eyebrow"><i>01</i> Rótulo da seção</div>           ║
+║           <h2>Título com <em>palavra em vermelho</em></h2>               ║
+║           <p class="lead">Frase de contexto.</p>                         ║
+║         </div>                                                           ║
+║         ... conteúdo ...                                                 ║
+║       </div></section>                                                   ║
+║                                                                          ║
+║  5. COMPONENTES PRONTOS — reutilize, não invente novos:                  ║
+║     .kpi-grid > .kpi          blocos de número grande                    ║
+║     .grid .g2 .g3 .g4         grades responsivas                         ║
+║     .card + .card-h           cartão com cabeçalho                       ║
+║     .metric-row               linha métrica/valor/variação               ║
+║     .pilar-grid > .pilar      pilares numerados                          ║
+║     .deliv-grid > .deliv      entregas: número grande + descrição        ║
+║     .team-grid > .person      card de pessoa (foto retrato + nome)       ║
+║     .tl > .tl-item            linha do tempo                             ║
+║     .clip                     item de clipping de imprensa               ║
+║     .bmc + .dumb              comparativo cliente x setor                ║
+║     .q + .q-item              coluna de trimestre                        ║
+║     .reveal                   anima a entrada ao rolar (adicione sempre) ║
+║                                                                          ║
+║  6. AO CRIAR UMA SEÇÃO NOVA: use os componentes acima, registre a chave  ║
+║     em SECOES, adicione o objeto em REGISTRO e mantenha a alternância    ║
+║     de fundos. Consulte GUIA-DE-IDENTIDADE.md.                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+-->
+
+<style>
+:root{
+  --red:#D10A11; --ink:#1D1D1B; --cream:#EEE7D6; --white:#fff;
+  --ink-70:rgba(29,29,27,.70); --ink-45:rgba(29,29,27,.46); --ink-12:rgba(29,29,27,.13);
+  --cream-70:rgba(238,231,214,.72); --cream-20:rgba(238,231,214,.18);
+  --pad:clamp(1.25rem,4.5vw,3.75rem); --maxw:1140px; --s-y:clamp(4rem,9vw,7.5rem);
+  --side:clamp(215px,19vw,268px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Figtree,-apple-system,'Segoe UI',sans-serif;font-weight:300;color:var(--ink);
+  background:var(--white);line-height:1.55;font-size:17px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+
+/* ══ ESQUELETO: menu lateral + conteúdo ══ */
+.shell{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh}
+.main{min-width:0}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+.sec{padding-block:var(--s-y);position:relative}
+.sec--cream{background:var(--cream)}
+.sec--ink{background:var(--ink);color:var(--cream)}
+.sec--ink .lead,.sec--ink .eyebrow{color:var(--cream-70)}
+
+/* ══ MENU LATERAL ══ */
+.side{position:sticky;top:0;height:100vh;z-index:70;background:var(--white);
+  border-right:1px solid var(--ink-12);display:flex;flex-direction:column;
+  padding:2.2rem 1.5rem 1.6rem}
+.side-mark{color:var(--red);display:block;flex-shrink:0}
+.side-mark svg{height:clamp(30px,2.6vw,36px);width:auto}
+.side-cap{margin-top:1.7rem;padding-bottom:1.5rem;border-bottom:1px solid var(--ink-12)}
+.side-cap b{display:block;font-weight:500;font-size:.92rem;letter-spacing:-.01em;line-height:1.3}
+.side-cap span{display:block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-45);margin-top:.45rem;font-weight:600}
+.side-nav{margin-top:1.4rem;display:flex;flex-direction:column;overflow-y:auto;
+  flex:1 1 auto;scrollbar-width:thin}
+.side-nav a{position:relative;display:flex;gap:.7rem;align-items:baseline;padding:.52rem 0 .52rem .95rem;
+  font-size:.87rem;color:var(--ink-70);text-decoration:none;transition:color .25s}
+.side-nav a i{font-style:normal;font-size:.63rem;font-weight:700;color:var(--ink-45);
+  min-width:1.5em;font-variant-numeric:tabular-nums;transition:color .25s}
+.side-nav a::before{content:"";position:absolute;left:0;top:50%;width:3px;height:0;
+  background:var(--red);transform:translateY(-50%);transition:height .3s cubic-bezier(.22,1,.36,1)}
+.side-nav a:hover{color:var(--ink)}
+.side-nav a.on{color:var(--ink);font-weight:400}
+.side-nav a.on i{color:var(--red)}
+.side-nav a.on::before{height:58%}
+.side-foot{margin-top:auto;padding-top:1.3rem;border-top:1px solid var(--ink-12);
+  font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-45);font-weight:600}
+.side-prog{height:2px;background:var(--ink-12);margin-top:.75rem}
+.side-prog i{display:block;height:100%;width:0;background:var(--red)}
+
+/* ══ TIPOGRAFIA ══ */
+h1,h2,h3,h4{font-weight:300;line-height:1.04;letter-spacing:-.028em}
+h2{font-size:clamp(2rem,4.6vw,3.5rem);margin-bottom:1.35rem}
+h3{font-size:clamp(1.18rem,1.9vw,1.5rem);font-weight:400;letter-spacing:-.012em;line-height:1.2}
+em{font-style:italic;color:var(--red);font-weight:300}
+.eyebrow{display:flex;align-items:center;gap:.8rem;font-size:.69rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-45);margin-bottom:1.4rem}
+.eyebrow i{font-style:normal;color:var(--red);font-weight:700;font-variant-numeric:tabular-nums}
+.eyebrow::after{content:"";flex:0 0 36px;height:1px;background:currentColor;opacity:.35}
+.lead{font-size:clamp(1rem,1.4vw,1.15rem);color:var(--ink-70);max-width:64ch;font-weight:300}
+.sec-head{margin-bottom:clamp(2.3rem,5vw,4rem)}
+.subhead{display:flex;align-items:center;gap:.8rem;font-size:.69rem;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-45);
+  margin:clamp(2.75rem,6vw,4.5rem) 0 1.75rem;padding-top:1.6rem;border-top:1px solid var(--ink-12)}
+.sec--ink .subhead{color:var(--cream-70);border-color:var(--cream-20)}
+
+/* ══ CAPA ══ */
+.hero{background:var(--ink);color:var(--cream);position:relative;overflow:hidden;
+  padding-block:clamp(3.5rem,8vw,6.5rem) clamp(3rem,6vw,4.5rem)}
+.hero::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(120% 90% at 90% 4%,rgba(209,10,17,.30),transparent 58%)}
+.hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1.5fr .78fr;
+  gap:clamp(2rem,4.5vw,4rem);align-items:end}
+.hero .eyebrow{color:var(--cream-70);margin-bottom:1.6rem}
+.hero h1{font-size:clamp(2.7rem,7.4vw,5.6rem);letter-spacing:-.045em}
+.hero h1 span{display:block}
+.hero h1 .ln2{color:var(--red);font-style:italic}
+.hero-sub{margin-top:1.8rem;max-width:56ch;color:var(--cream-70);
+  font-size:clamp(1rem,1.5vw,1.2rem)}
+.hero-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:1.5rem 2rem;
+  margin-top:clamp(2.4rem,5vw,3.4rem);padding-top:1.7rem;border-top:1px solid var(--cream-20)}
+.hero-meta span{display:block;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cream-70);margin-bottom:.4rem}
+.hero-meta strong{font-weight:400;font-size:.96rem;line-height:1.35;display:block}
+.client-slot{aspect-ratio:4/3;background:rgba(238,231,214,.06);border:1px dashed var(--cream-20);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.95rem;
+  padding:1.6rem;text-align:center}
+.client-slot--filled{background:var(--cream);border-style:solid;border-color:var(--cream);padding:1.9rem}
+.client-slot img{max-height:100%;max-width:100%;object-fit:contain}
+.client-slot svg{width:42px;height:42px;color:var(--cream-70);opacity:.55}
+.client-slot p{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cream-70);font-weight:600;line-height:1.7}
+
+/* ══ PILARES ══ */
+.pilar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2rem 1.75rem}
+.pilar{border-top:2px solid var(--red);padding-top:1.15rem}
+.pilar .n{font-size:.66rem;font-weight:700;letter-spacing:.16em;color:var(--red);
+  font-variant-numeric:tabular-nums;display:block;margin-bottom:.85rem}
+.pilar h3{font-size:1.16rem;font-weight:500;margin-bottom:.45rem}
+.pilar .k{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-45);
+  font-weight:600;display:block;margin-bottom:.85rem}
+.sec--ink .pilar .k{color:var(--cream-70)}
+.pilar p{font-size:.9rem;color:var(--ink-70);line-height:1.5}
+.sec--ink .pilar p{color:var(--cream-70)}
+
+/* ══ KPI ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));
+  gap:1px;background:var(--ink-12);border-block:1px solid var(--ink-12)}
+.kpi{background:var(--white);padding:1.9rem 1.65rem 2rem}
+.sec--cream .kpi{background:var(--cream)}
+.sec--ink .kpi{background:var(--ink)}
+.kpi-grid.tight{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.kpi-label{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-45);margin-bottom:1.25rem;font-weight:600}
+.sec--ink .kpi-label{color:var(--cream-70)}
+.kpi-val{font-size:clamp(2.4rem,4.6vw,3.4rem);font-weight:300;letter-spacing:-.05em;line-height:.95;
+  display:flex;align-items:baseline;gap:.06em}
+.kpi-val i{font-style:italic;color:var(--red);font-size:.5em;font-weight:400}
+.kpi-delta{display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;font-size:.79rem;font-weight:600}
+.up{color:#0f7a4a}.down{color:var(--red)}.flat{color:var(--ink-45)}
+.sec--ink .up{color:#5fd39b}.sec--ink .flat{color:var(--cream-70)}
+.kpi-note{font-size:.82rem;color:var(--ink-70);margin-top:.7rem;line-height:1.5}
+.sec--ink .kpi-note{color:var(--cream-70)}
+
+/* ══ GRIDS E CARTÕES ══ */
+.grid{display:grid;gap:1.5rem}
+.g2{grid-template-columns:repeat(auto-fit,minmax(315px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(285px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))}
+.card{background:var(--white);border:1px solid var(--ink-12);padding:1.75rem}
+.sec--ink .card{background:rgba(238,231,214,.045);border-color:var(--cream-20)}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  margin-bottom:1.4rem;padding-bottom:.95rem;border-bottom:1px solid var(--ink-12)}
+.sec--ink .card-h{border-color:var(--cream-20)}
+.card-h h3{font-size:1.08rem;font-weight:500;letter-spacing:0}
+.card-h .tag{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:700}
+.chart-box{position:relative;height:230px}
+.metric-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  padding:.72rem 0;border-bottom:1px dashed var(--ink-12);font-size:.89rem}
+.sec--ink .metric-row{border-color:var(--cream-20)}
+.metric-row:last-child{border:0}
+.metric-row b{font-weight:400;font-size:1.18rem;letter-spacing:-.02em}
+.metric-row .d{font-size:.74rem;font-weight:700;margin-left:.5rem}
+
+/* ══ ENTREGAS ══ */
+.deliv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));
+  gap:.25rem 2.5rem}
+.deliv{display:flex;align-items:baseline;gap:1.1rem;padding:1.05rem 0;
+  border-bottom:1px solid var(--cream-20)}
+.deliv b{font-size:clamp(1.9rem,3vw,2.4rem);font-weight:300;letter-spacing:-.05em;
+  min-width:3.2em;text-align:right;flex-shrink:0;line-height:1}
+.deliv b i{font-style:italic;color:var(--red);font-size:.48em}
+.deliv span{color:var(--cream-70);font-size:.92rem;line-height:1.45}
+
+/* ══ PESSOAS (padrão do site) ══ */
+.team-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.6rem 1.3rem}
+.person{display:flex;flex-direction:column;min-width:0}
+.person figure{aspect-ratio:3/4;overflow:hidden;background:rgba(29,29,27,.06);margin-bottom:.85rem}
+.sec--ink .person figure{background:rgba(238,231,214,.08)}
+.person img{width:100%;height:100%;object-fit:cover;object-position:top center;
+  filter:grayscale(1) contrast(1.03);transition:filter .45s ease,transform .6s cubic-bezier(.22,1,.36,1)}
+.person:hover img{filter:none;transform:scale(1.035)}
+.person strong{font-weight:500;font-size:.94rem;letter-spacing:-.01em;line-height:1.25}
+.person span{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);
+  font-weight:600;margin-top:.35rem}
+.person small{font-size:.76rem;color:var(--cream-70);margin-top:.28rem;line-height:1.35}
+.sec:not(.sec--ink) .person small{color:var(--ink-70)}
+
+/* ══ LINHA DO TEMPO ══ */
+.tl-item{position:relative;padding-left:clamp(1.6rem,3.5vw,2.6rem);padding-bottom:clamp(2.4rem,5vw,3.6rem)}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:0;top:.5rem;width:11px;height:11px;
+  background:var(--red);border-radius:50%}
+.tl-item::after{content:"";position:absolute;left:5px;top:1.55rem;bottom:0;width:1px;background:var(--ink-12)}
+.tl-item:last-child::after{display:none}
+.tl-when{font-size:.67rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);
+  font-weight:700;margin-bottom:.55rem}
+.tl-body{display:grid;grid-template-columns:1.35fr .95fr;gap:clamp(1.4rem,3vw,2.4rem);align-items:start}
+.tl-body figure{aspect-ratio:4/3;overflow:hidden;background:rgba(29,29,27,.06)}
+.tl-body img{width:100%;height:100%;object-fit:cover}
+.tl-res{display:block;margin-top:1rem;font-size:.85rem;font-weight:500;
+  border-left:2px solid var(--red);padding-left:.9rem;line-height:1.5}
+
+/* ══ IMPRENSA ══ */
+.clip{display:grid;grid-template-columns:auto 1fr auto;gap:1.4rem;align-items:baseline;
+  text-decoration:none;padding:1.25rem 0;border-bottom:1px solid var(--ink-12);transition:.25s}
+.sec--ink .clip{border-color:var(--cream-20)}
+.clip:hover{background:rgba(209,10,17,.035);padding-inline:.75rem}
+.clip .v{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);
+  font-weight:700;min-width:9em}
+.clip .t{font-size:1rem;font-weight:400;line-height:1.35}
+.clip .d{font-size:.75rem;color:var(--ink-45);white-space:nowrap}
+.sec--ink .clip .d{color:var(--cream-70)}
+
+/* ══ RANKINGS ══ */
+.rk{border-top:2px solid var(--red);padding-top:1.1rem;display:flex;flex-direction:column;gap:.38rem}
+.rk .n{font-weight:500;font-size:1.02rem;letter-spacing:-.01em}
+.rk .c{font-size:.85rem;color:var(--cream-70);line-height:1.4}
+.rk .lv{font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);
+  font-weight:700;margin-top:.3rem}
+
+/* ══ BENCHMARK · comparativo em pares ══ */
+.bmc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));
+  gap:1px;background:var(--ink-12);border-block:1px solid var(--ink-12)}
+.bmc{background:var(--white);padding:1.85rem 1.6rem 1.7rem;display:flex;flex-direction:column}
+.sec--cream .bmc{background:var(--cream)}
+.bmc-m{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-45);
+  font-weight:600;line-height:1.5;min-height:3em;margin-bottom:1.1rem}
+.bmc-x{font-size:clamp(2.7rem,5vw,3.6rem);font-weight:300;letter-spacing:-.05em;line-height:.92;
+  display:flex;align-items:baseline;gap:.04em}
+.bmc-x i{font-style:italic;color:var(--red);font-size:.46em;font-weight:400}
+.bmc-cap{font-size:.79rem;color:var(--ink-70);margin-top:.6rem;line-height:1.4}
+.bmc-cap b{font-weight:600;color:var(--ink)}
+.dumb{position:relative;height:30px;margin-top:auto;padding-top:1.9rem}
+.dumb-in{position:absolute;left:6px;right:6px;top:1.9rem;bottom:0}
+.dumb-base{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--ink-12);transform:translateY(-50%)}
+.dumb-fill{position:absolute;top:50%;height:2px;width:0;background:var(--red);
+  transform:translateY(-50%);transition:width .95s cubic-bezier(.22,1,.36,1) .1s}
+.dumb-dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;
+  transform:translate(-50%,-50%);opacity:0;transition:opacity .5s ease .3s}
+.dumb-dot.ds{background:var(--white);border:2px solid rgba(29,29,27,.32)}
+.sec--cream .dumb-dot.ds{background:var(--cream)}
+.dumb-dot.dc{background:var(--red);box-shadow:0 0 0 4px rgba(209,10,17,.14)}
+.dumb.go .dumb-dot{opacity:1}
+.dumb-vals{display:flex;justify-content:space-between;gap:1rem;margin-top:.75rem;
+  font-size:.75rem;color:var(--ink-45);font-weight:600;letter-spacing:.04em}
+.dumb-vals b{color:var(--red);font-weight:700}
+.bmc-leg{display:flex;gap:1.6rem;font-size:.73rem;color:var(--ink-45);margin-top:1.6rem}
+.bmc-leg span{display:inline-flex;align-items:center;gap:.5rem}
+.bmc-leg span::before{content:"";width:11px;height:11px;border-radius:50%}
+.bmc-leg .lc::before{background:var(--red)}
+.bmc-leg .ls::before{background:transparent;border:2px solid rgba(29,29,27,.32)}
+
+/* ══ PLANEJAMENTO ══ */
+.q{border-top:2px solid var(--red);padding-top:1.25rem}
+.q h4{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;
+  color:var(--red);margin-bottom:1.25rem}
+.q-item{padding:.9rem 0;border-bottom:1px solid var(--ink-12)}
+.q-item:last-child{border:0}
+.q-item strong{display:block;font-weight:500;font-size:.94rem;margin-bottom:.26rem;letter-spacing:-.01em}
+.q-item span{font-size:.83rem;color:var(--ink-70);line-height:1.45;display:block}
+.q-item em{font-style:normal;display:inline-block;font-size:.61rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-45);border:1px solid var(--ink-12);
+  padding:.15rem .48rem;margin-top:.55rem;font-weight:600}
+
+/* ══ FECHAMENTO ══ */
+.end{max-width:880px}
+.end p{font-size:clamp(1.35rem,3.2vw,2.3rem);font-weight:300;line-height:1.28;
+  letter-spacing:-.03em;color:var(--cream)}
+.end .sign{margin-top:2.6rem;padding-top:1.5rem;border-top:1px solid var(--cream-20);
+  font-size:.85rem;color:var(--cream-70)}
+.foot{background:var(--ink);color:var(--cream-70);padding-block:2.2rem;
+  border-top:1px solid var(--cream-20);font-size:.77rem}
+.foot-in{display:flex;flex-wrap:wrap;gap:1rem 2rem;justify-content:space-between;align-items:center}
+
+.reveal{opacity:0;transform:translateY(24px);
+  transition:opacity .8s ease,transform .8s cubic-bezier(.22,1,.36,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ══ RESPONSIVO ══ */
+@media(max-width:1080px){
+  html{scroll-padding-top:74px}
+  .shell{display:block}
+  .side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;gap:1.25rem;
+    padding:.7rem var(--pad);border-right:0;border-bottom:1px solid var(--ink-12);
+    background:rgba(255,255,255,.93);backdrop-filter:saturate(1.4) blur(16px)}
+  .side-mark svg{height:24px}
+  .side-cap,.side-foot{display:none}
+  .side-nav{flex-direction:row;margin:0 0 0 auto;overflow-x:auto;overflow-y:hidden;
+    flex:0 1 auto;gap:1.15rem;scrollbar-width:none}
+  .side-nav::-webkit-scrollbar{display:none}
+  .side-nav a{padding:.25rem 0;font-size:.8rem;white-space:nowrap;
+    border-bottom:1.5px solid transparent}
+  .side-nav a i{display:none}
+  .side-nav a::before{display:none}
+  .side-nav a.on{border-color:var(--red)}
+}
+@media(max-width:820px){
+  .hero-in{grid-template-columns:1fr}
+  .client-slot{order:-1;aspect-ratio:16/7}
+  .tl-body{grid-template-columns:1fr}
+  .clip{grid-template-columns:1fr;gap:.28rem}
+  .clip .v{min-width:0}
+  .team-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body{font-size:16px}
+}
+@media(max-width:520px){ .team-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+@media print{
+  .side{display:none}
+  .shell{display:block}
+  .reveal{opacity:1!important;transform:none!important}
+  .sec{padding-block:2rem;break-inside:avoid}
+  .hero{padding-block:2.5rem}
+  body{font-size:10.5pt}
+  .hero,.sec--ink,.sec--cream,.kpi,.bmc,.dumb-fill,.dumb-dot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .dumb-fill,.dumb-dot{transition:none}
+}
+</style>
+</head>
+<body>
+<noscript><div style="padding:4rem 2rem;text-align:center;font-family:sans-serif">
+Este relatório precisa de JavaScript ativado para ser exibido.</div></noscript>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   ATIVO DE MARCA · logo LETS em SVG (herda a cor do elemento pai)
+   Não altere. Para trocar a cor, use CSS: .minha-classe{color:var(--red)}
+   ═══════════════════════════════════════════════════════════════════════════ */
+const LOGO_LETS = `<svg viewBox="2700 2650 1950 720" xmlns="http://www.w3.org/2000/svg" fill="currentColor" role="img" aria-label="LETS Marketing"><path d="M 3125.7 2704.3 L 2760.2 2704.3 L 2760.2 3142.5 L 3198.4 3142.5 L 3198.4 2923.4 L 3125.7 2923.4 Z M 3125.7 2704.3"/><path d="M 3427.4 3005.9 L 3427.4 2994.6 L 3648.4 2994.6 L 3648.4 2859.8 L 3427.4 2859.8 L 3427.4 2848.5 L 3648.4 2848.5 L 3648.4 2704.3 L 3210.1 2704.3 L 3210.1 3142.5 L 3648.4 3142.5 L 3648.4 3005.9 Z M 3427.4 3005.9"/><path d="M 4327.3 2859.8 L 4327.3 2848.5 L 4548.3 2848.5 L 4548.3 2704.3 L 4110 2704.3 L 4110 2994.6 L 4329.9 2994.6 L 4329.9 3005.9 L 4110 3005.9 L 4110 3142.5 L 4548.3 3142.5 L 4548.3 2859.8 Z M 4327.3 2859.8"/><path d="M 3660.1 2704.3 L 3660.1 2923.4 L 3733.1 2923.4 L 3733.1 3142.5 L 4025.3 3142.5 L 4025.3 2923.4 L 4098.3 2923.4 L 4098.3 2704.3 Z M 3660.1 2704.3"/><path d="M 3712.3 3250.2 L 3740.7 3196.7 L 3764.5 3196.7 L 3764.5 3302.3 L 3740.6 3302.3 L 3740.6 3242.6 L 3718.9 3284.8 L 3705.2 3284.8 L 3684 3243 L 3684 3302.3 L 3660.1 3302.3 L 3660.1 3196.7 L 3683.6 3196.7 Z M 3712.3 3250.2"/><path d="M 3822 3263.1 L 3841.5 3263.1 L 3831.8 3231.9 Z M 3782.8 3302.3 L 3819.6 3196.7 L 3844.1 3196.7 L 3880.8 3302.3 L 3853.7 3302.3 L 3848.1 3284.2 L 3815.5 3284.2 L 3809.9 3302.3 Z M 3782.8 3302.3"/><path d="M 3935.9 3241.2 C 3946.2 3241.2 3953.5 3239.8 3953.5 3229.9 C 3953.5 3219.8 3946.2 3217.8 3935.9 3217.8 L 3924.6 3217.8 L 3924.6 3241.2 Z M 3955.4 3302.3 L 3937.8 3262.3 L 3924.6 3262.3 L 3924.6 3302.3 L 3899.2 3302.3 L 3899.2 3196.7 L 3939 3196.7 C 3963.3 3196.7 3978.9 3207.8 3978.9 3229.9 C 3978.9 3243.6 3972.8 3253 3962.1 3257.9 L 3983.2 3302.3 Z M 3955.4 3302.3"/><path d="M 4062.8 3302.3 L 4040 3261.7 L 4030.8 3274.3 L 4030.8 3302.3 L 4005.4 3302.3 L 4005.4 3196.7 L 4030.8 3196.7 L 4030.8 3235.8 L 4058.1 3196.7 L 4087.6 3196.7 L 4056.4 3239.4 L 4093.1 3302.3 Z M 4062.8 3302.3"/><path d="M 4182.1 3196.7 L 4182.1 3217.8 L 4140.7 3217.8 L 4140.7 3237.1 L 4177.5 3237.1 L 4177.5 3258.2 L 4140.7 3258.2 L 4140.7 3281.2 L 4182.1 3281.2 L 4182.1 3302.3 L 4115.3 3302.3 L 4115.3 3196.7 Z M 4182.1 3196.7"/><path d="M 4278.7 3196.7 L 4278.7 3217.8 L 4251.1 3217.8 L 4251.1 3302.3 L 4225.7 3302.3 L 4225.7 3217.8 L 4198.2 3217.8 L 4198.2 3196.7 Z M 4278.7 3196.7"/><path d="M 4327.1 3302.3 L 4301.6 3302.3 L 4301.6 3196.7 L 4327.1 3196.7 Z M 4327.1 3302.3"/><path d="M 4441 3196.7 L 4441 3302.3 L 4420.4 3302.3 L 4381.6 3243.8 L 4381.6 3302.3 L 4357.7 3302.3 L 4357.7 3196.7 L 4377.9 3196.7 L 4417.1 3255.9 L 4417.1 3196.7 Z M 4441 3196.7"/><path d="M 4548.3 3246.4 L 4548.3 3257.7 C 4548.3 3289.3 4533.4 3303.8 4509.4 3303.8 C 4485.3 3303.8 4467.7 3289.3 4467.7 3257.7 L 4467.7 3243.3 C 4467.7 3209.4 4485.3 3195.1 4509.4 3195.1 C 4532.3 3195.1 4545.2 3208.6 4548.3 3229.3 L 4524.1 3229.3 C 4523 3222.7 4518.6 3216.3 4509.4 3216.3 C 4498.8 3216.3 4493.1 3223.9 4493.1 3241.2 L 4493.1 3257.7 C 4493.1 3275 4498.8 3282.7 4509.4 3282.7 C 4519.6 3282.7 4523 3276.3 4523.9 3267.5 L 4509.8 3267.5 L 4509.8 3246.4 Z M 4548.3 3246.4"/></svg>`;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIRETÓRIO DO TIME LETS · nome → [papel institucional, arquivo da foto]
+   Compilado do site oficial (letsmarketing.com.br/pessoas).
+   O consultor só precisa escrever o NOME em DADOS.valor.time — o papel e a
+   foto são preenchidos automaticamente a partir daqui.
+   Pessoa nova ainda não listada: adicione a linha aqui, ou informe o objeto
+   completo {nome, papel, foto} direto em DADOS.valor.time.
+   ═══════════════════════════════════════════════════════════════════════════ */
+const EQUIPE_LETS = {
+  "Amanda Paccola":["Administradora","2026/04/AP-1.png"],
+  "Fabio Bernardes":["Administrador","2026/04/FB-1-1.png"],
+  "Rafael Gagliardi":["Administrador","2026/04/RG-1.png"],
+  "Willian Fernandes":["Administrador","2026/04/WF-1-1.png"],
+  "Karina Ifanger":["Sócia","2026/04/KI-1-1.png"],
+  "Luana Pablos":["Sócia","2026/04/LP-1.png"],
+  "Marina Toledo":["Sócia","2026/04/MT-1.png"],
+  "Thais Rago":["Sócia","2026/04/TR-1.png"],
+  "Thamires Telles":["Sócia","2026/04/TT-1-1.png"],
+  "Camila Vichoski":["Líder","2026/04/CV-1.png"],
+  "Gabriel Duarte":["Líder","2026/04/GD-1.png"],
+  "Isabelle Brandão":["Líder","2026/04/IB-1.png"],
+  "Nikolas Gói":["Líder","2026/04/NG-1.png"],
+  "Roberta Bezerra":["Líder","2026/04/RB-1.png"],
+  "Yasmin Brandão":["Líder","2026/04/YB-1.png"],
+  "Alice Gonsalez":["Associada","2026/04/AG-1.png"],
+  "Brenda Nascimento":["Associada","2026/04/BN-1.png"],
+  "Daniel Chinelato":["Associado","2026/04/DC-1.png"],
+  "Elane Ribeiro":["Associada","2026/07/Elane.png"],
+  "Felipe Albuquerque":["Associado","2026/04/FA-1.png"],
+  "Gabriel Faleiros":["Associado","2026/04/GF-1.png"],
+  "Gabriela Grando":["Associada",""],
+  "Gabriela Melle":["Associada","2026/04/GM-1.png"],
+  "Giovanna Rocha":["Associada","2026/05/GR.png"],
+  "Jaqueline Amaral":["Associada","2026/05/JA.png"],
+  "Jennifer Alvino":["Associada","2026/05/JF.png"],
+  "Jéssica Mendes":["Associada","2026/05/JM.png"],
+  "Juliano Trevisan":["Associado","2026/05/JT.png"],
+  "Julio Berriel":["Associado","2026/05/JB.png"],
+  "Kely Santos Oliveira":["Designer","2026/07/Kely.png"],
+  "Luiza Fazolo":["Associada","2026/05/LF.png"],
+  "Maira Huffenbaecher":["Associada","2026/05/MH.png"],
+  "Raquel Machado":["Associada","2026/05/RM.png"],
+  "Stefany Oliveira":["Associada","2026/05/SO.png"],
+  "Thiemy Ferreira":["Associada","2026/05/TF.png"],
+  "Adilene Anjos":["Estagiária","2026/05/AA.png"],
+  "Alan Luis de Figueiredo":["Colaborador","2026/07/Alan.png"],
+  "Ana Beatriz Viana":["Colaboradora","2026/05/AB.png"],
+  "Ana Luiza Bernardi":["Colaboradora","2026/05/AL.png"],
+  "Ariane Souza da Silva":["Estagiária","2026/07/Ariane.png"],
+  "Brenda Lachi":["Colaboradora","2026/05/BL.png"],
+  "Carolina Garcia":["Colaboradora","2026/05/CG.png"],
+  "Duisa Lorrana Ferreira":["Colaboradora","2026/05/DL.png"],
+  "Érica Rodrigues":["Colaboradora","2026/05/erica.png"],
+  "Gabriela Mendoça":["Estagiária","2026/05/GM.png"],
+  "Laylla Cabral":["Colaboradora","2026/05/LC.png"],
+  "Letícia Oliveira":["Estagiária","2026/07/Leticia.png"],
+  "Lucas Luz":["Colaborador","2026/05/LL.png"],
+  "Phamela Leticia da Silva":["Colaboradora","2026/07/Phamela.png"],
+  "Vanessa Santos":["Colaboradora","2026/05/VS.png"],
+  "Yanca Silva Suassui de Lima":["Colaboradora","2026/07/Yanca.png"],
+};
+const FOTO_BASE = "https://www.letsmarketing.com.br/wp-content/uploads/";
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   ██  1. SEÇÕES DO RELATÓRIO  ██
+   Nem todo cliente recebe todas as frentes. Marque true nas seções que fazem
+   sentido para ESTE cliente e false nas que não fazem. A seção desligada some
+   por completo — do conteúdo, do menu e da numeração, sem deixar buraco.
+   O consultor decide isso na pergunta 0.1 do formulário.
+   ══════════════════════════════════════════════════════════════════════════ */
+const SECOES = {
+  pilares:      true,   // Os cinco pilares do trabalho da LETS       (recomendado sempre)
+  resumo:       true,   // Sumário executivo com os números do ano   (recomendado sempre)
+  digital:      true,   // Site e canais digitais, com gráficos
+  valor:        true,   // Entregas da LETS + time dedicado à conta
+  imprensa:     true,   // Assessoria de imprensa e clipping
+  rankings:     true,   // Rankings e reconhecimentos
+  destaques:    true,   // Linha do tempo dos destaques do ano
+  benchmark:    true,   // Comparativo com a média do setor
+  plano:        true,   // Planejamento do ano seguinte
+  encerramento: true    // Frase de fechamento                       (recomendado sempre)
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ██  2. BLOCO DADOS  ██
+   Este é o ÚNICO trecho do arquivo que deve ser alterado, junto com SECOES.
+   Preencha conforme o FORMULARIO-CONSULTOR. Não altere nada abaixo da linha
+   "FIM DO BLOCO DADOS".
+   ══════════════════════════════════════════════════════════════════════════ */
+const DADOS = {
+
+  /* --- 1. IDENTIFICAÇÃO ------------------------------------------------ */
+  cliente: {
+    nome: "Marques Vieira Advogados",
+    logo: "",                              // caminho do PNG do cliente. Vazio = espaço reservado
+    ano: 2026,                             // ano do relatório  → título "Resultados 2026"
+    anoAnterior: 2025,                     // base de comparação
+    // o ano do plano é sempre ano + 1     → título "Plano 2027"
+    subtitulo: "Um ano de construção de reputação, autoridade técnica e crescimento consistente da marca no mercado jurídico.",
+    inicioParceria: "Março de 2023",
+    frentes: "Marketing & Comunicação · Imprensa · Rankings",
+    consultorResponsavel: "Roberta Bezerra"
+  },
+
+  /* --- 2. NOSSOS PILARES ------------------------------------------------
+     Os cinco pilares são fixos e valem para todos os clientes. Só mexa aqui
+     se a LETS revisar o próprio método. Se uma frente não é atendida neste
+     cliente, remova o item da lista em vez de reescrevê-lo.               */
+  pilares: {
+    texto:"Cinco frentes sustentam tudo o que a LETS entrega. Cada número deste relatório nasce de uma delas.",
+    itens:[
+      { t:"Branding", k:"Posicionamento e reputação",
+        d:"Como o escritório é percebido antes de qualquer reunião acontecer. Identidade, discurso e coerência em todos os pontos de contato." },
+      { t:"Conteúdo", k:"Narrativa e autoridade",
+        d:"Conhecimento técnico dos sócios transformado em material que circula. É o que faz o escritório ser lembrado quando a dúvida aparece." },
+      { t:"Performance", k:"Captação e conversão",
+        d:"A ponte entre reputação e pipeline. Tráfego qualificado, páginas que convertem e origem rastreada de cada contato recebido." },
+      { t:"Dados", k:"Métrica e decisão",
+        d:"Nada entra no plano sem número que sustente. É a métrica que separa decisão de palpite — e que valida ou derruba a estratégia." },
+      { t:"Comunicação interna", k:"Cultura e alinhamento",
+        d:"Marca forte começa dentro. Sócios e equipe alinhados no mesmo discurso multiplicam o alcance de tudo que se constrói fora." }
+    ]
+  },
+
+  /* --- 3. SUMÁRIO EXECUTIVO -------------------------------------------- */
+  resumo: {
+    texto: "2026 foi o ano em que a presença digital do escritório deixou de ser institucional e passou a gerar demanda qualificada. O tráfego orgânico cresceu 84%, as menções espontâneas em imprensa dobraram e o escritório entrou em três novos rankings internacionais. O eixo da estratégia — transformar conhecimento técnico dos sócios em conteúdo de autoridade — se provou: 62% dos contatos recebidos pelo site citaram um artigo ou entrevista como origem.",
+    kpis: [
+      { label:"Sessões no site",        valor:"148", sufixo:"k", variacao:84,  nota:"Crescimento puxado por busca orgânica e LinkedIn" },
+      { label:"Inserções na imprensa",  valor:"96",  sufixo:"",  variacao:118, nota:"44 veículos distintos, 12 de alcance nacional" },
+      { label:"Seguidores no LinkedIn", valor:"18,4",sufixo:"k", variacao:61,  nota:"Página do escritório e perfis dos sócios" },
+      { label:"Rankings conquistados",  valor:"9",   sufixo:"",  variacao:50,  nota:"Três novas entradas internacionais" },
+      { label:"Leads qualificados",     valor:"213", sufixo:"",  variacao:37,  nota:"Formulário do site e WhatsApp institucional" },
+      { label:"Share of voice",         valor:"12,8",sufixo:"%", variacao:-4,  nota:"Frente a oito escritórios concorrentes monitorados" }
+    ]
+  },
+
+  /* --- 4. PERFORMANCE DIGITAL ------------------------------------------ */
+  meses: ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],
+  digital: {
+    site: {
+      titulo:"Site institucional",
+      fonte:"Google Analytics 4",
+      serieAtual:   [7100,7900,9200,10400,11800,12300,13100,14200,13800,15100,16400,16700],
+      serieAnterior:[4200,4400,5100,5600,6200,6400,6900,7100,6800,7300,7900,8100],
+      metricas:[
+        { label:"Usuários únicos",       valor:"96,2 k", variacao:79 },
+        { label:"Páginas por sessão",    valor:"3,4",    variacao:22 },
+        { label:"Tempo médio na página", valor:"2m 51s", variacao:35 },
+        { label:"Taxa de conversão",     valor:"1,8 %",  variacao:0.4 }
+      ],
+      leitura:"O blog jurídico responde hoje por 71% do tráfego total. As três páginas mais visitadas do ano são artigos técnicos assinados por sócios — não páginas institucionais."
+    },
+    canais:[
+      { nome:"LinkedIn", tag:"Rede principal",
+        serie:[11400,11900,12600,13300,14100,14800,15400,16000,16600,17200,17900,18400],
+        metricas:[{label:"Seguidores",valor:"18,4 k",variacao:61},{label:"Impressões",valor:"1,2 M",variacao:94},{label:"Taxa de engajamento",valor:"6,2 %",variacao:18}],
+        leitura:"Posts com opinião técnica dos sócios performam 3,1 vezes melhor que posts institucionais." },
+      { nome:"Instagram", tag:"Marca empregadora",
+        serie:[4200,4350,4500,4720,4900,5100,5340,5520,5710,5900,6120,6380],
+        metricas:[{label:"Seguidores",valor:"6,4 k",variacao:52},{label:"Alcance",valor:"312 k",variacao:44},{label:"Salvamentos",valor:"2,9 k",variacao:87}],
+        leitura:"Bastidores e cultura interna sustentam o canal; conteúdo jurídico puro tem desempenho baixo aqui." },
+      { nome:"Google Meu Negócio", tag:"Busca local",
+        serie:[820,890,940,1010,1120,1180,1260,1340,1410,1490,1580,1660],
+        metricas:[{label:"Visualizações",valor:"14,7 k",variacao:38},{label:"Cliques para o site",valor:"1,9 k",variacao:41},{label:"Solicitações de rota",valor:"342",variacao:29}],
+        leitura:"A avaliação média subiu de 4,3 para 4,8 após a rotina de solicitação de reviews implantada em abril." },
+      { nome:"YouTube", tag:"Conteúdo em vídeo",
+        serie:[120,180,260,340,480,610,760,900,1050,1220,1400,1580],
+        metricas:[{label:"Inscritos",valor:"1,6 k",variacao:213},{label:"Horas assistidas",valor:"4,1 k",variacao:190},{label:"Vídeos publicados",valor:"24",variacao:100}],
+        leitura:"Canal lançado em janeiro. A série Direito em 3 minutos concentra 68% das visualizações." }
+    ]
+  },
+
+  /* --- 5. VALOR ENTREGUE ----------------------------------------------- */
+  valor: {
+    texto:"O que a LETS executou para o escritório ao longo do ano, em números.",
+    entregas:[
+      { qtd:"186", un:"", oq:"peças de conteúdo produzidas entre artigos, posts, cards e roteiros" },
+      { qtd:"96",  un:"", oq:"inserções conquistadas em imprensa espontânea" },
+      { qtd:"42",  un:"", oq:"submissões a rankings nacionais e internacionais" },
+      { qtd:"24",  un:"", oq:"reuniões estratégicas com o comitê de marketing do escritório" },
+      { qtd:"11",  un:"", oq:"treinamentos com sócios e associados em LinkedIn, mídia e conteúdo" },
+      { qtd:"1.240",un:"h",oq:"horas de consultoria dedicadas à conta" }
+    ],
+    /* Escreva apenas o NOME. Papel e foto vêm do diretório EQUIPE_LETS.
+       Para dar um papel específico nesta conta, use:
+       { nome:"Roberta Bezerra", papelNaConta:"Consultora responsável" }         */
+    time:[
+      { nome:"Roberta Bezerra", papelNaConta:"Consultora responsável" },
+      "Willian Fernandes",
+      "Camila Vichoski",
+      "Gabriel Duarte",
+      "Kely Santos Oliveira",
+      "Maira Huffenbaecher",
+      "Julio Berriel",
+      "Jennifer Alvino"
+    ]
+  },
+
+  /* --- 6. IMPRENSA ------------------------------------------------------ */
+  imprensa: {
+    insercoes:96, veiculos:44, alcanceEstimado:"18,6 M", valorEquivalente:"R$ 1,4 mi",
+    porMes:[3,5,4,7,9,8,11,9,10,8,12,10],
+    leitura:"O salto do segundo semestre acompanha o posicionamento do escritório como fonte recorrente em pautas de direito ambiental e tributário.",
+    principais:[
+      { veiculo:"Valor Econômico", titulo:"Novas regras de licenciamento ambiental mudam o cálculo de risco das empresas", data:"Novembro · 2026", url:"#" },
+      { veiculo:"Folha de S.Paulo", titulo:"Escritórios apostam em especialização setorial para crescer fora do eixo Rio–SP", data:"Outubro · 2026", url:"#" },
+      { veiculo:"JOTA", titulo:"STJ fixa tese sobre responsabilidade em operações societárias", data:"Setembro · 2026", url:"#" },
+      { veiculo:"Estadão", titulo:"Mercado de crédito de carbono ganha tração e exige nova moldura contratual", data:"Agosto · 2026", url:"#" },
+      { veiculo:"InfoMoney", titulo:"O que muda na tributação de fundos exclusivos a partir de 2027", data:"Julho · 2026", url:"#" },
+      { veiculo:"Gazeta do Povo", titulo:"Produtor rural em recuperação judicial: os limites da garantia pessoal", data:"Maio · 2026", url:"#" }
+    ]
+  },
+
+  /* --- 7. RANKINGS E RECONHECIMENTOS ------------------------------------ */
+  rankings:[
+    { nome:"Chambers Brazil",         categoria:"Environment · Band 3",           nivel:"Nova entrada" },
+    { nome:"Leaders League",          categoria:"Tax Litigation · Recommended",   nivel:"Nova entrada" },
+    { nome:"The Legal 500",           categoria:"Agribusiness · Tier 4",          nivel:"Nova entrada" },
+    { nome:"Análise Advocacia 500",   categoria:"Mais Admirados · Meio Ambiente", nivel:"Manutenção" },
+    { nome:"Análise Advocacia Mulher",categoria:"Duas sócias reconhecidas",       nivel:"Evolução" },
+    { nome:"ITR World Tax",           categoria:"General Corporate Tax · Tier 3", nivel:"Evolução" },
+    { nome:"LACCA Approved",          categoria:"Environmental",                  nivel:"Manutenção" },
+    { nome:"IFLR1000",                categoria:"Project Development",            nivel:"Manutenção" },
+    { nome:"Prêmio Análise DNA",      categoria:"Case de comunicação institucional", nivel:"Nova entrada" }
+  ],
+
+  /* --- 8. DESTAQUES DO ANO ---------------------------------------------- */
+  destaques:[
+    { quando:"Março · 2026", titulo:"Rebranding e novo site institucional",
+      descricao:"Reposicionamento completo da marca, com nova identidade visual, arquitetura de informação orientada a áreas de atuação e site construído com foco em SEO técnico e conversão.",
+      imagem:"img/destaque-01.jpg", resultado:"Tempo de carregamento caiu 62% · tráfego orgânico dobrou em 90 dias" },
+    { quando:"Junho · 2026", titulo:"Seminário Agro & Meio Ambiente",
+      descricao:"Concepção, produção e cobertura do primeiro seminário próprio do escritório, reunindo clientes, produtores rurais e imprensa especializada em Curitiba.",
+      imagem:"img/destaque-02.jpg", resultado:"142 participantes presenciais · 9 inserções de imprensa geradas" },
+    { quando:"Agosto · 2026", titulo:"Série Direito em 3 minutos",
+      descricao:"Formato de vídeo curto com sócios explicando decisões recentes em linguagem acessível, distribuído em YouTube, LinkedIn e Instagram.",
+      imagem:"img/destaque-03.jpg", resultado:"24 episódios · 1,6 mil inscritos em oito meses" },
+    { quando:"Novembro · 2026", titulo:"Entrada no Chambers Brazil",
+      descricao:"Primeira submissão estruturada ao Chambers, com curadoria de casos, coleta de referências de clientes e preparação dos sócios para as entrevistas dos pesquisadores.",
+      imagem:"img/destaque-04.jpg", resultado:"Band 3 em Environment logo na primeira participação" }
+  ],
+
+  /* --- 9. BENCHMARK DE MERCADO ------------------------------------------ */
+  benchmark: {
+    texto:"Comparativo com a média de escritórios de porte equivalente atendidos pela LETS, sobre uma base de mais de 450 escritórios.",
+    itens:[
+      { metrica:"Crescimento de tráfego orgânico", cliente:84, setor:31, un:"%" },
+      { metrica:"Inserções de imprensa no ano",    cliente:96, setor:38, un:"" },
+      { metrica:"Engajamento no LinkedIn",         cliente:6.2, setor:3.4, un:"%" },
+      { metrica:"Rankings ativos",                 cliente:9,  setor:5,  un:"" },
+      { metrica:"Artigos publicados por sócio",    cliente:7,  setor:4,  un:"" }
+    ]
+  },
+
+  /* --- 10. PLANEJAMENTO DO PRÓXIMO ANO ----------------------------------- */
+  planejamento: {
+    texto:"A prioridade do próximo ciclo é converter autoridade em pipeline: menos ampliação de canais, mais profundidade nos que já performam.",
+    trimestres:[
+      { nome:"1º Trimestre", itens:[
+        { t:"Newsletter proprietária", d:"Lançamento do informativo mensal para a base de clientes e prospects.", f:"Conteúdo" },
+        { t:"CRM e mailing", d:"Higienização da base e integração com o formulário do site.", f:"Dados" },
+        { t:"Treinamento de LinkedIn", d:"Segunda turma, agora com associados sêniores.", f:"Pessoas" } ] },
+      { nome:"2º Trimestre", itens:[
+        { t:"Segunda edição do seminário", d:"Formato ampliado com painel de convidados externos.", f:"Eventos" },
+        { t:"Landing pages por área", d:"Páginas de conversão para as três áreas mais rentáveis.", f:"Digital" },
+        { t:"Ciclo de rankings", d:"Submissões de meio de ano com curadoria antecipada de casos.", f:"Rankings" } ] },
+      { nome:"3º Trimestre", itens:[
+        { t:"Podcast institucional", d:"Piloto de seis episódios com convidados do agronegócio.", f:"Conteúdo" },
+        { t:"Tráfego pago", d:"Testes de mídia paga em busca para termos de alta intenção.", f:"Digital" },
+        { t:"Pesquisa de satisfação", d:"Client experience estruturado com os vinte maiores clientes.", f:"Estratégia" } ] },
+      { nome:"4º Trimestre", itens:[
+        { t:"Relatório anual", d:"Consolidação de resultados e planejamento do ciclo seguinte.", f:"Estratégia" },
+        { t:"Campanha institucional", d:"Peça de fim de ano com foco em retenção e relacionamento.", f:"Marca" },
+        { t:"Revisão de posicionamento", d:"Diagnóstico de marca com base nos dados acumulados no ano.", f:"Branding" } ] }
+    ]
+  },
+
+  /* --- 11. ENCERRAMENTO -------------------------------------------------- */
+  encerramento: {
+    texto:"Reputação não se compra e não se acelera. Constrói-se com consistência, ano após ano — e é isso que os números deste relatório mostram.",
+    assinatura:"LETS Marketing · Consultoria líder em marketing jurídico"
+  }
+};
+
+/* ██  FIM DO BLOCO DADOS — não altere nada daqui para baixo  ██ */
+</script>
+
+<div id="app"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   MOTOR DE RENDERIZAÇÃO — estrutura do relatório. Não editar.
+   ══════════════════════════════════════════════════════════════════════════ */
+const RED="#D10A11", INK="#1D1D1B", CREAM="#EEE7D6";
+const D=DADOS;
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const nf  = n => Number(n).toLocaleString("pt-BR");
+
+/* ---------- espaços reservados de imagem ---------- */
+function PH(txt,w,h,dark){
+  w=w||900;h=h||675;
+  const bg=dark?INK:"#E3DCCB", fg=dark?CREAM:INK;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+  <rect width="${w}" height="${h}" fill="${bg}"/>
+  <circle cx="${w*.84}" cy="${h*.18}" r="${h*.45}" fill="${RED}" opacity=".13"/>
+  <rect x="${w*.07}" y="${h*.52}" width="${w*.11}" height="3" fill="${RED}"/>
+  <text x="${w*.07}" y="${h*.66}" font-family="Figtree,sans-serif" font-size="${Math.round(h*.072)}"
+    font-weight="300" fill="${fg}" opacity=".7">${esc(txt)}</text>
+  <text x="${w*.07}" y="${h*.755}" font-family="Figtree,sans-serif" font-size="${Math.round(h*.038)}"
+    font-weight="600" letter-spacing="3" fill="${fg}" opacity=".38">IMAGEM A SUBSTITUIR</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+}
+function AV(nome){
+  const ini=String(nome).split(" ").filter(Boolean).slice(0,2).map(p=>p[0]).join("").toUpperCase();
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800">
+  <rect width="600" height="800" fill="#E3DCCB"/>
+  <text x="300" y="400" font-family="Figtree,sans-serif" font-size="190" font-weight="300"
+   fill="${INK}" opacity=".42" text-anchor="middle" dominant-baseline="central">${ini}</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);
+}
+const IMG=(src,alt,w,h,dark)=>`<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy"
+  onerror="this.onerror=null;this.src=PH(${JSON.stringify(String(alt))},${w||900},${h||675},${dark?1:0})">`;
+
+const SLOT_VAZIO = `<div class="client-slot">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+    <rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 15l4.5-4.5 3.5 3.5L15 10l6 6"/>
+    <circle cx="8.5" cy="8.5" r="1.4"/></svg>
+  <p>Logo do<br>cliente aqui</p></div>`;
+function clientSlot(){
+  if(!D.cliente.logo) return SLOT_VAZIO;
+  return `<div class="client-slot client-slot--filled"><img src="${esc(D.cliente.logo)}"
+    alt="${esc(D.cliente.nome)}" onerror="this.closest('.client-slot').outerHTML=SLOT_VAZIO"></div>`;
+}
+
+/* ---------- pessoas do time ---------- */
+function pessoa(p){
+  const nome = typeof p==="string" ? p : (p.nome||"");
+  const reg  = EQUIPE_LETS[nome] || ["",""];
+  const papel= (typeof p==="object" && p.papelNaConta) || reg[0] || "LETS Marketing";
+  const inst = (typeof p==="object" && p.papelNaConta && reg[0] && reg[0]!==p.papelNaConta) ? reg[0] : "";
+  const foto = (typeof p==="object" && p.foto) || (reg[1] ? FOTO_BASE+reg[1] : "");
+  return {nome,papel,inst,foto};
+}
+
+/* ---------- variações ---------- */
+function delta(v){
+  if(v===null||v===undefined||v==="") return "";
+  const n=parseFloat(v), c=n>0?"up":(n<0?"down":"flat"), a=n>0?"▲":(n<0?"▼":"—");
+  return `<span class="kpi-delta ${c}">${a} ${nf(Math.abs(n))}% vs ${D.cliente.anoAnterior}</span>`;
+}
+const dSmall=v=>{ if(v===null||v===undefined||v==="")return"";
+  const n=parseFloat(v),c=n>0?"up":(n<0?"down":"flat");
+  return `<span class="d ${c}">${n>0?"+":""}${nf(n)}%</span>`;};
+
+const head=(n,rot,titulo,lead)=>`<div class="sec-head reveal">
+  <div class="eyebrow"><i>${String(n).padStart(2,"0")}</i> ${esc(rot)}</div>
+  <h2>${titulo}</h2>${lead?`<p class="lead">${esc(lead)}</p>`:""}</div>`;
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REGISTRO DE SEÇÕES — para acrescentar uma seção nova, adicione um objeto
+   aqui e a chave correspondente em SECOES.
+   ══════════════════════════════════════════════════════════════════════════ */
+const REGISTRO = [
+ {id:"pilares", nav:"Pilares", bg:"cream", build:n=>`
+   ${head(n,"Nossos pilares",`Cinco frentes, <em>um método</em>`,D.pilares.texto)}
+   <div class="pilar-grid reveal">${D.pilares.itens.map((p,i)=>`<div class="pilar">
+     <span class="n">${String(i+1).padStart(2,"0")}</span>
+     <h3>${esc(p.t)}</h3><span class="k">${esc(p.k)}</span><p>${esc(p.d)}</p></div>`).join("")}</div>`},
+
+ {id:"resumo", nav:"Resumo", bg:"white", build:n=>`
+   ${head(n,"Sumário executivo",`O ano em <em>números</em>`,D.resumo.texto)}
+   <div class="kpi-grid reveal">${D.resumo.kpis.map(k=>`<div class="kpi">
+     <div class="kpi-label">${esc(k.label)}</div>
+     <div class="kpi-val">${esc(k.valor)}${k.sufixo?`<i>${esc(k.sufixo)}</i>`:""}</div>
+     ${delta(k.variacao)}${k.nota?`<div class="kpi-note">${esc(k.nota)}</div>`:""}</div>`).join("")}</div>`},
+
+ {id:"digital", nav:"Digital", bg:"cream", build:n=>{const st=D.digital.site; return `
+   ${head(n,"Performance digital",`Onde a marca <em>foi vista</em>`,
+     `Evolução de cada canal ao longo de ${D.cliente.ano}, comparada ao ano anterior.`)}
+   <div class="card reveal" style="margin-bottom:1.5rem">
+     <div class="card-h"><h3>${esc(st.titulo)}</h3><span class="tag">${esc(st.fonte)}</span></div>
+     <div class="grid g2" style="align-items:start">
+       <div class="chart-box"><canvas id="ch-site"></canvas></div>
+       <div>${st.metricas.map(m=>`<div class="metric-row"><span>${esc(m.label)}</span>
+         <span><b>${esc(m.valor)}</b>${dSmall(m.variacao)}</span></div>`).join("")}
+         ${st.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(st.leitura)}</p>`:""}</div>
+     </div></div>
+   <div class="grid g2 reveal">${D.digital.canais.map((c,i)=>`<div class="card">
+     <div class="card-h"><h3>${esc(c.nome)}</h3><span class="tag">${esc(c.tag)}</span></div>
+     <div class="chart-box" style="height:175px"><canvas id="ch-c${i}"></canvas></div>
+     <div style="margin-top:1.1rem">${c.metricas.map(m=>`<div class="metric-row"><span>${esc(m.label)}</span>
+       <span><b>${esc(m.valor)}</b>${dSmall(m.variacao)}</span></div>`).join("")}</div>
+     ${c.leitura?`<p class="kpi-note" style="margin-top:1.1rem">${esc(c.leitura)}</p>`:""}</div>`).join("")}</div>`}},
+
+ {id:"valor", nav:"Entregas", bg:"ink", build:n=>`
+   ${head(n,"Valor entregue",`O que a LETS <em>executou</em>`,D.valor.texto)}
+   <div class="deliv-grid reveal">${D.valor.entregas.map(e=>`<div class="deliv">
+     <b>${esc(e.qtd)}${e.un?`<i>${esc(e.un)}</i>`:""}</b><span>${esc(e.oq)}</span></div>`).join("")}</div>
+   <div class="subhead reveal">Time dedicado à conta</div>
+   <div class="team-grid reveal">${D.valor.time.map(p=>{const q=pessoa(p); return `<div class="person">
+     <figure><img src="${q.foto?esc(q.foto):AV(q.nome)}" alt="${esc(q.nome)}" loading="lazy"
+       onerror="this.onerror=null;this.src=AV(${JSON.stringify(q.nome)})"></figure>
+     <strong>${esc(q.nome)}</strong><span>${esc(q.papel)}</span>
+     ${q.inst?`<small>${esc(q.inst)} na LETS</small>`:""}</div>`;}).join("")}</div>`},
+
+ {id:"imprensa", nav:"Imprensa", bg:"white", build:n=>{const ip=D.imprensa; return `
+   ${head(n,"Assessoria de imprensa",`Presença <em>espontânea</em>`,ip.leitura)}
+   <div class="kpi-grid tight reveal" style="margin-bottom:clamp(2.4rem,5vw,3.4rem)">
+     <div class="kpi"><div class="kpi-label">Inserções</div><div class="kpi-val">${nf(ip.insercoes)}</div></div>
+     <div class="kpi"><div class="kpi-label">Veículos distintos</div><div class="kpi-val">${nf(ip.veiculos)}</div></div>
+     <div class="kpi"><div class="kpi-label">Alcance estimado</div><div class="kpi-val">${esc(ip.alcanceEstimado)}</div></div>
+     <div class="kpi"><div class="kpi-label">Valor equivalente</div><div class="kpi-val">${esc(ip.valorEquivalente)}</div></div>
+   </div>
+   <div class="grid g2 reveal" style="gap:clamp(2rem,4.5vw,3.5rem);align-items:start">
+     <div class="card"><div class="card-h"><h3>Inserções por mês</h3></div>
+       <div class="chart-box"><canvas id="ch-imp"></canvas></div></div>
+     <div><div class="eyebrow">Destaques de cobertura</div>
+       ${ip.principais.map(c=>`<a class="clip" href="${esc(c.url)}" target="_blank" rel="noopener">
+         <span class="v">${esc(c.veiculo)}</span><span class="t">${esc(c.titulo)}</span>
+         <span class="d">${esc(c.data)}</span></a>`).join("")}</div>
+   </div>`}},
+
+ {id:"rankings", nav:"Rankings", bg:"ink", build:n=>`
+   ${head(n,"Reconhecimentos",`Validação <em>externa</em>`,
+     `Rankings e premiações conquistados ou mantidos em ${D.cliente.ano}.`)}
+   <div class="grid g3 reveal">${D.rankings.map(r=>`<div class="rk">
+     <div class="n">${esc(r.nome)}</div><div class="c">${esc(r.categoria)}</div>
+     <div class="lv">${esc(r.nivel)}</div></div>`).join("")}</div>`},
+
+ {id:"destaques", nav:"Destaques", bg:"cream", build:n=>`
+   ${head(n,"Destaques do ano",`Os momentos que <em>moveram o ponteiro</em>`)}
+   <div class="tl reveal">${D.destaques.map(d=>`<div class="tl-item">
+     <div class="tl-when">${esc(d.quando)}</div>
+     <div class="tl-body">
+       <div><h3>${esc(d.titulo)}</h3>
+         <p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(d.descricao)}</p>
+         ${d.resultado?`<span class="tl-res">${esc(d.resultado)}</span>`:""}</div>
+       <figure>${IMG(d.imagem,d.titulo,900,675)}</figure>
+     </div></div>`).join("")}</div>`},
+
+ {id:"benchmark", nav:"Benchmark", bg:"white", build:n=>{
+   const it=D.benchmark.itens;
+   const card=i=>{
+     /* cada cartão tem escala própria: o maior valor do par ocupa a linha inteira */
+     const mx=Math.max(i.cliente,i.setor)||1;
+     const mult=i.setor ? i.cliente/i.setor : 0;
+     const a=(i.setor/mx*100), b=(i.cliente/mx*100);
+     const mtxt = !mult ? "—" : (mult>=10 ? mult.toFixed(0) : mult.toFixed(1).replace(".",","));
+     return `<div class="bmc">
+       <div class="bmc-m">${esc(i.metrica)}</div>
+       <div class="bmc-x">${mtxt}<i>×</i></div>
+       <div class="bmc-cap">a média do setor</div>
+       <div class="dumb" data-a="${a.toFixed(1)}" data-b="${b.toFixed(1)}">
+         <div class="dumb-in">
+           <span class="dumb-base"></span><span class="dumb-fill"></span>
+           <span class="dumb-dot ds" style="left:${a.toFixed(1)}%"></span>
+           <span class="dumb-dot dc" style="left:${b.toFixed(1)}%"></span>
+         </div></div>
+       <div class="dumb-vals"><span>Setor ${nf(i.setor)}${esc(i.un)}</span>
+         <span>Escritório <b>${nf(i.cliente)}${esc(i.un)}</b></span></div>
+     </div>`;};
+   return `
+   ${head(n,"Benchmark de mercado",`Como o escritório se <em>compara</em>`,D.benchmark.texto)}
+   <div class="bmc-grid reveal">${it.map(card).join("")}</div>
+   <div class="bmc-leg"><span class="lc">${esc(D.cliente.nome)}</span><span class="ls">Média do setor</span></div>`}},
+
+ {id:"plano", nav:()=>"Plano "+(D.cliente.ano+1), bg:"cream", build:n=>`
+   ${head(n,"Planejamento "+(D.cliente.ano+1),`O que vem <em>a seguir</em>`,D.planejamento.texto)}
+   <div class="grid g4 reveal">${D.planejamento.trimestres.map(q=>`<div class="q">
+     <h4>${esc(q.nome)}</h4>
+     ${q.itens.map(it=>`<div class="q-item"><strong>${esc(it.t)}</strong>
+       <span>${esc(it.d)}</span>${it.f?`<em>${esc(it.f)}</em>`:""}</div>`).join("")}</div>`).join("")}</div>`},
+
+ {id:"encerramento", nav:"", bg:"ink", build:()=>`
+   <div class="end reveal">
+     <div class="eyebrow">Para o extraordinário</div>
+     <p>${esc(D.encerramento.texto)}</p>
+     <div class="sign">${esc(D.encerramento.assinatura)}</div></div>`}
+];
+
+/* ---------- seleção, numeração e alternância de fundos ---------- */
+const ATIVAS = REGISTRO.filter(s => SECOES[s.id] !== false);
+let anterior = "ink";                      /* a capa é escura */
+ATIVAS.forEach(s=>{
+  let bg = s.bg;
+  if(bg === anterior) bg = (bg === "ink") ? "cream" : (bg === "cream" ? "white" : "cream");
+  s._bg = bg; anterior = bg;
+});
+const BG  = Object.fromEntries(ATIVAS.map(s=>[s.id,s._bg]));
+const NAV = ATIVAS.filter(s=>s.nav).map((s,i)=>[s.id, typeof s.nav==="function"?s.nav():s.nav]);
+const NUM = Object.fromEntries(ATIVAS.map((s,i)=>[s.id,String(i+1).padStart(2,"0")]));
+
+/* ---------- montagem ---------- */
+const SIDE = `<aside class="side">
+  <span class="side-mark">${LOGO_LETS}</span>
+  <div class="side-cap"><b>${esc(D.cliente.nome)}</b>
+    <span>Resultados ${D.cliente.ano} · Plano ${D.cliente.ano+1}</span></div>
+  <nav class="side-nav">${NAV.map(([id,t])=>
+    `<a href="#${id}"><i>${NUM[id]}</i>${esc(t)}</a>`).join("")}</nav>
+  <div class="side-foot">Confidencial
+    <div class="side-prog"><i id="prg"></i></div></div>
+</aside>`;
+
+const HERO = `<header class="hero"><div class="wrap hero-in">
+  <div>
+    <div class="eyebrow">Relatório anual de resultados</div>
+    <h1><span>Resultados ${D.cliente.ano}</span><span class="ln2">Plano ${D.cliente.ano+1}</span></h1>
+    <p class="hero-sub">${esc(D.cliente.subtitulo)}</p>
+    <div class="hero-meta">
+      <div><span>Cliente</span><strong>${esc(D.cliente.nome)}</strong></div>
+      <div><span>Parceria desde</span><strong>${esc(D.cliente.inicioParceria)}</strong></div>
+      <div><span>Frentes ativas</span><strong>${esc(D.cliente.frentes)}</strong></div>
+      <div><span>Consultoria</span><strong>${esc(D.cliente.consultorResponsavel)}</strong></div>
+    </div>
+  </div>
+  ${clientSlot()}
+</div></header>`;
+
+const SECS = ATIVAS.map((s,i)=>{
+  const cls = s._bg==="ink" ? " sec--ink" : (s._bg==="cream" ? " sec--cream" : "");
+  return `<section class="sec${cls}" id="${s.id}"><div class="wrap">${s.build(i+1)}</div></section>`;
+}).join("");
+
+const FOOT = `<footer class="foot"><div class="wrap foot-in">
+  <span>Resultados ${D.cliente.ano} · Plano ${D.cliente.ano+1} · ${esc(D.cliente.nome)}</span>
+  <span>Documento confidencial · LETS Marketing</span>
+  <span>letsmarketing.com.br</span></div></footer>`;
+
+document.getElementById("app").innerHTML =
+  `<div class="shell">${SIDE}<div class="main">${HERO}${SECS}${FOOT}</div></div>`;
+document.title = `Resultados ${D.cliente.ano} · ${D.cliente.nome} · LETS Marketing`;
+
+/* ---------- gráficos ---------- */
+if(window.Chart){
+  Chart.defaults.font.family="Figtree, sans-serif";
+  Chart.defaults.font.size=11;
+  const escuro = id => BG[id]==="ink";
+  const tick = d => d ? "rgba(238,231,214,.55)" : "rgba(29,29,27,.48)";
+  const grid = d => d ? "rgba(238,231,214,.13)" : "rgba(29,29,27,.08)";
+  const opts = d => ({responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},
+      tooltip:{backgroundColor:d?CREAM:INK,titleColor:d?INK:CREAM,bodyColor:d?INK:CREAM,
+        padding:11,cornerRadius:0,displayColors:false,titleFont:{weight:"600"},bodyFont:{weight:"400"}}},
+    scales:{x:{grid:{display:false},border:{display:false},
+               ticks:{color:tick(d),maxRotation:0,autoSkipPadding:12}},
+            y:{grid:{color:grid(d)},border:{display:false},
+               ticks:{color:tick(d),maxTicksLimit:5,
+                 callback:v=>v>=1000?(v/1000).toLocaleString("pt-BR")+"k":v}}}});
+  const fill=(ctx,cor)=>{const g=ctx.createLinearGradient(0,0,0,230);
+    g.addColorStop(0,cor+"3D");g.addColorStop(1,cor+"00");return g;};
+
+  if(SECOES.digital!==false){
+    const d=escuro("digital"), st=D.digital.site;
+    const cs=document.getElementById("ch-site").getContext("2d");
+    const o=opts(d); o.plugins.legend={display:true,align:"end",
+      labels:{color:tick(d),boxWidth:14,boxHeight:2,usePointStyle:false,font:{size:11}}};
+    new Chart(cs,{type:"line",data:{labels:D.meses,datasets:[
+      {label:String(D.cliente.ano),data:st.serieAtual,borderColor:RED,backgroundColor:fill(cs,RED),
+       fill:true,tension:.34,borderWidth:2,pointRadius:0,pointHoverRadius:5},
+      {label:String(D.cliente.anoAnterior),data:st.serieAnterior,
+       borderColor:d?"rgba(238,231,214,.45)":"rgba(29,29,27,.38)",borderDash:[4,4],fill:false,
+       tension:.34,borderWidth:1.5,pointRadius:0,pointHoverRadius:5}]},options:o});
+    D.digital.canais.forEach((c,i)=>{
+      const cx=document.getElementById("ch-c"+i).getContext("2d");
+      new Chart(cx,{type:"line",data:{labels:D.meses,datasets:[{data:c.serie,borderColor:RED,
+        backgroundColor:fill(cx,RED),fill:true,tension:.34,borderWidth:2,pointRadius:0,pointHoverRadius:5}]},
+        options:opts(d)});
+    });
+  }
+  if(SECOES.imprensa!==false){
+    const d=escuro("imprensa");
+    new Chart(document.getElementById("ch-imp"),{type:"bar",
+      data:{labels:D.meses,datasets:[{data:D.imprensa.porMes,backgroundColor:RED,
+        hoverBackgroundColor:d?CREAM:INK,borderRadius:0,barPercentage:.6}]},options:opts(d)});
+  }
+}
+
+/* ---------- interações ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.06});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+function animaDumb(el){
+  const a=parseFloat(el.dataset.a), b=parseFloat(el.dataset.b);
+  const f=el.querySelector(".dumb-fill");
+  f.style.left=Math.min(a,b)+"%"; f.style.width=Math.abs(b-a)+"%";
+  el.classList.add("go");
+}
+const bio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){animaDumb(e.target);bio.unobserve(e.target);}}),{threshold:.4});
+document.querySelectorAll(".dumb").forEach(el=>bio.observe(el));
+
+const prg=document.getElementById("prg");
+const links=[...document.querySelectorAll(".side-nav a")];
+const alvos=NAV.map(([id])=>document.getElementById(id));
+addEventListener("scroll",()=>{
+  const h=document.documentElement;
+  prg.style.width=(h.scrollTop/Math.max(1,h.scrollHeight-h.clientHeight)*100)+"%";
+  let at=-1; alvos.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<=140)at=i;});
+  links.forEach((l,i)=>l.classList.toggle("on",i===at));
+},{passive:true});
+
+window.addEventListener("beforeprint",()=>{
+  document.querySelectorAll(".reveal").forEach(e=>e.classList.add("in"));
+  document.querySelectorAll(".dumb").forEach(animaDumb);});
+</script>
+</body>
+</html>

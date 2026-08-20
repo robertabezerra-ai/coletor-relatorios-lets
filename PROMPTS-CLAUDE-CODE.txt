@@ -1,0 +1,223 @@
+════════════════════════════════════════════════════════════════════════════
+ O QUE MANDAR NO CLAUDE CODE · Coletor de Relatórios LETS
+ Oito mensagens, uma por fase. Não pule e não junte duas.
+════════════════════════════════════════════════════════════════════════════
+
+
+ANTES DE ABRIR O CLAUDE CODE
+────────────────────────────────────────────────────────────────────────────
+1. Crie uma pasta no computador, por exemplo  coletor-lets
+2. Copie para dentro dela estes cinco arquivos:
+      SPEC-APP-FORMULARIO.md
+      perguntas.schema.json
+      FORMULARIO-CONSULTOR.docx
+      RELATORIO-BASE-2026.html
+      GUIA-DE-IDENTIDADE.md
+3. Crie uma conta em supabase.com e um projeto novo (região South America).
+   Guarde: Project URL, anon key e service_role key.
+   Elas ficam em Project Settings › API.
+4. Abra o terminal na pasta e rode:  claude
+5. Mande a MENSAGEM 1.
+
+Entre uma fase e outra, teste no navegador. Se algo estiver errado, corrija
+naquela fase antes de seguir — erro de fundação vira retrabalho em cascata.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 1 · Fundação
+════════════════════════════════════════════════════════════════════════════
+
+Leia o SPEC-APP-FORMULARIO.md inteiro antes de começar. Ele descreve um app
+que vamos construir em oito fases; você vai executar uma fase por vez e parar
+no fim de cada uma para eu testar.
+
+Execute agora só a Fase 1 (Fundação):
+- Projeto Next.js 15 com App Router, TypeScript e Tailwind.
+- Fonte Figtree e as variáveis de cor da LETS configuradas no Tailwind.
+- Cliente Supabase para browser e para servidor.
+- Login por magic link restrito a @letsmarketing.com.br, validado no cliente
+  e no servidor.
+- Middleware protegendo todas as rotas menos /login.
+- Tela /login seguindo a identidade do GUIA-DE-IDENTIDADE.md.
+- Arquivo .env.local.example com as três variáveis.
+
+Não crie tabelas nem telas de formulário ainda. Ao terminar, me diga
+exatamente o que preciso fazer no painel do Supabase e da Vercel para isso
+rodar, e pare.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 2 · Banco e painel
+════════════════════════════════════════════════════════════════════════════
+
+Fase 2 do SPEC-APP-FORMULARIO.md.
+
+- Gere o arquivo SQL da seção 4 da spec, incluindo o trigger que alimenta
+  respostas_log e atualiza relatorios.atualizado_em, e as políticas de RLS.
+  Me entregue o SQL pronto para colar no editor do Supabase.
+- Construa o painel em /: squads com seus relatórios, card com progresso,
+  status, quem mexeu por último e quando.
+- Criação de relatório (cliente, ano, squad).
+- Tela de gestão de squads: criar, renomear, cor, tipo squad ou chapter,
+  arquivar. Sem excluir squad que tenha relatórios.
+- Mover relatório de squad pelo menu do card.
+
+O progresso ainda pode ser um valor fixo — a fórmula real vem na Fase 5.
+Pare ao terminar.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 3 · Motor do formulário
+════════════════════════════════════════════════════════════════════════════
+
+Fase 3 do SPEC-APP-FORMULARIO.md.
+
+Construa a tela /relatorio/[id] lendo perguntas.schema.json como única fonte
+de verdade — nenhum rótulo, opção ou texto de ajuda pode aparecer escrito
+dentro de componente.
+
+- Menu de blocos à esquerda, bloco ativo no centro, cabeçalho com cliente,
+  squad, ano e estado do salvamento.
+- Implemente por enquanto só os tipos: texto, textoLongo, numero, selecao.
+- Salvamento automático com debounce de 800 ms, por campo, via Route Handler
+  enxuta. Indicador de salvando / salvo / erro.
+- Renderize o Bloco 1 inteiro funcionando de ponta a ponta.
+
+Esta é a fase mais importante do projeto: todo o resto reaproveita este
+ciclo. Capriche na estrutura dos componentes antes de multiplicar tipos.
+Pare ao terminar.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 4 · Tipos complexos
+════════════════════════════════════════════════════════════════════════════
+
+Fase 4 do SPEC-APP-FORMULARIO.md. Implemente os tipos restantes:
+
+- serie12: doze campos Jan a Dez, mais um botão que cola uma linha inteira
+  separada por vírgula e distribui pelos meses.
+- tabela: linhas repetíveis, adicionar e remover, respeitando min e max.
+- grupoRepetivel: usado nos canais digitais e nos trimestres.
+- multiSelecao: usado no Bloco 0.
+- imagem: upload para o bucket privado do Supabase Storage, com preview,
+  validação de tipo e tamanho no servidor e conversão para WebP.
+- pessoas: tabela com autocomplete na coluna do nome, alimentado pelo objeto
+  EQUIPE_LETS que está dentro do RELATORIO-BASE-2026.html. Extraia a lista
+  para um arquivo próprio do projeto em vez de ler o HTML em tempo de
+  execução.
+
+Com isso todos os blocos devem renderizar. Pare ao terminar.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 5 · Progresso e blocos condicionais
+════════════════════════════════════════════════════════════════════════════
+
+Fase 5 do SPEC-APP-FORMULARIO.md.
+
+- Cálculo de progresso pela regra da seção 6 da spec: essencial pesa 3,
+  importante pesa 1, opcional pesa 0, considerando só blocos visíveis.
+- Indicador vazio / parcial / completo em cada bloco do menu.
+- Painel "Falta preencher" no topo, listando os campos essenciais vazios,
+  cada um clicando direto para o campo.
+- Blocos com dependeDeSecao aparecem e somem conforme o Bloco 0. Ao
+  desmarcar uma seção, NUNCA apague as respostas: esconda o bloco e avise
+  que os dados ficam guardados.
+- Progresso real no card do painel.
+
+Pare ao terminar.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 6 · Perguntas personalizadas e histórico
+════════════════════════════════════════════════════════════════════════════
+
+Fase 6 do SPEC-APP-FORMULARIO.md.
+
+- Bloco 13: botão Nova pergunta pedindo rótulo, texto de ajuda e tipo
+  (texto curto, texto longo, número, tabela livre). Grava em
+  perguntas_custom e passa a se comportar como qualquer outro campo.
+  Permitir editar, reordenar e excluir.
+- Tela /relatorio/[id]/historico: linha do tempo do log, do mais recente ao
+  mais antigo, com quem, quando, campo, valor anterior e valor novo. Filtro
+  por pessoa e por bloco. Botão restaurar, que grava uma nova entrada no log
+  em vez de editar o passado.
+- Trate o conflito de edição simultânea como descrito na seção 11 da spec:
+  compare o atualizado_em antes de gravar e, se divergir, mostre os dois
+  valores em vez de sobrescrever.
+
+Pare ao terminar.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 7 · Exportação para Word
+════════════════════════════════════════════════════════════════════════════
+
+Fase 7 do SPEC-APP-FORMULARIO.md.
+
+Route Handler GET /api/relatorio/[id]/docx com runtime nodejs, usando a
+biblioteca docx.
+
+- Percorra perguntas.schema.json na ordem, incluindo só blocos visíveis, e
+  no fim as perguntas personalizadas.
+- Cada campo: rótulo numerado em negrito vermelho, linha de formato em
+  itálico cinza, resposta abaixo. Campo vazio sai como [PENDENTE].
+- Tabelas do schema viram tabelas do Word, cabeçalho preto com texto creme.
+- Estilo igual ao FORMULARIO-CONSULTOR.docx que está na pasta: fonte Aptos,
+  vermelho D10A11, tinta 1D1D1B, cinza 6E6A63, caixas bege F6F3EC, A4 com
+  margens de 1,9 cm.
+- Capa: logo LETS em vermelho, cliente, ano, squad, data da exportação e
+  percentual de preenchimento.
+- Nome do arquivo: formulario-{cliente-com-hifen}-{ano}.docx
+- Botão de download no cabeçalho do formulário, funcionando mesmo com o
+  preenchimento incompleto.
+
+Ao terminar, gere um .docx de teste com dados fictícios e me mostre.
+
+
+════════════════════════════════════════════════════════════════════════════
+ MENSAGEM 8 · Acabamento
+════════════════════════════════════════════════════════════════════════════
+
+Fase 8 do SPEC-APP-FORMULARIO.md.
+
+- Responsivo no celular e no tablet: menu de blocos vira seletor no topo.
+- Estados vazios em todas as listas, com texto que ensina o próximo passo.
+- Mensagens de erro claras, nunca stack trace na tela.
+- Atalhos de teclado para ir ao bloco anterior e ao próximo.
+- Revisão de acessibilidade: foco visível, label associado a cada input,
+  contraste mínimo AA, navegação por teclado no formulário inteiro.
+- Rode a checklist da seção 10 da spec e me diga item por item o que passou
+  e o que não passou.
+
+
+════════════════════════════════════════════════════════════════════════════
+ DEPOIS DAS OITO FASES · publicar na Vercel
+════════════════════════════════════════════════════════════════════════════
+
+Suba o projeto para um repositório no GitHub, importe na Vercel e cadastre
+as três variáveis de ambiente em Settings › Environment Variables:
+
+  NEXT_PUBLIC_SUPABASE_URL
+  NEXT_PUBLIC_SUPABASE_ANON_KEY
+  SUPABASE_SERVICE_ROLE_KEY
+
+Depois do primeiro deploy, adicione a URL da Vercel em
+Supabase › Authentication › URL Configuration › Redirect URLs. Sem isso o
+link de acesso por e-mail cai numa página de erro.
+
+
+════════════════════════════════════════════════════════════════════════════
+ SE ALGO SAIR ERRADO
+════════════════════════════════════════════════════════════════════════════
+
+Mande no chat, sem reiniciar o projeto:
+
+  Isso aqui não está funcionando: <descreva o que você fez e o que aconteceu>.
+  Consulte o SPEC-APP-FORMULARIO.md e corrija sem mudar as fases anteriores
+  que já estão funcionando.
+
+Se ele começar a escrever rótulo de pergunta dentro de componente:
+
+  Você está duplicando conteúdo que já existe em perguntas.schema.json.
+  Refatore para ler tudo do schema, como manda a seção 3 da spec.

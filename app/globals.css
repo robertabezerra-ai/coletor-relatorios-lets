@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --color-vermelho: #d10a11;
+  --color-tinta: #1d1d1b;
+  --color-creme: #eee7d6;
+  --color-bege: #f6f3ec;
+  --color-cinza: #6e6a63;
+  --color-verde: #0f7a4a;
+}
+
+@theme inline {
+  --font-sans: var(--font-figtree);
+
+  --color-vermelho: var(--color-vermelho);
+  --color-tinta: var(--color-tinta);
+  --color-creme: var(--color-creme);
+  --color-bege: var(--color-bege);
+  --color-cinza: var(--color-cinza);
+  --color-verde: var(--color-verde);
+
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+body {
+  font-family: var(--font-sans), sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.rotulo {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-vermelho);
+  outline-offset: 2px;
+}

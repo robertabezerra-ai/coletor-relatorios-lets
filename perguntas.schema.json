@@ -1,0 +1,309 @@
+{
+  "versao": "2026.1",
+  "descricao": "Schema único do formulário do relatório anual LETS. É a fonte de verdade para: renderizar a página, calcular o progresso e gerar o .docx. Nunca duplique estas definições em outro lugar do código.",
+  "niveis": {
+    "essencial": "Sem isto o relatório não fecha. Conta para o progresso e bloqueia a exportação final.",
+    "importante": "Conta para o progresso, mas não bloqueia.",
+    "opcional": "Não conta para o progresso."
+  },
+  "tipos": {
+    "texto": "input de uma linha",
+    "textoLongo": "textarea, com contador de caracteres quando houver limite",
+    "numero": "input numérico",
+    "serie12": "doze campos numéricos rotulados Jan a Dez, com botão de colar linha inteira separada por vírgula",
+    "selecao": "select de opção única, valores em opcoes[]",
+    "multiSelecao": "checkboxes, valores em opcoes[]",
+    "tabela": "linhas repetíveis com as colunas definidas em colunas[], com botão adicionar e remover linha",
+    "grupoRepetivel": "bloco inteiro repetível, campos definidos em campos[]",
+    "imagem": "upload de arquivo para o Supabase Storage",
+    "pessoas": "tabela com autocomplete de nomes do time LETS na primeira coluna"
+  },
+
+  "blocos": [
+    {
+      "id": "b0",
+      "titulo": "Seções do relatório",
+      "descricao": "Nem todo cliente recebe todas as frentes. Marque só o que faz sentido para este cliente — as seções não marcadas somem por completo do relatório final.",
+      "campos": [
+        {
+          "id": "secoes",
+          "rotulo": "Quais seções entram neste relatório",
+          "tipo": "multiSelecao",
+          "nivel": "essencial",
+          "padrao": ["pilares", "resumo", "plano", "encerramento"],
+          "opcoes": [
+            { "valor": "pilares", "rotulo": "Nossos pilares", "ajuda": "As cinco frentes do método da LETS. Texto fixo, não precisa preencher nada.", "recomendado": true },
+            { "valor": "resumo", "rotulo": "Sumário executivo", "ajuda": "Os números que abrem o relatório, com variação sobre o ano anterior.", "recomendado": true },
+            { "valor": "digital", "rotulo": "Performance digital", "ajuda": "Site e canais, com gráficos mês a mês. Só se houver dado de analytics ou redes." },
+            { "valor": "valor", "rotulo": "Valor entregue", "ajuda": "Entregas do ano e time dedicado à conta. Bom para contas com muitas horas." },
+            { "valor": "imprensa", "rotulo": "Assessoria de imprensa", "ajuda": "Volume de inserções, curva mensal e clipping." },
+            { "valor": "rankings", "rotulo": "Rankings", "ajuda": "Rankings e reconhecimentos conquistados ou mantidos." },
+            { "valor": "destaques", "rotulo": "Destaques do ano", "ajuda": "Linha do tempo dos momentos que moveram o ponteiro." },
+            { "valor": "benchmark", "rotulo": "Benchmark de mercado", "ajuda": "Comparativo com a média de escritórios de porte parecido." },
+            { "valor": "plano", "rotulo": "Planejamento do próximo ano", "ajuda": "Iniciativas organizadas por trimestre.", "recomendado": true },
+            { "valor": "encerramento", "rotulo": "Encerramento", "ajuda": "Frase de fechamento e assinatura.", "recomendado": true }
+          ]
+        },
+        {
+          "id": "secaoNova",
+          "rotulo": "Alguma seção fora desta lista que este cliente precisa?",
+          "tipo": "textoLongo",
+          "nivel": "opcional",
+          "formato": "Descreva o que ela mostraria e quais dados existem. O Claude cria a seção seguindo a identidade da LETS."
+        }
+      ]
+    },
+
+    {
+      "id": "b1",
+      "titulo": "Identificação",
+      "campos": [
+        { "id": "cliente.nome", "rotulo": "Nome do cliente, como deve aparecer no relatório", "tipo": "texto", "nivel": "essencial", "formato": "Razão social ou nome fantasia. Ex.: Marques Vieira Advogados" },
+        { "id": "cliente.logo", "rotulo": "Logo do cliente", "tipo": "imagem", "nivel": "opcional", "formato": "PNG branco (só o traço branco, fundo transparente), mínimo 600 px de largura — a capa do relatório aplica a logo sobre um fundo preto. Sem logo, a capa mostra um espaço reservado." },
+        { "id": "cliente.ano", "rotulo": "Ano do relatório", "tipo": "numero", "nivel": "essencial", "formato": "Só o número. Ex.: 2026. O título da capa é montado sozinho: Resultados 2026 e Plano 2027." },
+        { "id": "cliente.subtitulo", "rotulo": "Frase de abertura", "tipo": "textoLongo", "nivel": "essencial", "limite": 220, "formato": "Uma ou duas frases que resumem o ano. Aparece logo abaixo do título na capa." },
+        { "id": "cliente.inicioParceria", "rotulo": "Início da parceria", "tipo": "texto", "nivel": "importante", "formato": "Mês por extenso e ano. Ex.: Março de 2023" },
+        { "id": "cliente.consultorResponsavel", "rotulo": "Consultor(a) responsável pela conta", "tipo": "texto", "nivel": "essencial", "autocompletar": "equipeLets", "formato": "Nome completo, como aparece no site da LETS" },
+        { "id": "cliente.frentes", "rotulo": "Frentes ativas nesta conta", "tipo": "texto", "nivel": "importante", "formato": "Separadas por ponto médio. Ex.: Marketing & Comunicação · Imprensa · Rankings" }
+      ]
+    },
+
+    {
+      "id": "b2",
+      "titulo": "Nossos pilares",
+      "descricao": "Texto fixo, igual para todos os clientes. Nada a preencher — só decidir no Bloco 0 se a seção entra.",
+      "somenteLeitura": true,
+      "campos": []
+    },
+
+    {
+      "id": "b3",
+      "titulo": "Sumário executivo",
+      "dependeDeSecao": "resumo",
+      "campos": [
+        { "id": "resumo.texto", "rotulo": "Leitura do ano", "tipo": "textoLongo", "nivel": "essencial", "formato": "Um parágrafo de 4 a 6 linhas. O que mudou, por quê e qual a evidência. Evite adjetivo sem número." },
+        {
+          "id": "resumo.kpis", "rotulo": "Os números que abrem o relatório", "tipo": "tabela",
+          "nivel": "essencial", "min": 4, "max": 6,
+          "formato": "Sufixo = k, M, % ou vazio. Variação = número inteiro, positivo ou negativo, comparando com o ano anterior.",
+          "colunas": [
+            { "id": "label", "rotulo": "Rótulo", "tipo": "texto" },
+            { "id": "valor", "rotulo": "Valor", "tipo": "texto", "dica": "Já formatado. Ex.: 18,4" },
+            { "id": "sufixo", "rotulo": "Sufixo", "tipo": "selecao", "opcoes": ["", "k", "M", "%"] },
+            { "id": "variacao", "rotulo": "Variação %", "tipo": "numero" },
+            { "id": "nota", "rotulo": "Nota de uma linha", "tipo": "texto" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b4",
+      "titulo": "Site institucional",
+      "dependeDeSecao": "digital",
+      "campos": [
+        { "id": "digital.site.fonte", "rotulo": "Fonte dos dados", "tipo": "texto", "nivel": "importante", "padrao": "Google Analytics 4" },
+        { "id": "digital.site.serieAtual", "rotulo": "Sessões mês a mês — ano do relatório", "tipo": "serie12", "nivel": "essencial", "formato": "Doze números inteiros, de janeiro a dezembro, sem separador de milhar." },
+        { "id": "digital.site.serieAnterior", "rotulo": "Sessões mês a mês — ano anterior", "tipo": "serie12", "nivel": "importante", "formato": "Doze números inteiros. Deixe vazio se não houver histórico." },
+        {
+          "id": "digital.site.metricas", "rotulo": "Métricas complementares do site", "tipo": "tabela",
+          "nivel": "importante", "min": 2, "max": 6,
+          "formato": "Valor já formatado como deve aparecer. Ex.: 96,2 k · 2m 51s · 1,8 %",
+          "colunas": [
+            { "id": "label", "rotulo": "Métrica", "tipo": "texto" },
+            { "id": "valor", "rotulo": "Valor", "tipo": "texto" },
+            { "id": "variacao", "rotulo": "Variação %", "tipo": "numero" }
+          ]
+        },
+        { "id": "digital.site.leitura", "rotulo": "Leitura do canal", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma ou duas frases interpretando o número. O que ele significa para o cliente." }
+      ]
+    },
+
+    {
+      "id": "b5",
+      "titulo": "Redes sociais e demais canais",
+      "dependeDeSecao": "digital",
+      "campos": [
+        {
+          "id": "digital.canais", "rotulo": "Canais ativos", "tipo": "grupoRepetivel",
+          "nivel": "importante", "min": 1, "max": 6, "rotuloItem": "Canal",
+          "campos": [
+            { "id": "nome", "rotulo": "Nome do canal", "tipo": "texto", "sugestoes": ["LinkedIn", "Instagram", "Facebook", "YouTube", "Google Meu Negócio", "TikTok"] },
+            { "id": "tag", "rotulo": "Etiqueta curta", "tipo": "texto", "formato": "Duas ou três palavras que definem o papel do canal. Ex.: Rede principal" },
+            { "id": "serie", "rotulo": "Série mês a mês da métrica principal", "tipo": "serie12", "formato": "Use a métrica de acúmulo: seguidores, inscritos ou visualizações." },
+            {
+              "id": "metricas", "rotulo": "Três métricas do canal", "tipo": "tabela", "min": 1, "max": 4,
+              "colunas": [
+                { "id": "label", "rotulo": "Métrica", "tipo": "texto" },
+                { "id": "valor", "rotulo": "Valor", "tipo": "texto" },
+                { "id": "variacao", "rotulo": "Variação %", "tipo": "numero" }
+              ]
+            },
+            { "id": "leitura", "rotulo": "Leitura do canal", "tipo": "textoLongo", "formato": "O que funciona e o que não funciona neste canal para este cliente." }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b6",
+      "titulo": "Valor entregue pela LETS",
+      "dependeDeSecao": "valor",
+      "campos": [
+        { "id": "valor.texto", "rotulo": "Frase de abertura da seção", "tipo": "texto", "nivel": "opcional", "padrao": "O que a LETS executou para o escritório ao longo do ano, em números." },
+        {
+          "id": "valor.entregas", "rotulo": "Entregas do ano", "tipo": "tabela",
+          "nivel": "essencial", "min": 4, "max": 8,
+          "formato": "Descrição em letra minúscula, começando por substantivo no plural.",
+          "colunas": [
+            { "id": "qtd", "rotulo": "Quantidade", "tipo": "texto" },
+            { "id": "un", "rotulo": "Unidade", "tipo": "texto", "dica": "h, %, k ou vazio" },
+            { "id": "oq", "rotulo": "O que foi entregue", "tipo": "texto" }
+          ]
+        },
+        {
+          "id": "valor.time", "rotulo": "Time dedicado à conta", "tipo": "pessoas",
+          "nivel": "importante", "min": 3, "max": 10,
+          "formato": "Escreva só o nome. Foto e cargo vêm automaticamente do diretório do time LETS. Preencha a segunda coluna só quando a pessoa tiver papel específico nesta conta.",
+          "colunas": [
+            { "id": "nome", "rotulo": "Nome", "tipo": "texto", "autocompletar": "equipeLets" },
+            { "id": "papelNaConta", "rotulo": "Papel nesta conta (opcional)", "tipo": "texto" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b7",
+      "titulo": "Assessoria de imprensa",
+      "dependeDeSecao": "imprensa",
+      "campos": [
+        { "id": "imprensa.insercoes", "rotulo": "Total de inserções", "tipo": "numero", "nivel": "essencial" },
+        { "id": "imprensa.veiculos", "rotulo": "Veículos distintos", "tipo": "numero", "nivel": "importante" },
+        { "id": "imprensa.alcanceEstimado", "rotulo": "Alcance estimado", "tipo": "texto", "nivel": "importante", "formato": "Já formatado. Ex.: 18,6 M" },
+        { "id": "imprensa.valorEquivalente", "rotulo": "Valor equivalente", "tipo": "texto", "nivel": "opcional", "formato": "Já formatado. Ex.: R$ 1,4 mi" },
+        { "id": "imprensa.porMes", "rotulo": "Inserções mês a mês", "tipo": "serie12", "nivel": "essencial" },
+        { "id": "imprensa.leitura", "rotulo": "Leitura da imprensa", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma ou duas frases explicando o comportamento da curva ao longo do ano." },
+        {
+          "id": "imprensa.principais", "rotulo": "Destaques de cobertura", "tipo": "tabela",
+          "nivel": "importante", "min": 4, "max": 10,
+          "colunas": [
+            { "id": "veiculo", "rotulo": "Veículo", "tipo": "texto" },
+            { "id": "titulo", "rotulo": "Título da matéria", "tipo": "texto" },
+            { "id": "data", "rotulo": "Data", "tipo": "texto", "dica": "Mês · Ano" },
+            { "id": "url", "rotulo": "Link", "tipo": "texto", "validacao": "url" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b8",
+      "titulo": "Rankings e reconhecimentos",
+      "dependeDeSecao": "rankings",
+      "campos": [
+        {
+          "id": "rankings", "rotulo": "Rankings do ano", "tipo": "tabela",
+          "nivel": "essencial", "min": 3, "max": 15,
+          "colunas": [
+            { "id": "nome", "rotulo": "Ranking", "tipo": "texto", "sugestoes": ["Chambers Brazil", "Leaders League", "The Legal 500", "Análise Advocacia 500", "Análise Advocacia Mulher", "ITR World Tax", "IFLR1000", "LACCA Approved"] },
+            { "id": "categoria", "rotulo": "Categoria e posição", "tipo": "texto" },
+            { "id": "nivel", "rotulo": "Status", "tipo": "selecao", "opcoes": ["Nova entrada", "Evolução", "Manutenção"] }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b9",
+      "titulo": "Destaques do ano",
+      "dependeDeSecao": "destaques",
+      "campos": [
+        { "id": "destaques.frase", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Os momentos que moveram o ponteiro", "formato": "Aparece em destaque no topo da seção \"Destaques do ano\" do relatório em HTML. Curto, no estilo manchete." },
+        {
+          "id": "destaques", "rotulo": "Momentos que marcaram o ano", "tipo": "tabela",
+          "nivel": "importante", "min": 3, "max": 6,
+          "formato": "Em ordem cronológica. O resultado precisa conter pelo menos um número.",
+          "colunas": [
+            { "id": "quando", "rotulo": "Quando", "tipo": "texto", "dica": "Mês · Ano" },
+            { "id": "titulo", "rotulo": "Título", "tipo": "texto" },
+            { "id": "descricao", "rotulo": "Descrição", "tipo": "textoLongo" },
+            { "id": "resultado", "rotulo": "Resultado", "tipo": "texto" },
+            { "id": "imagem", "rotulo": "Imagem", "tipo": "imagem", "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b10",
+      "titulo": "Benchmark de mercado",
+      "dependeDeSecao": "benchmark",
+      "campos": [
+        { "id": "benchmark.texto", "rotulo": "Frase de abertura da seção", "tipo": "textoLongo", "nivel": "opcional", "formato": "Explique com o que o cliente está sendo comparado." },
+        {
+          "id": "benchmark.itens", "rotulo": "Comparativos", "tipo": "tabela",
+          "nivel": "importante", "min": 3, "max": 6,
+          "formato": "Só números, sem texto. Decimal com ponto. Ex.: 6.2",
+          "colunas": [
+            { "id": "metrica", "rotulo": "Métrica", "tipo": "texto" },
+            { "id": "cliente", "rotulo": "Valor do cliente", "tipo": "numero" },
+            { "id": "setor", "rotulo": "Média do setor", "tipo": "numero" },
+            { "id": "un", "rotulo": "Unidade", "tipo": "selecao", "opcoes": ["", "%"] }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b11",
+      "titulo": "Planejamento do próximo ano",
+      "dependeDeSecao": "plano",
+      "campos": [
+        { "id": "planejamento.texto", "rotulo": "Direção geral do ano seguinte", "tipo": "textoLongo", "nivel": "essencial", "formato": "Uma ou duas frases sobre a prioridade estratégica. O que muda em relação ao ano relatado." },
+        {
+          "id": "planejamento.trimestres", "rotulo": "Iniciativas por trimestre", "tipo": "grupoRepetivel",
+          "nivel": "essencial", "min": 4, "max": 4, "fixo": true,
+          "itensFixos": ["1º Trimestre", "2º Trimestre", "3º Trimestre", "4º Trimestre"],
+          "campos": [
+            {
+              "id": "itens", "rotulo": "Iniciativas", "tipo": "tabela", "min": 2, "max": 4,
+              "colunas": [
+                { "id": "t", "rotulo": "Iniciativa", "tipo": "texto" },
+                { "id": "d", "rotulo": "Descrição em uma linha", "tipo": "texto" },
+                { "id": "f", "rotulo": "Frente", "tipo": "selecao", "opcoes": ["Conteúdo", "Digital", "Imprensa", "Rankings", "Eventos", "Pessoas", "Dados", "Marca", "Branding", "Estratégia"] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b12",
+      "titulo": "Encerramento",
+      "dependeDeSecao": "encerramento",
+      "campos": [
+        { "id": "encerramento.texto", "rotulo": "Frase de fechamento", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma frase de impacto, sem número. É o último texto que o cliente lê." },
+        { "id": "encerramento.assinatura", "rotulo": "Assinatura", "tipo": "texto", "nivel": "opcional", "padrao": "LETS Marketing · Consultoria líder em marketing jurídico" }
+      ]
+    },
+
+    {
+      "id": "b13",
+      "titulo": "Perguntas personalizadas",
+      "descricao": "Espaço livre para o que este cliente tem de específico e não cabe nos blocos acima. Cada pergunta criada aqui vira um item do .docx e é lida pelo Claude na hora de montar o relatório.",
+      "customizavel": true,
+      "campos": []
+    },
+
+    {
+      "id": "b14",
+      "titulo": "Arquivos",
+      "descricao": "Nada aqui é obrigatório. Sem logo, a capa mostra um espaço reservado. Sem imagem de destaque, cada uma vira um espaço reservado discreto. As fotos do time da LETS vêm automaticamente do site.",
+      "campos": [
+        { "id": "arquivos.extras", "rotulo": "Outros arquivos relevantes", "tipo": "imagem", "multiplo": true, "nivel": "opcional" }
+      ]
+    }
+  ]
+}
