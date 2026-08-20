@@ -1,29 +1,27 @@
 import { NextResponse } from "next/server";
-import { isEmailDominioPermitido } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
-  const { email } = await request.json();
+  const { senha } = await request.json();
 
-  if (typeof email !== "string" || !isEmailDominioPermitido(email)) {
+  if (typeof senha !== "string" || senha.length === 0 || senha !== process.env.PAINEL_SENHA) {
+    return NextResponse.json({ error: "Senha incorreta." }, { status: 401 });
+  }
+
+  const email = process.env.AUTH_SHARED_EMAIL;
+  const password = process.env.AUTH_SHARED_PASSWORD;
+  if (!email || !password) {
     return NextResponse.json(
-      { error: "Use um e-mail @letsmarketing.com.br." },
-      { status: 400 },
+      { error: "Login não configurado. Avise quem administra o app." },
+      { status: 500 },
     );
   }
 
   const supabase = await createClient();
-  const origin = new URL(request.url).origin;
-
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback`,
-    },
-  });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Não foi possível entrar. Tente de novo." }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { obterIdentidadeAtual } from "@/lib/identidade";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: relatorioId } = await params;
@@ -48,6 +49,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         campo_id: campoId,
         valor: valor ?? null,
         atualizado_por: user.id,
+        atualizado_por_nome: await obterIdentidadeAtual(),
       },
       { onConflict: "relatorio_id,campo_id" },
     )

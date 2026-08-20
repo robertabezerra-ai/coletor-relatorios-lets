@@ -12,22 +12,21 @@ export type EntradaLog = {
 
 export async function listarHistorico(relatorioId: string): Promise<EntradaLog[]> {
   const supabase = await createClient();
-  const [{ data: log, error: erroLog }, { data: perfis, error: erroPerfis }] = await Promise.all([
-    supabase
-      .from("respostas_log")
-      .select("id, campo_id, valor_anterior, valor_novo, autor, quando")
-      .eq("relatorio_id", relatorioId)
-      .order("quando", { ascending: false }),
-    supabase.from("perfis").select("id, nome"),
-  ]);
+  const { data: log, error } = await supabase
+    .from("respostas_log")
+    .select("id, campo_id, valor_anterior, valor_novo, autor, autor_nome, quando")
+    .eq("relatorio_id", relatorioId)
+    .order("quando", { ascending: false });
 
-  if (erroLog) throw erroLog;
-  if (erroPerfis) throw erroPerfis;
-
-  const nomesPorId = new Map((perfis ?? []).map((perfil) => [perfil.id, perfil.nome]));
+  if (error) throw error;
 
   return (log ?? []).map((linha) => ({
-    ...linha,
-    autorNome: linha.autor ? (nomesPorId.get(linha.autor) ?? null) : null,
+    id: linha.id,
+    campo_id: linha.campo_id,
+    valor_anterior: linha.valor_anterior,
+    valor_novo: linha.valor_novo,
+    autor: linha.autor,
+    quando: linha.quando,
+    autorNome: linha.autor_nome,
   }));
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { NovoRelatorioModal } from "@/components/painel/NovoRelatorioModal";
 import { CardRelatorio } from "@/components/painel/CardRelatorio";
 import { LogoutButton } from "@/app/logout-button";
+import { trocarPessoa } from "@/lib/actions/identidade";
 import { ROTULO_STATUS, STATUS_OPCOES } from "@/lib/status";
 import type { RelatorioPainel, RelatorioStatus, Squad } from "@/lib/types";
 
@@ -12,12 +13,12 @@ export function PainelClient({
   squads,
   relatorios,
   progressoPorRelatorio,
-  usuarioAtualId,
+  identidadeAtual,
 }: {
   squads: Squad[];
   relatorios: RelatorioPainel[];
   progressoPorRelatorio: Record<string, number>;
-  usuarioAtualId: string;
+  identidadeAtual: string;
 }) {
   const [busca, setBusca] = useState("");
   const [filtroAno, setFiltroAno] = useState("todos");
@@ -67,7 +68,10 @@ export function PainelClient({
           </p>
           <h1 className="mt-1 text-3xl font-light text-tinta">Painel</h1>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          {identidadeAtual && (
+            <span className="rotulo text-cinza">Você: {identidadeAtual}</span>
+          )}
           <Link
             href="/squads"
             className="rotulo border border-tinta/20 px-4 py-2 text-tinta hover:border-vermelho hover:text-vermelho"
@@ -80,6 +84,14 @@ export function PainelClient({
           >
             Novo relatório
           </button>
+          <form action={trocarPessoa}>
+            <button
+              type="submit"
+              className="rotulo border border-tinta/20 px-4 py-2 text-tinta hover:border-vermelho hover:text-vermelho"
+            >
+              Trocar pessoa
+            </button>
+          </form>
           <LogoutButton />
         </div>
       </header>
@@ -192,7 +204,7 @@ export function PainelClient({
                         relatorio={relatorio}
                         squads={squadsAtivos}
                         progresso={progressoPorRelatorio[relatorio.id] ?? 0}
-                        usuarioAtualId={usuarioAtualId}
+                        identidadeAtual={identidadeAtual}
                       />
                     ))}
                   </div>

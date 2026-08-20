@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { mensagemErroAmigavel } from "@/lib/erroAmigavel";
+import { obterIdentidadeAtual } from "@/lib/identidade";
 
 export async function criarRelatorio(dados: { cliente: string; ano: number; squad_id: string }) {
   const supabase = await createClient();
@@ -12,6 +13,8 @@ export async function criarRelatorio(dados: { cliente: string; ano: number; squa
 
   if (!user) return { error: "Sessão expirada. Faça login de novo." };
 
+  const nomeAtual = await obterIdentidadeAtual();
+
   const { data, error } = await supabase
     .from("relatorios")
     .insert({
@@ -19,6 +22,7 @@ export async function criarRelatorio(dados: { cliente: string; ano: number; squa
       ano: dados.ano,
       squad_id: dados.squad_id,
       criado_por: user.id,
+      criador_nome: nomeAtual,
     })
     .select("id")
     .single();
@@ -51,15 +55,17 @@ export async function excluirRelatorio(relatorioId: string) {
   } = await supabase.auth.getUser();
   if (!user) return { error: "Sessão expirada. Faça login de novo." };
 
+  const nomeAtual = await obterIdentidadeAtual();
+
   const { data: relatorio, error: erroBusca } = await supabase
     .from("relatorios")
-    .select("criado_por")
+    .select("criador_nome")
     .eq("id", relatorioId)
     .maybeSingle();
 
   if (erroBusca) return { error: mensagemErroAmigavel(erroBusca) };
   if (!relatorio) return { error: "Relatório não encontrado." };
-  if (relatorio.criado_por !== user.id) {
+  if (!nomeAtual || relatorio.criador_nome !== nomeAtual) {
     return { error: "Só quem criou este relatório pode excluí-lo." };
   }
 

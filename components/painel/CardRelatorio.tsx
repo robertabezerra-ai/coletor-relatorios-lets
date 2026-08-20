@@ -13,19 +13,19 @@ export function CardRelatorio({
   relatorio,
   squads,
   progresso,
-  usuarioAtualId,
+  identidadeAtual,
 }: {
   relatorio: RelatorioPainel;
   squads: Squad[];
   progresso: number;
-  usuarioAtualId: string;
+  identidadeAtual: string;
 }) {
   const router = useRouter();
   const [menuAberto, setMenuAberto] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
   const [erroExclusao, setErroExclusao] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
-  const souCriador = relatorio.criado_por === usuarioAtualId;
+  const souCriador = Boolean(identidadeAtual) && relatorio.criado_por_nome === identidadeAtual;
 
   useEffect(() => {
     function fecharSeFora(event: MouseEvent) {

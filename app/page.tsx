@@ -5,6 +5,7 @@ import { listarRelatoriosPainel, listarRespostasAgrupadas } from "@/lib/data/rel
 import { PainelClient } from "@/components/painel/PainelClient";
 import { blocosVisiveis, listarBlocos, obterSecoesSelecionadas } from "@/lib/schema";
 import { calcularProgresso } from "@/lib/progresso";
+import { obterIdentidadeAtual } from "@/lib/identidade";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -31,12 +32,14 @@ export default async function Home() {
     progressoPorRelatorio[relatorio.id] = calcularProgresso(visiveis, respostas).percentualGeral;
   }
 
+  const identidadeAtual = await obterIdentidadeAtual();
+
   return (
     <PainelClient
       squads={squads}
       relatorios={relatorios}
       progressoPorRelatorio={progressoPorRelatorio}
-      usuarioAtualId={user.id}
+      identidadeAtual={identidadeAtual ?? ""}
     />
   );
 }
