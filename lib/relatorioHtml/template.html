@@ -154,7 +154,7 @@ em{font-style:italic;color:var(--red);font-weight:300}
   color:var(--cream-70);font-weight:600;line-height:1.7}
 
 /* ══ PILARES ══ */
-.pilar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2rem 1.75rem}
+.pilar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem 1.75rem}
 .pilar{border-top:2px solid var(--red);padding-top:1.15rem}
 .pilar .n{font-size:.66rem;font-weight:700;letter-spacing:.16em;color:var(--red);
   font-variant-numeric:tabular-nums;display:block;margin-bottom:.85rem}
@@ -186,6 +186,7 @@ em{font-style:italic;color:var(--red);font-weight:300}
 
 /* ══ GRIDS E CARTÕES ══ */
 .grid{display:grid;gap:1.5rem}
+.g1{grid-template-columns:1fr}
 .g2{grid-template-columns:repeat(auto-fit,minmax(315px,1fr))}
 .g3{grid-template-columns:repeat(auto-fit,minmax(285px,1fr))}
 .g4{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))}
@@ -244,7 +245,7 @@ em{font-style:italic;color:var(--red);font-weight:300}
   border-left:2px solid var(--red);padding-left:.9rem;line-height:1.5}
 
 /* ══ IMPRENSA ══ */
-.clip{display:grid;grid-template-columns:auto 1fr auto;gap:1.4rem;align-items:baseline;
+.clip{display:grid;grid-template-columns:auto 1fr auto;gap:1.4rem;align-items:start;
   text-decoration:none;padding:1.25rem 0;border-bottom:1px solid var(--ink-12);transition:.25s}
 .sec--ink .clip{border-color:var(--cream-20)}
 .clip:hover{background:rgba(209,10,17,.035);padding-inline:.75rem}
@@ -313,6 +314,13 @@ em{font-style:italic;color:var(--red);font-weight:300}
 .pc-list li{position:relative;padding-left:1.1rem;font-size:.92rem;color:var(--ink-70);line-height:1.5}
 .pc-list li::before{content:"";position:absolute;left:0;top:.6rem;width:9px;height:1px;background:var(--red)}
 
+/* ══ LINKS DE POSTAGEM/VÍDEO EM DESTAQUE (redes sociais) ══ */
+.post-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding:.55rem 0;border-bottom:1px solid var(--ink-12);text-decoration:none;
+  color:inherit;font-size:.85rem}
+.post-row:last-child{border-bottom:0}
+.post-row b{font-weight:600;color:var(--red)}
+
 /* ══ FECHAMENTO ══ */
 .end{max-width:880px}
 .end p{font-size:clamp(1.35rem,3.2vw,2.3rem);font-weight:300;line-height:1.28;
@@ -349,6 +357,7 @@ em{font-style:italic;color:var(--red);font-weight:300}
   .hero-in{grid-template-columns:1fr}
   .client-slot{order:-1;aspect-ratio:16/7}
   .tl-body{grid-template-columns:1fr}
+  .pilar-grid{grid-template-columns:1fr}
   .clip{grid-template-columns:1fr;gap:.28rem}
   .clip .v{min-width:0}
   .team-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -732,10 +741,6 @@ function delta(v){
   const n=parseFloat(v), c=n>0?"up":(n<0?"down":"flat"), a=n>0?"▲":(n<0?"▼":"—");
   return `<span class="kpi-delta ${c}">${a} ${nf(Math.abs(n))}% vs ${D.cliente.anoAnterior}</span>`;
 }
-const dSmall=v=>{ if(v===null||v===undefined||v==="")return"";
-  const n=parseFloat(v),c=n>0?"up":(n<0?"down":"flat");
-  return `<span class="d ${c}">${n>0?"+":""}${nf(n)}%</span>`;};
-
 const head=(n,rot,titulo,lead)=>`<div class="sec-head reveal">
   <div class="eyebrow"><i>${String(n).padStart(2,"0")}</i> ${esc(rot)}</div>
   <h2>${titulo}</h2>${lead?`<p class="lead">${esc(lead)}</p>`:""}</div>`;
@@ -746,38 +751,44 @@ const head=(n,rot,titulo,lead)=>`<div class="sec-head reveal">
    ══════════════════════════════════════════════════════════════════════════ */
 const REGISTRO = [
  {id:"pilares", nav:"Pilares", bg:"cream", build:n=>`
-   ${head(n,"Nossos pilares",`Cinco frentes, <em>um método</em>`,D.pilares.texto)}
+   ${head(n,"Nossos pilares",esc(D.pilares.titulo),D.pilares.texto)}
    <div class="pilar-grid reveal">${D.pilares.itens.map((p,i)=>`<div class="pilar">
      <span class="n">${String(i+1).padStart(2,"0")}</span>
      <h3>${esc(p.t)}</h3><span class="k">${esc(p.k)}</span><p>${esc(p.d)}</p></div>`).join("")}</div>`},
 
  {id:"resumo", nav:"Resumo", bg:"white", build:n=>`
-   ${head(n,"Sumário executivo",`O ano em <em>números</em>`,D.resumo.texto)}
+   ${head(n,"Sumário executivo",esc(D.resumo.titulo),D.resumo.texto)}
    <div class="kpi-grid reveal">${D.resumo.kpis.map(k=>`<div class="kpi">
      <div class="kpi-label">${esc(k.label)}</div>
      <div class="kpi-val">${esc(k.valor)}${k.sufixo?`<i>${esc(k.sufixo)}</i>`:""}</div>
      ${delta(k.variacao)}${k.nota?`<div class="kpi-note">${esc(k.nota)}</div>`:""}</div>`).join("")}</div>`},
 
  {id:"digital", nav:"Digital", bg:"cream", build:n=>{const st=D.digital.site; return `
-   ${head(n,"Performance digital",`Onde a marca <em>foi vista</em>`,
-     `Evolução de cada canal ao longo de ${D.cliente.ano}, comparada ao ano anterior.`)}
+   ${head(n,"Performance digital",esc(D.digital.titulo),
+     "Métricas de site e redes sociais, lado a lado.")}
    <div class="card reveal" style="margin-bottom:1.5rem">
      <div class="card-h"><h3>${esc(st.titulo)}</h3><span class="tag">${esc(st.fonte)}</span></div>
-     <div class="grid g2" style="align-items:start">
-       <div class="chart-box"><canvas id="ch-site"></canvas></div>
-       <div>${st.metricas.map(m=>`<div class="metric-row"><span>${esc(m.label)}</span>
-         <span><b>${esc(m.valor)}</b>${dSmall(m.variacao)}</span></div>`).join("")}
-         ${st.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(st.leitura)}</p>`:""}</div>
-     </div></div>
-   <div class="grid g2 reveal">${D.digital.canais.map((c,i)=>`<div class="card">
+     <div class="kpi-grid tight" style="margin-top:1rem">${st.metricas.map(m=>`<div class="kpi">
+       <div class="kpi-label">${esc(m.label)}</div>
+       <div class="kpi-val">${esc(m.valor)}</div>
+       ${delta(m.variacao)}</div>`).join("")}</div>
+     ${st.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(st.leitura)}</p>`:""}
+   </div>
+   <div class="grid g2 reveal">${D.digital.canais.map(c=>`<div class="card">
      <div class="card-h"><h3>${esc(c.nome)}</h3><span class="tag">${esc(c.tag)}</span></div>
-     <div class="chart-box" style="height:175px"><canvas id="ch-c${i}"></canvas></div>
-     <div style="margin-top:1.1rem">${c.metricas.map(m=>`<div class="metric-row"><span>${esc(m.label)}</span>
-       <span><b>${esc(m.valor)}</b>${dSmall(m.variacao)}</span></div>`).join("")}</div>
+     <div class="kpi-grid tight" style="margin-top:1rem">${c.metricas.map(m=>`<div class="kpi">
+       <div class="kpi-label">${esc(m.label)}</div>
+       <div class="kpi-val">${m.valor===null?"–":nf(m.valor)}</div>
+       ${delta(m.variacao)}</div>`).join("")}</div>
+     ${c.postagensOrganicas.length?`<div style="margin-top:1.1rem">${c.postagensOrganicas.map(p=>`
+       <a class="post-row" href="${esc(p.link)}" target="_blank" rel="noopener">
+         <span>${esc(p.metrica)}</span><b>${esc(p.valor)}</b></a>`).join("")}</div>`:""}
+     ${c.videoDestaque?`<a class="post-row" href="${esc(c.videoDestaque)}" target="_blank" rel="noopener">
+       <span>Vídeo em destaque</span><b>Assistir ↗</b></a>`:""}
      ${c.leitura?`<p class="kpi-note" style="margin-top:1.1rem">${esc(c.leitura)}</p>`:""}</div>`).join("")}</div>`}},
 
  {id:"valor", nav:"Entregas", bg:"ink", build:n=>`
-   ${head(n,"Valor entregue",`O que a LETS <em>executou</em>`,D.valor.texto)}
+   ${head(n,"Valor entregue",esc(D.valor.titulo),D.valor.texto)}
    <div class="deliv-grid reveal">${D.valor.entregas.map(e=>`<div class="deliv">
      <b>${esc(e.qtd)}${e.un?`<i>${esc(e.un)}</i>`:""}</b><span>${esc(e.oq)}</span></div>`).join("")}</div>
    <div class="subhead reveal">Time dedicado à conta</div>
@@ -788,16 +799,16 @@ const REGISTRO = [
      ${q.inst?`<small>${esc(q.inst)} na LETS</small>`:""}</div>`;}).join("")}</div>`},
 
  {id:"imprensa", nav:"Imprensa", bg:"white", build:n=>{const ip=D.imprensa; return `
-   ${head(n,"Assessoria de imprensa",`Presença <em>espontânea</em>`,ip.leitura)}
+   ${head(n,"Assessoria de imprensa",esc(D.imprensa.titulo),ip.leitura)}
    <div class="kpi-grid tight reveal" style="margin-bottom:clamp(2.4rem,5vw,3.4rem)">
      <div class="kpi"><div class="kpi-label">Inserções</div><div class="kpi-val">${nf(ip.insercoes)}</div></div>
      <div class="kpi"><div class="kpi-label">Veículos distintos</div><div class="kpi-val">${nf(ip.veiculos)}</div></div>
      <div class="kpi"><div class="kpi-label">Alcance estimado</div><div class="kpi-val">${esc(ip.alcanceEstimado)}</div></div>
      <div class="kpi"><div class="kpi-label">Valor equivalente</div><div class="kpi-val">${esc(ip.valorEquivalente)}</div></div>
    </div>
-   <div class="grid g2 reveal" style="gap:clamp(2rem,4.5vw,3.5rem);align-items:start">
-     <div class="card"><div class="card-h"><h3>Inserções por mês</h3></div>
-       <div class="chart-box"><canvas id="ch-imp"></canvas></div></div>
+   <div class="grid ${ip.porMes?"g2":"g1"} reveal" style="gap:clamp(2rem,4.5vw,3.5rem);align-items:start">
+     ${ip.porMes?`<div class="card"><div class="card-h"><h3>Inserções por mês</h3></div>
+       <div class="chart-box"><canvas id="ch-imp"></canvas></div></div>`:""}
      <div><div class="eyebrow">Destaques de cobertura</div>
        ${ip.principais.map(c=>`<a class="clip" href="${esc(c.url)}" target="_blank" rel="noopener">
          <span class="v">${esc(c.veiculo)}</span><span class="t">${esc(c.titulo)}</span>
@@ -805,9 +816,9 @@ const REGISTRO = [
    </div>`}},
 
  {id:"rankings", nav:"Rankings", bg:"ink", build:n=>`
-   ${head(n,"Reconhecimentos",`Validação <em>externa</em>`,
+   ${head(n,"Reconhecimentos",esc(D.rankings.titulo),
      `Rankings e premiações conquistados ou mantidos em ${D.cliente.ano}.`)}
-   <div class="grid g3 reveal">${D.rankings.map(r=>`<div class="rk">
+   <div class="grid g3 reveal">${D.rankings.itens.map(r=>`<div class="rk">
      <div class="n">${esc(r.nome)}</div><div class="c">${esc(r.categoria)}</div>
      <div class="lv">${esc(r.nivel)}</div></div>`).join("")}</div>`},
 
@@ -822,38 +833,16 @@ const REGISTRO = [
        <figure>${IMG(d.imagem,d.titulo,900,675)}</figure>
      </div></div>`).join("")}</div>`},
 
- {id:"benchmark", nav:"Benchmark", bg:"white", build:n=>{
-   const it=D.benchmark.itens;
-   const card=i=>{
-     /* cada cartão tem escala própria: o maior valor do par ocupa a linha inteira */
-     const mx=Math.max(i.cliente,i.setor)||1;
-     const mult=i.setor ? i.cliente/i.setor : 0;
-     const a=(i.setor/mx*100), b=(i.cliente/mx*100);
-     const mtxt = !mult ? "—" : (mult>=10 ? mult.toFixed(0) : mult.toFixed(1).replace(".",","));
-     return `<div class="bmc">
-       <div class="bmc-m">${esc(i.metrica)}</div>
-       <div class="bmc-x">${mtxt}<i>×</i></div>
-       <div class="bmc-cap">a média do setor</div>
-       <div class="dumb" data-a="${a.toFixed(1)}" data-b="${b.toFixed(1)}">
-         <div class="dumb-in">
-           <span class="dumb-base"></span><span class="dumb-fill"></span>
-           <span class="dumb-dot ds" style="left:${a.toFixed(1)}%"></span>
-           <span class="dumb-dot dc" style="left:${b.toFixed(1)}%"></span>
-         </div></div>
-       <div class="dumb-vals"><span>Setor ${nf(i.setor)}${esc(i.un)}</span>
-         <span>Escritório <b>${nf(i.cliente)}${esc(i.un)}</b></span></div>
-     </div>`;};
-   return `
-   ${head(n,"Benchmark de mercado",`Como o escritório se <em>compara</em>`,D.benchmark.texto)}
-   <div class="bmc-grid reveal">${it.map(card).join("")}</div>
-   <div class="bmc-leg"><span class="lc">${esc(D.cliente.nome)}</span><span class="ls">Média do setor</span></div>`}},
-
  {id:"plano", nav:()=>"Plano "+(D.cliente.ano+1), bg:"cream", build:n=>`
-   ${head(n,"Planejamento "+(D.cliente.ano+1),`O que vem <em>a seguir</em>`,D.planejamento.texto)}
+   ${head(n,"Planejamento "+(D.cliente.ano+1),esc(D.planejamento.titulo),D.planejamento.texto)}
+   ${D.planejamento.modo==="blocos" ? `
+   <div class="grid g3 reveal">${D.planejamento.blocos.map(b=>`<div class="card">
+     <div class="card-h"><h3>${esc(b.titulo)}</h3></div>
+     <p class="kpi-note">${esc(b.texto)}</p></div>`).join("")}</div>` : `
    <div class="grid g4 reveal">${D.planejamento.trimestres.map(q=>`<div class="q">
      <h4>${esc(q.nome)}</h4>
      ${q.itens.map(it=>`<div class="q-item"><strong>${esc(it.t)}</strong>
-       <span>${esc(it.d)}</span>${it.f?`<em>${esc(it.f)}</em>`:""}</div>`).join("")}</div>`).join("")}</div>`},
+       <span>${esc(it.d)}</span></div>`).join("")}</div>`).join("")}</div>`}`},
 
  {id:"personalizadas", nav:"Extras", bg:"white", build:n=>`
    ${head(n,"Extras do ano",`O que também <em>vale contar</em>`)}
@@ -876,7 +865,7 @@ const REGISTRO = [
 
  {id:"encerramento", nav:"", bg:"ink", build:()=>`
    <div class="end reveal">
-     <div class="eyebrow">Para o extraordinário</div>
+     <div class="eyebrow">${esc(D.encerramento.titulo)}</div>
      <p>${esc(D.encerramento.texto)}</p>
      <div class="sign">${esc(D.encerramento.assinatura)}</div></div>`}
 ];
@@ -949,28 +938,7 @@ if(window.Chart){
             y:{grid:{color:grid(d)},border:{display:false},
                ticks:{color:tick(d),maxTicksLimit:5,
                  callback:v=>v>=1000?(v/1000).toLocaleString("pt-BR")+"k":v}}}});
-  const fill=(ctx,cor)=>{const g=ctx.createLinearGradient(0,0,0,230);
-    g.addColorStop(0,cor+"3D");g.addColorStop(1,cor+"00");return g;};
-
-  if(SECOES.digital!==false){
-    const d=escuro("digital"), st=D.digital.site;
-    const cs=document.getElementById("ch-site").getContext("2d");
-    const o=opts(d); o.plugins.legend={display:true,align:"end",
-      labels:{color:tick(d),boxWidth:14,boxHeight:2,usePointStyle:false,font:{size:11}}};
-    new Chart(cs,{type:"line",data:{labels:D.meses,datasets:[
-      {label:String(D.cliente.ano),data:st.serieAtual,borderColor:RED,backgroundColor:fill(cs,RED),
-       fill:true,tension:.34,borderWidth:2,pointRadius:0,pointHoverRadius:5},
-      {label:String(D.cliente.anoAnterior),data:st.serieAnterior,
-       borderColor:d?"rgba(238,231,214,.45)":"rgba(29,29,27,.38)",borderDash:[4,4],fill:false,
-       tension:.34,borderWidth:1.5,pointRadius:0,pointHoverRadius:5}]},options:o});
-    D.digital.canais.forEach((c,i)=>{
-      const cx=document.getElementById("ch-c"+i).getContext("2d");
-      new Chart(cx,{type:"line",data:{labels:D.meses,datasets:[{data:c.serie,borderColor:RED,
-        backgroundColor:fill(cx,RED),fill:true,tension:.34,borderWidth:2,pointRadius:0,pointHoverRadius:5}]},
-        options:opts(d)});
-    });
-  }
-  if(SECOES.imprensa!==false){
+  if(SECOES.imprensa!==false && D.imprensa.porMes){
     const d=escuro("imprensa");
     new Chart(document.getElementById("ch-imp"),{type:"bar",
       data:{labels:D.meses,datasets:[{data:D.imprensa.porMes,backgroundColor:RED,

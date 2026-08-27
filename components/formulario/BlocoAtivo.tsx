@@ -1,5 +1,8 @@
+"use client";
+
 import { Campo } from "@/components/formulario/Campo";
-import { numeroDoBloco, type Bloco } from "@/lib/schema";
+import { useRespostas } from "@/components/formulario/RespostasContext";
+import { campoVisivel, numeroDoBloco, type Bloco } from "@/lib/schema";
 
 export function BlocoAtivo({
   bloco,
@@ -8,6 +11,9 @@ export function BlocoAtivo({
   bloco: Bloco;
   relatorioId: string;
 }) {
+  const { respostas } = useRespostas();
+  const camposVisiveis = bloco.campos.filter((campo) => campoVisivel(campo, bloco, respostas));
+
   return (
     <div className="mx-auto flex max-w-2xl flex-col">
       <h2 className="text-2xl font-light text-tinta">
@@ -22,7 +28,7 @@ export function BlocoAtivo({
         </p>
       )}
 
-      {bloco.somenteLeitura && (
+      {bloco.somenteLeitura && bloco.campos.length === 0 && (
         <p className="mt-6 text-sm text-cinza">
           Bloco de texto fixo — nada para preencher aqui.
         </p>
@@ -33,7 +39,7 @@ export function BlocoAtivo({
       )}
 
       <div className="mt-6 flex flex-col">
-        {bloco.campos.map((campo) => (
+        {camposVisiveis.map((campo) => (
           <Campo key={campo.id} campo={campo} relatorioId={relatorioId} />
         ))}
       </div>

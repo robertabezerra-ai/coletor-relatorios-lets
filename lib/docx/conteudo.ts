@@ -11,7 +11,7 @@ import {
 } from "docx";
 import sharp from "sharp";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { normalizarOpcoes, numeroDoBloco, type Bloco, type Campo } from "@/lib/schema";
+import { campoVisivel, normalizarOpcoes, numeroDoBloco, type Bloco, type Campo } from "@/lib/schema";
 import { campoPreenchido } from "@/lib/progresso";
 import { perguntaCustomParaCampo, type PerguntaCustom } from "@/lib/perguntasCustom";
 import { CORES, FONTE } from "@/lib/docx/estilo";
@@ -259,6 +259,7 @@ export async function montarConteudo(
     partes.push(tituloBloco(`${numeroDoBloco(bloco.id)}. ${bloco.titulo}`));
 
     for (const campo of bloco.campos) {
+      if (!campoVisivel(campo, bloco, respostas)) continue;
       partes.push(...(await renderizarCampo(campo, respostas[campo.id], supabase, contador)));
     }
   }

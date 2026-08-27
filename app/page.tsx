@@ -6,6 +6,7 @@ import { PainelClient } from "@/components/painel/PainelClient";
 import { blocosVisiveis, listarBlocos, obterSecoesSelecionadas } from "@/lib/schema";
 import { calcularProgresso } from "@/lib/progresso";
 import { obterIdentidadeAtual } from "@/lib/identidade";
+import { comRetentativa } from "@/lib/comRetentativa";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -17,11 +18,9 @@ export default async function Home() {
     redirect("/login");
   }
 
-  const [squads, relatorios, respostasAgrupadas] = await Promise.all([
-    listarSquads(),
-    listarRelatoriosPainel(),
-    listarRespostasAgrupadas(),
-  ]);
+  const [squads, relatorios, respostasAgrupadas] = await comRetentativa(() =>
+    Promise.all([listarSquads(), listarRelatoriosPainel(), listarRespostasAgrupadas()]),
+  );
 
   const blocos = listarBlocos();
   const progressoPorRelatorio: Record<string, number> = {};

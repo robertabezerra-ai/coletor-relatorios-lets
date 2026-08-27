@@ -49,6 +49,7 @@ export type Campo = {
   multiplo?: boolean;
   dica?: string;
   validacao?: string;
+  mostrarSe?: { campoId: string; valorEsperado: string };
 };
 
 export type Bloco = {

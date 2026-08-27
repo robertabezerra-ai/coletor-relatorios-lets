@@ -1,5 +1,5 @@
 import schemaJson from "@/perguntas.schema.json";
-import type { Bloco, FormularioSchema, OpcaoCampo } from "@/lib/schema/types";
+import type { Bloco, Campo, FormularioSchema, OpcaoCampo } from "@/lib/schema/types";
 
 export const schema = schemaJson as FormularioSchema;
 
@@ -40,6 +40,21 @@ export type OpcaoNormalizada = {
   ajuda?: string;
   recomendado?: boolean;
 };
+
+// Um campo com mostrarSe só existe pra ser preenchido quando outro campo do
+// mesmo bloco tem um valor específico (ex.: escolher "trimestres" ou
+// "blocos" no planejamento). Sem resposta salva ainda, cai no padrão do
+// campo controlador.
+export function campoVisivel(
+  campo: Campo,
+  bloco: Bloco,
+  respostas: Record<string, unknown>,
+): boolean {
+  if (!campo.mostrarSe) return true;
+  const controlador = bloco.campos.find((c) => c.id === campo.mostrarSe!.campoId);
+  const valorAtual = respostas[campo.mostrarSe.campoId] ?? controlador?.padrao ?? "";
+  return valorAtual === campo.mostrarSe.valorEsperado;
+}
 
 export function normalizarOpcoes(opcoes: OpcaoCampo[] | undefined): OpcaoNormalizada[] {
   if (!opcoes) return [];

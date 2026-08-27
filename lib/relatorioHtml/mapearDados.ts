@@ -8,37 +8,38 @@ const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "O
 // Texto institucional fixo — igual para todos os clientes (Bloco 2,
 // somenteLeitura no schema). Não vem de respostas, é o mesmo conteúdo que já
 // estava hardcoded no template original.
-const PILARES = {
-  texto:
-    "Cinco frentes sustentam tudo o que a LETS entrega. Cada número deste relatório nasce de uma delas.",
-  itens: [
-    {
-      t: "Branding",
-      k: "Posicionamento e reputação",
-      d: "Como o escritório é percebido antes de qualquer reunião acontecer. Identidade, discurso e coerência em todos os pontos de contato.",
-    },
-    {
-      t: "Conteúdo",
-      k: "Narrativa e autoridade",
-      d: "Conhecimento técnico dos sócios transformado em material que circula. É o que faz o escritório ser lembrado quando a dúvida aparece.",
-    },
-    {
-      t: "Performance",
-      k: "Captação e conversão",
-      d: "A ponte entre reputação e pipeline. Tráfego qualificado, páginas que convertem e origem rastreada de cada contato recebido.",
-    },
-    {
-      t: "Dados",
-      k: "Métrica e decisão",
-      d: "Nada entra no plano sem número que sustente. É a métrica que separa decisão de palpite — e que valida ou derruba a estratégia.",
-    },
-    {
-      t: "Comunicação interna",
-      k: "Cultura e alinhamento",
-      d: "Marca forte começa dentro. Sócios e equipe alinhados no mesmo discurso multiplicam o alcance de tudo que se constrói fora.",
-    },
-  ],
-};
+const PILARES_ITENS = [
+  {
+    t: "Branding",
+    k: "Posicionamento e reputação",
+    d: "Como o escritório é percebido antes de qualquer reunião acontecer. Identidade, discurso e coerência em todos os pontos de contato.",
+  },
+  {
+    t: "Conteúdo",
+    k: "Narrativa e autoridade",
+    d: "Conhecimento técnico dos sócios transformado em material que circula. É o que faz o escritório ser lembrado quando a dúvida aparece.",
+  },
+  {
+    t: "Performance",
+    k: "Captação e conversão",
+    d: "A ponte entre reputação e pipeline. Tráfego qualificado, páginas que convertem e origem rastreada de cada contato recebido.",
+  },
+  {
+    t: "Dados",
+    k: "Métrica e decisão",
+    d: "Nada entra no plano sem número que sustente. É a métrica que separa decisão de palpite — e que valida ou derruba a estratégia.",
+  },
+  {
+    t: "Comunicação interna",
+    k: "Cultura e alinhamento",
+    d: "Marca forte começa dentro. Sócios e equipe alinhados no mesmo discurso multiplicam o alcance de tudo que se constrói fora.",
+  },
+  {
+    t: "Rankings & Prêmios",
+    k: "Reconhecimento e validação externa",
+    d: "Reputação que se prova por terceiros. Submissões, ranqueamentos e cases premiados são o número que nenhuma campanha interna consegue fabricar — é o mercado validando o que o escritório já entrega.",
+  },
+];
 
 export const CHAVES_SECOES = [
   "pilares",
@@ -48,7 +49,6 @@ export const CHAVES_SECOES = [
   "imprensa",
   "rankings",
   "destaques",
-  "benchmark",
   "plano",
   "encerramento",
 ] as const;
@@ -72,9 +72,56 @@ function lista<T>(respostas: Record<string, unknown>, id: string): T[] {
   return Array.isArray(v) ? (v as T[]) : [];
 }
 
-function serie(respostas: Record<string, unknown>, id: string): (number | null)[] {
+function serieOuNull(respostas: Record<string, unknown>, id: string): (number | null)[] | null {
   const v = respostas[id];
-  return Array.isArray(v) && v.length === 12 ? (v as (number | null)[]) : Array(12).fill(null);
+  if (!Array.isArray(v) || v.length !== 12) return null;
+  const serie = v as (number | null)[];
+  return serie.some((mes) => mes !== null && mes !== undefined) ? serie : null;
+}
+
+// resumo.kpis pode ter uma linha em branco sobrando de um rascunho antigo —
+// não faz sentido mostrar um card vazio no relatório.
+function kpisPreenchidos(respostas: Record<string, unknown>) {
+  return lista<Record<string, unknown>>(respostas, "resumo.kpis").filter(
+    (k) => String(k.label ?? "").trim() !== "",
+  );
+}
+
+function metricasComVariacaoCalculada(bruto: Record<string, unknown>[]) {
+  return bruto
+    .filter((m) => String(m.label ?? "").trim() !== "")
+    .map((m) => {
+      const atual = typeof m.valorAtual === "number" ? m.valorAtual : null;
+      const anterior = typeof m.valorAnterior === "number" ? m.valorAnterior : null;
+      const variacao =
+        atual !== null && anterior !== null && anterior !== 0
+          ? Math.round(((atual - anterior) / Math.abs(anterior)) * 100)
+          : null;
+      return { label: String(m.label ?? ""), valor: atual, variacao };
+    });
+}
+
+function canaisParaTemplate(respostas: Record<string, unknown>) {
+  const brutos = lista<Record<string, unknown>>(respostas, "digital.canais");
+  return brutos.map((canal) => ({
+    nome: String(canal.nome ?? ""),
+    tag: String(canal.tag ?? ""),
+    metricas: metricasComVariacaoCalculada(
+      Array.isArray(canal.metricas) ? (canal.metricas as Record<string, unknown>[]) : [],
+    ),
+    postagensOrganicas: (Array.isArray(canal.postagensOrganicas)
+      ? (canal.postagensOrganicas as Record<string, unknown>[])
+      : []
+    )
+      .filter((p) => String(p.link ?? "").trim() !== "")
+      .map((p) => ({
+        link: String(p.link ?? ""),
+        metrica: String(p.metrica ?? ""),
+        valor: String(p.valor ?? ""),
+      })),
+    videoDestaque: String(canal.videoDestaque ?? ""),
+    leitura: String(canal.leitura ?? ""),
+  }));
 }
 
 function trimestresParaTemplate(respostas: Record<string, unknown>) {
@@ -154,6 +201,8 @@ export async function montarDados(
     })),
   );
 
+  const modoPlanejamento = texto(respostas, "planejamento.modo", "trimestres");
+
   return {
     cliente: {
       nome: texto(respostas, "cliente.nome", relatorio.cliente),
@@ -165,51 +214,60 @@ export async function montarDados(
       frentes: texto(respostas, "cliente.frentes"),
       consultorResponsavel: texto(respostas, "cliente.consultorResponsavel"),
     },
-    pilares: PILARES,
+    pilares: {
+      titulo: texto(respostas, "pilares.titulo", "Seis frentes, um método"),
+      texto: "Seis frentes sustentam tudo o que a LETS entrega. Cada número deste relatório nasce de uma delas.",
+      itens: PILARES_ITENS,
+    },
     resumo: {
+      titulo: texto(respostas, "resumo.titulo", "O ano em números"),
       texto: texto(respostas, "resumo.texto"),
-      kpis: lista(respostas, "resumo.kpis"),
+      kpis: kpisPreenchidos(respostas),
     },
     meses: MESES,
     digital: {
+      titulo: texto(respostas, "digital.titulo", "Onde a marca foi vista"),
       site: {
         titulo: "Site institucional",
         fonte: texto(respostas, "digital.site.fonte"),
-        serieAtual: serie(respostas, "digital.site.serieAtual"),
-        serieAnterior: serie(respostas, "digital.site.serieAnterior"),
         metricas: lista(respostas, "digital.site.metricas"),
         leitura: texto(respostas, "digital.site.leitura"),
       },
-      canais: lista(respostas, "digital.canais"),
+      canais: canaisParaTemplate(respostas),
     },
     valor: {
+      titulo: texto(respostas, "valor.titulo", "O que a LETS executou"),
       texto: texto(respostas, "valor.texto"),
       entregas: lista(respostas, "valor.entregas"),
       time: lista(respostas, "valor.time"),
     },
     imprensa: {
+      titulo: texto(respostas, "imprensa.titulo", "Presença espontânea"),
       insercoes: numero(respostas, "imprensa.insercoes"),
       veiculos: numero(respostas, "imprensa.veiculos"),
       alcanceEstimado: texto(respostas, "imprensa.alcanceEstimado"),
       valorEquivalente: texto(respostas, "imprensa.valorEquivalente"),
-      porMes: serie(respostas, "imprensa.porMes"),
+      porMes: serieOuNull(respostas, "imprensa.porMes"),
       leitura: texto(respostas, "imprensa.leitura"),
       principais: lista(respostas, "imprensa.principais"),
     },
-    rankings: lista(respostas, "rankings"),
+    rankings: {
+      titulo: texto(respostas, "rankings.titulo", "Validação externa"),
+      itens: lista(respostas, "rankings"),
+    },
     destaques: {
       frase: texto(respostas, "destaques.frase", "Os momentos que moveram o ponteiro"),
       itens: destaques,
     },
-    benchmark: {
-      texto: texto(respostas, "benchmark.texto"),
-      itens: lista(respostas, "benchmark.itens"),
-    },
     planejamento: {
+      titulo: texto(respostas, "planejamento.titulo", "O que vem a seguir"),
       texto: texto(respostas, "planejamento.texto"),
+      modo: modoPlanejamento,
       trimestres: trimestresParaTemplate(respostas),
+      blocos: lista(respostas, "planejamento.blocos"),
     },
     encerramento: {
+      titulo: texto(respostas, "encerramento.titulo", "Para o extraordinário"),
       texto: texto(respostas, "encerramento.texto"),
       assinatura: texto(respostas, "encerramento.assinatura"),
     },

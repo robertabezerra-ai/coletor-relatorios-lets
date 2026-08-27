@@ -4,6 +4,7 @@ import { buscarAtualizacoes, buscarRelatorio, buscarRespostas } from "@/lib/data
 import { listarPerguntasCustom } from "@/lib/data/perguntasCustom";
 import { listarBlocos } from "@/lib/schema";
 import { FormularioClient } from "@/components/formulario/FormularioClient";
+import { comRetentativa } from "@/lib/comRetentativa";
 
 export default async function RelatorioPage({
   params,
@@ -18,7 +19,7 @@ export default async function RelatorioPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const relatorio = await buscarRelatorio(id);
+  const relatorio = await comRetentativa(() => buscarRelatorio(id));
   if (!relatorio) notFound();
 
   const [respostas, atualizacoes, perguntasCustom] = await Promise.all([

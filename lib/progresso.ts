@@ -1,4 +1,4 @@
-import type { Bloco, Campo } from "@/lib/schema";
+import { campoVisivel, type Bloco, type Campo } from "@/lib/schema";
 
 export type EstadoBloco = "vazio" | "parcial" | "completo";
 
@@ -41,11 +41,12 @@ export function campoPreenchido(campo: Campo, valor: unknown): boolean {
 
 type PesoAcumulado = { peso: number; pesoPreenchido: number };
 
-function acumularPeso(campos: Campo[], respostas: Record<string, unknown>): PesoAcumulado {
+function acumularPeso(bloco: Bloco, respostas: Record<string, unknown>): PesoAcumulado {
   let peso = 0;
   let pesoPreenchido = 0;
 
-  for (const campo of campos) {
+  for (const campo of bloco.campos) {
+    if (!campoVisivel(campo, bloco, respostas)) continue;
     const pesoDoCampo = PESO_NIVEL[campo.nivel ?? "opcional"] ?? 0;
     if (pesoDoCampo === 0) continue;
 
@@ -73,7 +74,7 @@ export function calcularProgresso(blocosVisiveis: Bloco[], respostas: Record<str
   let pesoPreenchidoTotal = 0;
 
   for (const bloco of blocosVisiveis) {
-    const acumulado = acumularPeso(bloco.campos, respostas);
+    const acumulado = acumularPeso(bloco, respostas);
     porBloco[bloco.id] = { percentual: paraPercentual(acumulado), estado: paraEstado(acumulado) };
     pesoTotal += acumulado.peso;
     pesoPreenchidoTotal += acumulado.pesoPreenchido;
@@ -94,6 +95,7 @@ export function camposEssenciaisVazios(
 
   for (const bloco of blocosVisiveis) {
     for (const campo of bloco.campos) {
+      if (!campoVisivel(campo, bloco, respostas)) continue;
       if (campo.nivel === "essencial" && !campoPreenchido(campo, respostas[campo.id])) {
         vazios.push({ blocoId: bloco.id, blocoTitulo: bloco.titulo, campo });
       }

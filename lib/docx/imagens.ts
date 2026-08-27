@@ -1,4 +1,4 @@
-import type { Bloco, Campo } from "@/lib/schema";
+import { campoVisivel, type Bloco, type Campo } from "@/lib/schema";
 import { perguntaCustomParaCampo, type PerguntaCustom } from "@/lib/perguntasCustom";
 import { slug } from "@/lib/docx/estilo";
 
@@ -85,7 +85,8 @@ export function coletarImagens(
 
   for (const bloco of blocosVisiveis) {
     if (bloco.id === "b13") continue;
-    imagens.push(...coletarDeCampos(bloco.campos, (campoId) => respostas[campoId], contador));
+    const camposVisiveis = bloco.campos.filter((campo) => campoVisivel(campo, bloco, respostas));
+    imagens.push(...coletarDeCampos(camposVisiveis, (campoId) => respostas[campoId], contador));
   }
 
   const camposCustom = perguntasCustom.map(perguntaCustomParaCampo);
