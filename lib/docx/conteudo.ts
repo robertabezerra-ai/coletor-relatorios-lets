@@ -254,7 +254,7 @@ export async function montarConteudo(
   const partes: Bloco2[] = [];
 
   for (const bloco of blocosVisiveis) {
-    if (bloco.id === "b13") continue; // perguntas personalizadas vão no fim
+    if (bloco.id === "b15") continue; // perguntas personalizadas vão no fim
 
     partes.push(tituloBloco(`${numeroDoBloco(bloco.id)}. ${bloco.titulo}`));
 

@@ -8,7 +8,7 @@ export function resolverCampo(campoId: string, perguntasCustom: PerguntaCustom[]
     const id = campoId.slice("custom:".length);
     const pergunta = perguntasCustom.find((item) => item.id === id);
     return {
-      blocoId: "b13",
+      blocoId: "b15",
       blocoTitulo: "Perguntas personalizadas",
       rotulo: pergunta?.rotulo ?? "Pergunta removida",
     };

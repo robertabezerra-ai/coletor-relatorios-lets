@@ -45,11 +45,14 @@ export const CHAVES_SECOES = [
   "pilares",
   "resumo",
   "digital",
+  "traficoPago",
   "valor",
   "imprensa",
   "rankings",
   "destaques",
+  "inteligenciaAplicada",
   "plano",
+  "acompanhamentosFuturos",
   "encerramento",
 ] as const;
 
@@ -125,7 +128,7 @@ function canaisParaTemplate(respostas: Record<string, unknown>) {
 }
 
 function trimestresParaTemplate(respostas: Record<string, unknown>) {
-  const campo = buscarBloco("b11")?.campos.find((c) => c.id === "planejamento.trimestres");
+  const campo = buscarBloco("b12")?.campos.find((c) => c.id === "planejamento.trimestres");
   const nomes = campo?.itensFixos ?? ["1º Trimestre", "2º Trimestre", "3º Trimestre", "4º Trimestre"];
   const brutos = lista<{ itens?: unknown }>(respostas, "planejamento.trimestres");
 
@@ -133,6 +136,18 @@ function trimestresParaTemplate(respostas: Record<string, unknown>) {
     nome,
     itens: Array.isArray(brutos[indice]?.itens) ? brutos[indice]!.itens : [],
   }));
+}
+
+function bulletsPreenchidos(respostas: Record<string, unknown>, id: string) {
+  return lista<Record<string, unknown>>(respostas, id)
+    .map((linha) => String(linha.item ?? "").trim())
+    .filter((item) => item !== "");
+}
+
+function blocosDeFrase(respostas: Record<string, unknown>, id: string) {
+  return lista<Record<string, unknown>>(respostas, id)
+    .map((linha) => String(linha.frase ?? "").trim())
+    .filter((frase) => frase !== "");
 }
 
 async function personalizadasParaTemplate(
@@ -235,6 +250,11 @@ export async function montarDados(
       },
       canais: canaisParaTemplate(respostas),
     },
+    traficoPago: {
+      titulo: texto(respostas, "traficoPago.titulo", "Investimento com retorno"),
+      metricas: lista(respostas, "traficoPago.metricas"),
+      leitura: texto(respostas, "traficoPago.leitura"),
+    },
     valor: {
       titulo: texto(respostas, "valor.titulo", "O que a LETS executou"),
       texto: texto(respostas, "valor.texto"),
@@ -259,12 +279,21 @@ export async function montarDados(
       frase: texto(respostas, "destaques.frase", "Os momentos que moveram o ponteiro"),
       itens: destaques,
     },
+    inteligencia: {
+      titulo: texto(respostas, "inteligencia.titulo", "Inteligência aplicada"),
+      texto: texto(respostas, "inteligencia.texto"),
+      bullets: bulletsPreenchidos(respostas, "inteligencia.bullets"),
+    },
     planejamento: {
       titulo: texto(respostas, "planejamento.titulo", "O que vem a seguir"),
       texto: texto(respostas, "planejamento.texto"),
       modo: modoPlanejamento,
       trimestres: trimestresParaTemplate(respostas),
       blocos: lista(respostas, "planejamento.blocos"),
+    },
+    acompanhamentos: {
+      titulo: texto(respostas, "acompanhamentos.titulo", "Acompanhamentos estratégicos futuros"),
+      frases: blocosDeFrase(respostas, "acompanhamentos.blocos"),
     },
     encerramento: {
       titulo: texto(respostas, "encerramento.titulo", "Para o extraordinário"),

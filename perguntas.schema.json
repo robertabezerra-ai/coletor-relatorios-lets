@@ -1,5 +1,5 @@
 {
-  "versao": "2026.2",
+  "versao": "2026.3",
   "descricao": "Schema único do formulário do relatório anual LETS. É a fonte de verdade para: renderizar a página, calcular o progresso e gerar o .docx. Nunca duplique estas definições em outro lugar do código.",
   "niveis": {
     "essencial": "Sem isto o relatório não fecha. Conta para o progresso e bloqueia a exportação final.",
@@ -35,11 +35,14 @@
             { "valor": "pilares", "rotulo": "Nossos pilares", "ajuda": "As seis frentes do método da LETS. Texto fixo, não precisa preencher nada.", "recomendado": true },
             { "valor": "resumo", "rotulo": "Sumário executivo", "ajuda": "Os números que abrem o relatório, com variação sobre o ano anterior.", "recomendado": true },
             { "valor": "digital", "rotulo": "Performance digital", "ajuda": "Site e canais, com métricas em destaque por título e número." },
+            { "valor": "traficoPago", "rotulo": "Performance digital — tráfego pago", "ajuda": "Métricas de campanhas pagas, separadas do orgânico." },
             { "valor": "valor", "rotulo": "Valor entregue", "ajuda": "Entregas do ano e time dedicado à conta. Bom para contas com muitas horas." },
             { "valor": "imprensa", "rotulo": "Assessoria de imprensa", "ajuda": "Volume de inserções e clipping, com curva mensal opcional." },
             { "valor": "rankings", "rotulo": "Rankings", "ajuda": "Rankings e reconhecimentos conquistados ou mantidos." },
             { "valor": "destaques", "rotulo": "Destaques do ano", "ajuda": "Linha do tempo dos momentos que moveram o ponteiro." },
+            { "valor": "inteligenciaAplicada", "rotulo": "Inteligência aplicada", "ajuda": "Texto introdutório e/ou tópicos — o que for útil." },
             { "valor": "plano", "rotulo": "Planejamento do próximo ano", "ajuda": "Iniciativas por trimestre ou em blocos livres.", "recomendado": true },
+            { "valor": "acompanhamentosFuturos", "rotulo": "Acompanhamentos estratégicos futuros", "ajuda": "Frases curtas, organizadas em blocos." },
             { "valor": "encerramento", "rotulo": "Encerramento", "ajuda": "Frase de fechamento e assinatura.", "recomendado": true }
           ]
         },
@@ -158,6 +161,26 @@
 
     {
       "id": "b6",
+      "titulo": "Performance digital — tráfego pago",
+      "dependeDeSecao": "traficoPago",
+      "campos": [
+        { "id": "traficoPago.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Investimento com retorno", "formato": "Aparece em destaque no topo da seção de tráfego pago." },
+        {
+          "id": "traficoPago.metricas", "rotulo": "Métricas de tráfego pago", "tipo": "tabela",
+          "nivel": "importante", "min": 2, "max": 10,
+          "formato": "Caixas abertas: um título e um número grande por linha. Ex.: Cliques, CPC, ROAS, Conversões, Investimento — adicione quantas quiser.",
+          "colunas": [
+            { "id": "label", "rotulo": "Título", "tipo": "texto", "sugestoes": ["Investimento", "Cliques", "CPC", "CPM", "ROAS", "Conversões", "Custo por conversão", "Impressões"] },
+            { "id": "valor", "rotulo": "Valor", "tipo": "texto", "dica": "Já formatado. Ex.: R$ 12,4 k" },
+            { "id": "variacao", "rotulo": "Variação % (opcional)", "tipo": "numero" }
+          ]
+        },
+        { "id": "traficoPago.leitura", "rotulo": "Leitura do investimento", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma ou duas frases sobre o retorno das campanhas pagas." }
+      ]
+    },
+
+    {
+      "id": "b7",
       "titulo": "Valor entregue pela LETS",
       "dependeDeSecao": "valor",
       "campos": [
@@ -186,7 +209,7 @@
     },
 
     {
-      "id": "b7",
+      "id": "b8",
       "titulo": "Assessoria de imprensa",
       "dependeDeSecao": "imprensa",
       "campos": [
@@ -211,7 +234,7 @@
     },
 
     {
-      "id": "b8",
+      "id": "b9",
       "titulo": "Rankings e reconhecimentos",
       "dependeDeSecao": "rankings",
       "campos": [
@@ -221,15 +244,14 @@
           "nivel": "essencial", "min": 3, "max": 15,
           "colunas": [
             { "id": "nome", "rotulo": "Ranking", "tipo": "texto", "sugestoes": ["Chambers Brazil", "Leaders League", "The Legal 500", "Análise Advocacia 500", "Análise Advocacia Mulher", "ITR World Tax", "IFLR1000", "LACCA Approved"] },
-            { "id": "categoria", "rotulo": "Categoria e posição", "tipo": "texto" },
-            { "id": "nivel", "rotulo": "Status", "tipo": "selecao", "opcoes": ["Nova entrada", "Evolução", "Manutenção"] }
+            { "id": "categoria", "rotulo": "Categoria e posição", "tipo": "texto" }
           ]
         }
       ]
     },
 
     {
-      "id": "b9",
+      "id": "b10",
       "titulo": "Destaques do ano",
       "dependeDeSecao": "destaques",
       "campos": [
@@ -251,6 +273,25 @@
 
     {
       "id": "b11",
+      "titulo": "Inteligência aplicada",
+      "descricao": "Fica a critério: só o texto introdutório, só os tópicos, ou os dois.",
+      "dependeDeSecao": "inteligenciaAplicada",
+      "campos": [
+        { "id": "inteligencia.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Inteligência aplicada", "formato": "Aparece em destaque no topo da seção." },
+        { "id": "inteligencia.texto", "rotulo": "Texto introdutório (opcional)", "tipo": "textoLongo", "nivel": "opcional", "formato": "Pode deixar em branco se preferir só os tópicos abaixo." },
+        {
+          "id": "inteligencia.bullets", "rotulo": "Tópicos (opcional)", "tipo": "tabela",
+          "nivel": "opcional", "min": 0, "max": 8,
+          "formato": "Pode deixar vazio se preferir só o texto acima.",
+          "colunas": [
+            { "id": "item", "rotulo": "Tópico", "tipo": "texto" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b12",
       "titulo": "Planejamento do próximo ano",
       "dependeDeSecao": "plano",
       "campos": [
@@ -293,7 +334,24 @@
     },
 
     {
-      "id": "b12",
+      "id": "b13",
+      "titulo": "Acompanhamentos estratégicos futuros",
+      "dependeDeSecao": "acompanhamentosFuturos",
+      "campos": [
+        { "id": "acompanhamentos.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Acompanhamentos estratégicos futuros", "formato": "Aparece em destaque no topo da seção." },
+        {
+          "id": "acompanhamentos.blocos", "rotulo": "Blocos", "tipo": "tabela",
+          "nivel": "importante", "min": 1, "max": 8,
+          "formato": "Uma frase por bloco.",
+          "colunas": [
+            { "id": "frase", "rotulo": "Frase", "tipo": "textoLongo" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "b14",
       "titulo": "Encerramento",
       "dependeDeSecao": "encerramento",
       "campos": [
@@ -304,7 +362,7 @@
     },
 
     {
-      "id": "b13",
+      "id": "b15",
       "titulo": "Perguntas personalizadas",
       "descricao": "Espaço livre para o que este cliente tem de específico e não cabe nos blocos acima. Cada pergunta criada aqui vira um item do .docx e é lida pelo Claude na hora de montar o relatório.",
       "customizavel": true,
@@ -312,7 +370,7 @@
     },
 
     {
-      "id": "b14",
+      "id": "b16",
       "titulo": "Arquivos",
       "descricao": "Nada aqui é obrigatório. Sem logo, a capa mostra um espaço reservado. Sem imagem de destaque, cada uma vira um espaço reservado discreto. As fotos do time da LETS vêm automaticamente do site.",
       "campos": [

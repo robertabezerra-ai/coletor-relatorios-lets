@@ -84,7 +84,7 @@ export function coletarImagens(
   const imagens: ImagemColetada[] = [];
 
   for (const bloco of blocosVisiveis) {
-    if (bloco.id === "b13") continue;
+    if (bloco.id === "b15") continue;
     const camposVisiveis = bloco.campos.filter((campo) => campoVisivel(campo, bloco, respostas));
     imagens.push(...coletarDeCampos(camposVisiveis, (campoId) => respostas[campoId], contador));
   }

@@ -143,7 +143,7 @@ function FormularioInterno({
           {essenciaisVazios.length > 0 && (
             <PainelFaltaPreencher itens={essenciaisVazios} onIrPara={irParaCampo} />
           )}
-          {blocoAtivo?.id === "b13" ? (
+          {blocoAtivo?.id === "b15" ? (
             <BlocoPerguntasCustom
               relatorioId={relatorioId}
               perguntas={perguntasCustom}
