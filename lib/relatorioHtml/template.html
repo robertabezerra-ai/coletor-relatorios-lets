@@ -796,7 +796,7 @@ const REGISTRO = [
        ${delta(m.variacao)}</div>`).join("")}</div>
      ${c.postagensOrganicas.length?`<div style="margin-top:1.1rem">${c.postagensOrganicas.map(p=>`
        <a class="post-row" href="${esc(p.link)}" target="_blank" rel="noopener">
-         <span>${esc(p.metrica)}</span><b>${esc(p.valor)}</b></a>`).join("")}</div>`:""}
+         <span>${esc(p.metrica)||"Ver postagem"} ↗</span><b>${esc(p.valor)}</b></a>`).join("")}</div>`:""}
      ${c.videoDestaque?`<a class="post-row" href="${esc(c.videoDestaque)}" target="_blank" rel="noopener">
        <span>Vídeo em destaque</span><b>Assistir ↗</b></a>`:""}
      ${c.leitura?`<p class="kpi-note" style="margin-top:1.1rem">${esc(c.leitura)}</p>`:""}</div>`).join("")}</div>`}},
