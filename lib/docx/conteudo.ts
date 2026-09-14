@@ -13,7 +13,6 @@ import sharp from "sharp";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { campoVisivel, normalizarOpcoes, numeroDoBloco, type Bloco, type Campo } from "@/lib/schema";
 import { campoPreenchido } from "@/lib/progresso";
-import { perguntaCustomParaCampo, type PerguntaCustom } from "@/lib/perguntasCustom";
 import { CORES, FONTE } from "@/lib/docx/estilo";
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -199,27 +198,7 @@ async function conteudoDoValor(
     return blocos;
   }
 
-  if (campo.tipo === "grupoFixo") {
-    const item = valor && typeof valor === "object" ? (valor as Record<string, unknown>) : {};
-    const camposFilhos = campo.campos ?? [];
-    const blocos: Bloco2[] = [];
-
-    for (const subCampo of camposFilhos) {
-      blocos.push(
-        new Paragraph({
-          spacing: { after: 20 },
-          children: [
-            new TextRun({ text: subCampo.rotulo, bold: true, color: CORES.cinza, font: FONTE }),
-          ],
-        }),
-      );
-      blocos.push(...(await conteudoDoValor(subCampo, item[subCampo.id], supabase)));
-    }
-
-    return blocos;
-  }
-
-  // texto, numero, selecao e qualquer outro tipo simples
+  // texto, numero, selecao, selecaoEquipe e qualquer outro tipo simples
   return [paragrafoResposta(vazio ? "" : String(valor))];
 }
 
@@ -247,28 +226,16 @@ function tituloBloco(texto: string): Paragraph {
 export async function montarConteudo(
   blocosVisiveis: Bloco[],
   respostas: Record<string, unknown>,
-  perguntasCustom: PerguntaCustom[],
   supabase: SupabaseClient,
 ): Promise<Bloco2[]> {
   const contador: Contador = { valor: 0 };
   const partes: Bloco2[] = [];
 
   for (const bloco of blocosVisiveis) {
-    if (bloco.id === "b15") continue; // perguntas personalizadas vão no fim
-
     partes.push(tituloBloco(`${numeroDoBloco(bloco.id)}. ${bloco.titulo}`));
 
     for (const campo of bloco.campos) {
       if (!campoVisivel(campo, bloco, respostas)) continue;
-      partes.push(...(await renderizarCampo(campo, respostas[campo.id], supabase, contador)));
-    }
-  }
-
-  if (perguntasCustom.length > 0) {
-    partes.push(tituloBloco("Perguntas personalizadas"));
-
-    for (const pergunta of perguntasCustom) {
-      const campo = perguntaCustomParaCampo(pergunta);
       partes.push(...(await renderizarCampo(campo, respostas[campo.id], supabase, contador)));
     }
   }

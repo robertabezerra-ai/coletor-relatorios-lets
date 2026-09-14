@@ -3,11 +3,11 @@ import { CampoTexto } from "@/components/formulario/campos/CampoTexto";
 import { CampoTextoLongo } from "@/components/formulario/campos/CampoTextoLongo";
 import { CampoNumero } from "@/components/formulario/campos/CampoNumero";
 import { CampoSelecao } from "@/components/formulario/campos/CampoSelecao";
+import { CampoSelecaoEquipe } from "@/components/formulario/campos/CampoSelecaoEquipe";
 import { CampoMultiSelecao } from "@/components/formulario/campos/CampoMultiSelecao";
 import { CampoSerie12 } from "@/components/formulario/campos/CampoSerie12";
 import { CampoTabela } from "@/components/formulario/campos/CampoTabela";
 import { CampoGrupoRepetivel } from "@/components/formulario/campos/CampoGrupoRepetivel";
-import { CampoGrupoFixo } from "@/components/formulario/campos/CampoGrupoFixo";
 import { CampoImagem } from "@/components/formulario/campos/CampoImagem";
 import { CampoPendente } from "@/components/formulario/campos/CampoPendente";
 
@@ -27,6 +27,8 @@ export function Campo({
       return <CampoNumero campo={campo} relatorioId={relatorioId} />;
     case "selecao":
       return <CampoSelecao campo={campo} relatorioId={relatorioId} />;
+    case "selecaoEquipe":
+      return <CampoSelecaoEquipe campo={campo} relatorioId={relatorioId} />;
     case "multiSelecao":
       return <CampoMultiSelecao campo={campo} relatorioId={relatorioId} />;
     case "serie12":
@@ -36,8 +38,6 @@ export function Campo({
       return <CampoTabela campo={campo} relatorioId={relatorioId} />;
     case "grupoRepetivel":
       return <CampoGrupoRepetivel campo={campo} relatorioId={relatorioId} />;
-    case "grupoFixo":
-      return <CampoGrupoFixo campo={campo} relatorioId={relatorioId} />;
     case "imagem":
       return <CampoImagem campo={campo} relatorioId={relatorioId} />;
     default:

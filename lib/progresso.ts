@@ -30,12 +30,6 @@ export function campoPreenchido(campo: Campo, valor: unknown): boolean {
     return Boolean(valor && typeof valor === "object" && (valor as { caminho?: string }).caminho);
   }
 
-  if (campo.tipo === "grupoFixo") {
-    if (!valor || typeof valor !== "object") return false;
-    const item = valor as Record<string, unknown>;
-    return (campo.campos ?? []).some((subCampo) => campoPreenchido(subCampo, item[subCampo.id]));
-  }
-
   return valor !== null && valor !== undefined && String(valor).trim() !== "";
 }
 

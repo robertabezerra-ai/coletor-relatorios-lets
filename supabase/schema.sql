@@ -60,22 +60,10 @@ create table respostas_log (
   quando        timestamptz not null default now()
 );
 
-create table perguntas_custom (
-  id           uuid primary key default gen_random_uuid(),
-  relatorio_id uuid not null references relatorios(id) on delete cascade,
-  rotulo       text not null,
-  formato      text,
-  tipo         text not null default 'textoLongo',
-  ordem        int  not null default 0,
-  criado_por   uuid references auth.users(id),
-  criado_em    timestamptz not null default now()
-);
-
 -- Índices para os padrões de consulta do app (nenhum vem de graça com FK no Postgres).
 create index idx_relatorios_squad_id on relatorios(squad_id);
 create index idx_respostas_relatorio_id on respostas(relatorio_id);
 create index idx_respostas_log_relatorio_id on respostas_log(relatorio_id);
-create index idx_perguntas_custom_relatorio_id on perguntas_custom(relatorio_id);
 
 -- ============================================================================
 -- 2. Gatilho de histórico — toda escrita em `respostas` grava em
@@ -164,7 +152,6 @@ alter table squads enable row level security;
 alter table relatorios enable row level security;
 alter table respostas enable row level security;
 alter table respostas_log enable row level security;
-alter table perguntas_custom enable row level security;
 
 create policy "autenticados leem e escrevem squads"
   on squads for all
@@ -186,11 +173,6 @@ create policy "autenticados leem e escrevem respostas_log"
   to authenticated
   using (true) with check (true);
 
-create policy "autenticados leem e escrevem perguntas_custom"
-  on perguntas_custom for all
-  to authenticated
-  using (true) with check (true);
-
 -- ============================================================================
 -- 5. Permissão de tabela — RLS filtra linhas, mas o Postgres também exige a
 --    permissão de tabela em si; sem isso, "permission denied" mesmo com a
@@ -204,7 +186,6 @@ grant select, insert, update, delete on squads to authenticated;
 grant select, insert, update, delete on relatorios to authenticated;
 grant select, insert, update, delete on respostas to authenticated;
 grant select, insert, update, delete on respostas_log to authenticated;
-grant select, insert, update, delete on perguntas_custom to authenticated;
 grant select on relatorios_painel to authenticated;
 
 -- service_role é usado por scripts administrativos e futuras rotinas de
@@ -217,7 +198,6 @@ grant select, insert, update, delete on squads to service_role;
 grant select, insert, update, delete on relatorios to service_role;
 grant select, insert, update, delete on respostas to service_role;
 grant select, insert, update, delete on respostas_log to service_role;
-grant select, insert, update, delete on perguntas_custom to service_role;
 grant select on relatorios_painel to service_role;
 
 -- ============================================================================

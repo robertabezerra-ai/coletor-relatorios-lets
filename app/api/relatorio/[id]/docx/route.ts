@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import { Document, Packer, convertMillimetersToTwip } from "docx";
 import { createClient } from "@/lib/supabase/server";
 import { buscarRelatorio, buscarRespostas } from "@/lib/data/relatorios";
-import { listarPerguntasCustom } from "@/lib/data/perguntasCustom";
 import { blocosVisiveis, listarBlocos, obterSecoesSelecionadas } from "@/lib/schema";
-import { calcularProgresso } from "@/lib/progresso";
 import { montarConteudo } from "@/lib/docx/conteudo";
 import { montarCapa } from "@/lib/docx/capa";
 import { nomeArquivo, MARGEM_MM, FONTE, CORES } from "@/lib/docx/estilo";
@@ -27,24 +25,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Relatório não encontrado." }, { status: 404 });
   }
 
-  const [respostas, perguntasCustom] = await Promise.all([
-    buscarRespostas(id),
-    listarPerguntasCustom(id),
-  ]);
+  const respostas = await buscarRespostas(id);
 
   const blocos = listarBlocos();
   const secoes = obterSecoesSelecionadas(respostas);
   const visiveis = blocosVisiveis(blocos, secoes);
-  const { percentualGeral } = calcularProgresso(visiveis, respostas);
 
   const capa = montarCapa({
     cliente: relatorio.cliente,
     ano: relatorio.ano,
     squadNome: relatorio.squads?.nome ?? "",
-    percentual: percentualGeral,
   });
 
-  const conteudo = await montarConteudo(visiveis, respostas, perguntasCustom, supabase);
+  const conteudo = await montarConteudo(visiveis, respostas, supabase);
 
   const documento = new Document({
     styles: {

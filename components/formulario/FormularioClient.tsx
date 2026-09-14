@@ -7,12 +7,11 @@ import { MenuBlocos } from "@/components/formulario/MenuBlocos";
 import { SeletorBlocosMobile } from "@/components/formulario/SeletorBlocosMobile";
 import { CabecalhoFormulario } from "@/components/formulario/CabecalhoFormulario";
 import { BlocoAtivo } from "@/components/formulario/BlocoAtivo";
-import { BlocoPerguntasCustom } from "@/components/formulario/BlocoPerguntasCustom";
 import { PainelFaltaPreencher } from "@/components/formulario/PainelFaltaPreencher";
+import { PreviaAoVivo } from "@/components/formulario/PreviaAoVivo";
 import { blocosVisiveis, obterSecoesSelecionadas, type Bloco } from "@/lib/schema";
 import { calcularProgresso, camposEssenciaisVazios } from "@/lib/progresso";
 import { coletarImagens } from "@/lib/docx/imagens";
-import type { PerguntaCustom } from "@/lib/perguntasCustom";
 
 export function FormularioClient({
   relatorioId,
@@ -22,7 +21,8 @@ export function FormularioClient({
   blocos,
   respostas,
   atualizacoes,
-  perguntasCustomIniciais,
+  podeEditar,
+  criadoPorNome,
 }: {
   relatorioId: string;
   cliente: string;
@@ -31,7 +31,8 @@ export function FormularioClient({
   blocos: Bloco[];
   respostas: Record<string, unknown>;
   atualizacoes: Record<string, string>;
-  perguntasCustomIniciais: PerguntaCustom[];
+  podeEditar: boolean;
+  criadoPorNome: string | null;
 }) {
   return (
     <EstadoSalvamentoProvider>
@@ -42,7 +43,8 @@ export function FormularioClient({
           squadNome={squadNome}
           ano={ano}
           blocos={blocos}
-          perguntasCustomIniciais={perguntasCustomIniciais}
+          podeEditar={podeEditar}
+          criadoPorNome={criadoPorNome}
         />
       </RespostasProvider>
     </EstadoSalvamentoProvider>
@@ -55,20 +57,21 @@ function FormularioInterno({
   squadNome,
   ano,
   blocos,
-  perguntasCustomIniciais,
+  podeEditar,
+  criadoPorNome,
 }: {
   relatorioId: string;
   cliente: string;
   squadNome: string;
   ano: number;
   blocos: Bloco[];
-  perguntasCustomIniciais: PerguntaCustom[];
+  podeEditar: boolean;
+  criadoPorNome: string | null;
 }) {
   const { respostas } = useRespostas();
   const secoesSelecionadas = obterSecoesSelecionadas(respostas);
   const visiveis = blocosVisiveis(blocos, secoesSelecionadas);
 
-  const [perguntasCustom, setPerguntasCustom] = useState(perguntasCustomIniciais);
   const [blocoAtivoId, setBlocoAtivoId] = useState(blocos[0]?.id ?? "");
   const [campoParaFocar, setCampoParaFocar] = useState<string | null>(null);
 
@@ -104,10 +107,12 @@ function FormularioInterno({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [visiveis, blocoAtivoId]);
 
-  const blocoAtivo = visiveis.find((bloco) => bloco.id === blocoAtivoId) ?? visiveis[0];
+  const indiceAtivo = visiveis.findIndex((bloco) => bloco.id === blocoAtivoId);
+  const blocoAtivo = visiveis[indiceAtivo] ?? visiveis[0];
+  const proximoBloco = indiceAtivo >= 0 ? visiveis[indiceAtivo + 1] : undefined;
   const progresso = calcularProgresso(visiveis, respostas);
   const essenciaisVazios = camposEssenciaisVazios(visiveis, respostas);
-  const temImagens = coletarImagens(visiveis, respostas, perguntasCustom).length > 0;
+  const temImagens = coletarImagens(visiveis, respostas).length > 0;
 
   function irParaCampo(blocoId: string, campoId: string) {
     setBlocoAtivoId(blocoId);
@@ -121,15 +126,28 @@ function FormularioInterno({
         cliente={cliente}
         squadNome={squadNome}
         ano={ano}
-        percentualGeral={progresso.percentualGeral}
         temImagens={temImagens}
       />
+
+      {!podeEditar && (
+        <p className="border-b border-tinta/10 bg-bege px-4 py-2 text-center text-sm text-cinza sm:px-6">
+          {criadoPorNome
+            ? `Só ${criadoPorNome}, quem criou este relatório, pode editá-lo. Você está vendo em modo leitura.`
+            : "Só quem criou este relatório pode editá-lo. Você está vendo em modo leitura."}
+        </p>
+      )}
+
+      <p className="border-b border-tinta/10 bg-vermelho/5 px-4 py-2 text-center text-sm text-vermelho sm:px-6">
+        É importante compartilhar este conteúdo com o time antes da entrega final.
+      </p>
+
       <SeletorBlocosMobile
         blocos={visiveis}
         blocoAtivoId={blocoAtivoId}
         onSelecionar={setBlocoAtivoId}
         progressoPorBloco={progresso.porBloco}
       />
+
       <div className="flex flex-1 flex-col md:flex-row">
         <aside className="hidden w-64 shrink-0 border-r border-tinta/10 px-3 py-6 md:block">
           <MenuBlocos
@@ -139,20 +157,32 @@ function FormularioInterno({
             progressoPorBloco={progresso.porBloco}
           />
         </aside>
+
         <main className="flex-1 px-4 py-6 sm:px-8 sm:py-8">
           {essenciaisVazios.length > 0 && (
             <PainelFaltaPreencher itens={essenciaisVazios} onIrPara={irParaCampo} />
           )}
-          {blocoAtivo?.id === "b15" ? (
-            <BlocoPerguntasCustom
-              relatorioId={relatorioId}
-              perguntas={perguntasCustom}
-              onMudou={setPerguntasCustom}
-            />
-          ) : (
-            blocoAtivo && <BlocoAtivo bloco={blocoAtivo} relatorioId={relatorioId} />
+
+          <div className={podeEditar ? undefined : "pointer-events-none opacity-60"}>
+            {blocoAtivo && <BlocoAtivo bloco={blocoAtivo} relatorioId={relatorioId} />}
+          </div>
+
+          {proximoBloco && (
+            <div className="mx-auto mt-8 flex max-w-2xl justify-end">
+              <button
+                type="button"
+                onClick={() => setBlocoAtivoId(proximoBloco.id)}
+                className="rotulo bg-vermelho px-4 py-2 text-creme hover:opacity-90"
+              >
+                Ir para: {proximoBloco.titulo} →
+              </button>
+            </div>
           )}
         </main>
+
+        <aside className="hidden w-[440px] shrink-0 border-l border-tinta/10 xl:block">
+          <PreviaAoVivo cliente={cliente} ano={ano} blocoAtivoId={blocoAtivoId} />
+        </aside>
       </div>
     </div>
   );

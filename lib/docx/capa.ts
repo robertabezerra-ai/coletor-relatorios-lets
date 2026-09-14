@@ -5,7 +5,6 @@ export function montarCapa(dados: {
   cliente: string;
   ano: number;
   squadNome: string;
-  percentual: number;
 }): Paragraph[] {
   const dataExportacao = new Date().toLocaleDateString("pt-BR", {
     day: "2-digit",
@@ -46,17 +45,6 @@ export function montarCapa(dados: {
       children: [
         new TextRun({
           text: `Exportado em ${dataExportacao}`,
-          color: CORES.cinza,
-          size: 20,
-          font: FONTE,
-        }),
-      ],
-    }),
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      children: [
-        new TextRun({
-          text: `${dados.percentual}% preenchido`,
           color: CORES.cinza,
           size: 20,
           font: FONTE,

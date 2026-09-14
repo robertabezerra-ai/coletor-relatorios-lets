@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { NovoRelatorioModal } from "@/components/painel/NovoRelatorioModal";
 import { CardRelatorio } from "@/components/painel/CardRelatorio";
+import { SquadFolderCard } from "@/components/painel/SquadFolderCard";
 import { LogoutButton } from "@/app/logout-button";
 import { trocarPessoa } from "@/lib/actions/identidade";
 import { ROTULO_STATUS, STATUS_OPCOES } from "@/lib/status";
@@ -23,41 +24,34 @@ export function PainelClient({
   const [busca, setBusca] = useState("");
   const [filtroAno, setFiltroAno] = useState("todos");
   const [filtroStatus, setFiltroStatus] = useState<RelatorioStatus | "todos">("todos");
-  const [filtroSquad, setFiltroSquad] = useState("todos");
   const [modalAberto, setModalAberto] = useState(false);
-  const [squadsRecolhidos, setSquadsRecolhidos] = useState<Set<string>>(new Set());
-
-  function alternarRecolhido(squadId: string) {
-    setSquadsRecolhidos((atual) => {
-      const proximo = new Set(atual);
-      if (proximo.has(squadId)) {
-        proximo.delete(squadId);
-      } else {
-        proximo.add(squadId);
-      }
-      return proximo;
-    });
-  }
+  const [squadAbertoId, setSquadAbertoId] = useState<string | null>(null);
 
   const squadsAtivos = squads.filter((squad) => !squad.arquivado);
+  const squadAberto = squads.find((squad) => squad.id === squadAbertoId) ?? null;
 
   const anosDisponiveis = useMemo(
     () => Array.from(new Set(relatorios.map((r) => r.ano))).sort((a, b) => b - a),
     [relatorios],
   );
 
+  const buscaAtiva = busca.trim() !== "" || filtroAno !== "todos" || filtroStatus !== "todos";
+
   const relatoriosFiltrados = relatorios.filter((relatorio) => {
     if (busca && !relatorio.cliente.toLowerCase().includes(busca.toLowerCase())) return false;
     if (filtroAno !== "todos" && String(relatorio.ano) !== filtroAno) return false;
     if (filtroStatus !== "todos" && relatorio.status !== filtroStatus) return false;
-    if (filtroSquad !== "todos" && relatorio.squad_id !== filtroSquad) return false;
     return true;
   });
 
   const squadsParaExibir = squads.filter((squad) => {
     if (!squad.arquivado) return true;
-    return relatoriosFiltrados.some((r) => r.squad_id === squad.id);
+    return relatorios.some((r) => r.squad_id === squad.id);
   });
+
+  const relatoriosDoSquadAberto = squadAberto
+    ? relatoriosFiltrados.filter((r) => r.squad_id === squadAberto.id)
+    : [];
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-10">
@@ -140,79 +134,77 @@ export function PainelClient({
             </option>
           ))}
         </select>
-        <label htmlFor="filtro-squad" className="sr-only">
-          Filtrar por squad
-        </label>
-        <select
-          id="filtro-squad"
-          value={filtroSquad}
-          onChange={(event) => setFiltroSquad(event.target.value)}
-          className="border border-tinta/20 bg-white px-3 py-2 text-tinta"
-        >
-          <option value="todos">Todo squad</option>
-          {squads.map((squad) => (
-            <option key={squad.id} value={squad.id}>
-              {squad.nome}
-            </option>
-          ))}
-        </select>
       </div>
 
-      {squadsParaExibir.length === 0 && (
+      {buscaAtiva ? (
+        <div className="flex flex-col gap-2">
+          <p className="rotulo text-cinza">
+            {relatoriosFiltrados.length} resultado{relatoriosFiltrados.length === 1 ? "" : "s"}
+          </p>
+          {relatoriosFiltrados.length === 0 ? (
+            <p className="text-sm text-cinza">Nenhum relatório encontrado.</p>
+          ) : (
+            relatoriosFiltrados.map((relatorio) => (
+              <CardRelatorio
+                key={relatorio.id}
+                relatorio={relatorio}
+                squads={squadsAtivos}
+                progresso={progressoPorRelatorio[relatorio.id] ?? 0}
+                identidadeAtual={identidadeAtual}
+              />
+            ))
+          )}
+        </div>
+      ) : squadAberto ? (
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={() => setSquadAbertoId(null)}
+            className="rotulo flex w-fit items-center gap-2 text-cinza hover:text-vermelho"
+          >
+            ← Squads
+          </button>
+          <div className="flex items-center gap-2">
+            <span
+              className="h-2.5 w-2.5 shrink-0"
+              style={{ backgroundColor: squadAberto.cor }}
+              aria-hidden
+            />
+            <h2 className="text-xl text-tinta">{squadAberto.nome}</h2>
+          </div>
+          {relatoriosDoSquadAberto.length === 0 ? (
+            <p className="text-sm text-cinza">
+              Nenhum relatório aqui ainda. Clique em &ldquo;Novo relatório&rdquo; para começar.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {relatoriosDoSquadAberto.map((relatorio) => (
+                <CardRelatorio
+                  key={relatorio.id}
+                  relatorio={relatorio}
+                  squads={squadsAtivos}
+                  progresso={progressoPorRelatorio[relatorio.id] ?? 0}
+                  identidadeAtual={identidadeAtual}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : squadsParaExibir.length === 0 ? (
         <p className="text-cinza">
           Nenhum squad cadastrado ainda. Comece em &ldquo;Gerenciar squads&rdquo;.
         </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {squadsParaExibir.map((squad) => (
+            <SquadFolderCard
+              key={squad.id}
+              squad={squad}
+              quantidade={relatorios.filter((r) => r.squad_id === squad.id).length}
+              onAbrir={() => setSquadAbertoId(squad.id)}
+            />
+          ))}
+        </div>
       )}
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {squadsParaExibir.map((squad) => {
-          const relatoriosDoSquad = relatoriosFiltrados.filter((r) => r.squad_id === squad.id);
-          const recolhido = squadsRecolhidos.has(squad.id);
-          return (
-            <section key={squad.id} className="flex flex-col gap-3">
-              <button
-                onClick={() => alternarRecolhido(squad.id)}
-                aria-expanded={!recolhido}
-                className="flex items-center gap-2 text-left"
-              >
-                <span
-                  className="h-2.5 w-2.5 shrink-0"
-                  style={{ backgroundColor: squad.cor }}
-                  aria-hidden
-                />
-                <h2 className="text-tinta">{squad.nome}</h2>
-                {squad.arquivado && <span className="rotulo text-cinza">arquivado</span>}
-                <span className="text-sm text-cinza">
-                  {relatoriosDoSquad.length > 0 && `(${relatoriosDoSquad.length})`}
-                </span>
-                <span className="ml-auto text-cinza" aria-hidden>
-                  {recolhido ? "▸" : "▾"}
-                </span>
-              </button>
-
-              {!recolhido &&
-                (relatoriosDoSquad.length === 0 ? (
-                  <p className="text-sm text-cinza">
-                    Nenhum relatório aqui ainda. Clique em &ldquo;Novo relatório&rdquo; para
-                    começar.
-                  </p>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    {relatoriosDoSquad.map((relatorio) => (
-                      <CardRelatorio
-                        key={relatorio.id}
-                        relatorio={relatorio}
-                        squads={squadsAtivos}
-                        progresso={progressoPorRelatorio[relatorio.id] ?? 0}
-                        identidadeAtual={identidadeAtual}
-                      />
-                    ))}
-                  </div>
-                ))}
-            </section>
-          );
-        })}
-      </div>
 
       {modalAberto && (
         <NovoRelatorioModal squads={squadsAtivos} onClose={() => setModalAberto(false)} />

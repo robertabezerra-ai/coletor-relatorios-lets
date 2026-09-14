@@ -2,7 +2,6 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buscarRelatorio } from "@/lib/data/relatorios";
 import { listarHistorico } from "@/lib/data/historico";
-import { listarPerguntasCustom } from "@/lib/data/perguntasCustom";
 import { resolverCampo } from "@/lib/historico";
 import { HistoricoClient } from "@/components/historico/HistoricoClient";
 
@@ -22,14 +21,11 @@ export default async function HistoricoPage({
   const relatorio = await buscarRelatorio(id);
   if (!relatorio) notFound();
 
-  const [log, perguntasCustom] = await Promise.all([
-    listarHistorico(id),
-    listarPerguntasCustom(id),
-  ]);
+  const log = await listarHistorico(id);
 
   const entradas = log.map((linha) => ({
     ...linha,
-    ...resolverCampo(linha.campo_id, perguntasCustom),
+    ...resolverCampo(linha.campo_id),
   }));
 
   return (

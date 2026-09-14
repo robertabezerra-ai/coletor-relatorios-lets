@@ -6,10 +6,10 @@ export type TipoCampo =
   | "numero"
   | "serie12"
   | "selecao"
+  | "selecaoEquipe"
   | "multiSelecao"
   | "tabela"
   | "grupoRepetivel"
-  | "grupoFixo"
   | "imagem"
   | "pessoas";
 

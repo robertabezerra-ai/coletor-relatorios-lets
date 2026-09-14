@@ -753,11 +753,22 @@ const head=(n,rot,titulo,lead)=>`<div class="sec-head reveal">
    aqui e a chave correspondente em SECOES.
    ══════════════════════════════════════════════════════════════════════════ */
 const REGISTRO = [
- {id:"pilares", nav:"Pilares", bg:"cream", build:n=>`
-   ${head(n,"Nossos pilares",esc(D.pilares.titulo),D.pilares.texto)}
+ {id:"pilares", nav:"Frentes", bg:"cream", build:n=>`
+   ${head(n,"Nossas frentes",esc(D.pilares.titulo),D.pilares.texto)}
    <div class="pilar-grid reveal">${D.pilares.itens.map((p,i)=>`<div class="pilar">
      <span class="n">${String(i+1).padStart(2,"0")}</span>
      <h3>${esc(p.t)}</h3><span class="k">${esc(p.k)}</span><p>${esc(p.d)}</p></div>`).join("")}</div>`},
+
+ {id:"valor", nav:"Impacto", bg:"ink", build:n=>`
+   ${head(n,"Impacto gerado",esc(D.valor.titulo),D.valor.texto)}
+   <div class="deliv-grid reveal">${D.valor.entregas.map(e=>`<div class="deliv">
+     <b>${esc(e.qtd)}${e.un?`<i>${esc(e.un)}</i>`:""}</b><span>${esc(e.oq)}</span></div>`).join("")}</div>
+   <div class="subhead reveal">Time dedicado à conta</div>
+   <div class="team-grid reveal">${D.valor.time.map(p=>{const q=pessoa(p); return `<div class="person">
+     <figure><img src="${q.foto?esc(q.foto):AV(q.nome)}" alt="${esc(q.nome)}" loading="lazy"
+       onerror="this.onerror=null;this.src=AV(${JSON.stringify(q.nome)})"></figure>
+     <strong>${esc(q.nome)}</strong><span>${esc(q.papel)}</span>
+     ${q.inst?`<small>${esc(q.inst)} na LETS</small>`:""}</div>`;}).join("")}</div>`},
 
  {id:"resumo", nav:"Resumo", bg:"white", build:n=>`
    ${head(n,"Sumário executivo",esc(D.resumo.titulo),D.resumo.texto)}
@@ -770,7 +781,7 @@ const REGISTRO = [
    ${head(n,"Performance digital",esc(D.digital.titulo),
      "Métricas de site e redes sociais, lado a lado.")}
    <div class="card reveal" style="margin-bottom:1.5rem">
-     <div class="card-h"><h3>${esc(st.titulo)}</h3><span class="tag">${esc(st.fonte)}</span></div>
+     <div class="card-h"><h3>${esc(st.titulo)}</h3></div>
      <div class="kpi-grid tight" style="margin-top:1rem">${st.metricas.map(m=>`<div class="kpi">
        <div class="kpi-label">${esc(m.label)}</div>
        <div class="kpi-val">${esc(m.valor)}</div>
@@ -778,7 +789,7 @@ const REGISTRO = [
      ${st.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(st.leitura)}</p>`:""}
    </div>
    <div class="grid g2 reveal">${D.digital.canais.map(c=>`<div class="card">
-     <div class="card-h"><h3>${esc(c.nome)}</h3><span class="tag">${esc(c.tag)}</span></div>
+     <div class="card-h"><h3>${esc(c.nome)}</h3></div>
      <div class="kpi-grid tight" style="margin-top:1rem">${c.metricas.map(m=>`<div class="kpi">
        <div class="kpi-label">${esc(m.label)}</div>
        <div class="kpi-val">${m.valor===null?"–":nf(m.valor)}</div>
@@ -799,18 +810,17 @@ const REGISTRO = [
        <div class="kpi-val">${esc(m.valor)}</div>
        ${delta(m.variacao)}</div>`).join("")}</div>
      ${D.traficoPago.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(D.traficoPago.leitura)}</p>`:""}
-   </div>`},
-
- {id:"valor", nav:"Entregas", bg:"ink", build:n=>`
-   ${head(n,"Valor entregue",esc(D.valor.titulo),D.valor.texto)}
-   <div class="deliv-grid reveal">${D.valor.entregas.map(e=>`<div class="deliv">
-     <b>${esc(e.qtd)}${e.un?`<i>${esc(e.un)}</i>`:""}</b><span>${esc(e.oq)}</span></div>`).join("")}</div>
-   <div class="subhead reveal">Time dedicado à conta</div>
-   <div class="team-grid reveal">${D.valor.time.map(p=>{const q=pessoa(p); return `<div class="person">
-     <figure><img src="${q.foto?esc(q.foto):AV(q.nome)}" alt="${esc(q.nome)}" loading="lazy"
-       onerror="this.onerror=null;this.src=AV(${JSON.stringify(q.nome)})"></figure>
-     <strong>${esc(q.nome)}</strong><span>${esc(q.papel)}</span>
-     ${q.inst?`<small>${esc(q.inst)} na LETS</small>`:""}</div>`;}).join("")}</div>`},
+   </div>
+   ${D.traficoPago.campanhas.length?`
+   <div class="subhead reveal">Destaques das campanhas</div>
+   <div class="tl reveal">${D.traficoPago.campanhas.map(c=>`<div class="tl-item">
+     <div class="tl-when">${esc(c.mes)}${c.objetivo?` · ${esc(c.objetivo)}`:""}</div>
+     <div class="tl-body">
+       <div>${c.metrica?`<h3>${esc(c.metrica)}</h3>`:""}
+         ${c.valorMetrica?`<p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(c.valorMetrica)}</p>`:""}
+         ${c.resultado?`<span class="tl-res">${esc(c.resultado)}</span>`:""}</div>
+       <figure>${IMG(c.imagem,c.objetivo,900,675)}</figure>
+     </div></div>`).join("")}</div>`:""}`},
 
  {id:"imprensa", nav:"Imprensa", bg:"white", build:n=>{const ip=D.imprensa; return `
    ${head(n,"Assessoria de imprensa",esc(D.imprensa.titulo),ip.leitura)}
@@ -865,25 +875,6 @@ const REGISTRO = [
    ${head(n,"Acompanhamentos estratégicos futuros",esc(D.acompanhamentos.titulo))}
    <div class="grid g3 reveal">${D.acompanhamentos.frases.map(f=>`<div class="card">
      <p class="kpi-note" style="margin-top:0;font-size:.95rem">${esc(f)}</p></div>`).join("")}</div>`},
-
- {id:"personalizadas", nav:"Extras", bg:"white", build:n=>`
-   ${head(n,"Extras do ano",`O que também <em>vale contar</em>`)}
-   <div class="grid g2 reveal">${D.personalizadas.map(p=>{
-     if(p.modelo==="destaque") return `<div class="card">
-       <div class="card-h"><h3>${esc(p.rotulo)}</h3></div>
-       <div class="pc-img">${IMG(p.imagem,p.rotulo,800,600)}</div>
-       ${p.texto?`<p class="kpi-note">${esc(p.texto)}</p>`:""}</div>`;
-     if(p.modelo==="numero") return `<div class="card">
-       <div class="card-h"><h3>${esc(p.rotulo)}</h3></div>
-       <div class="kpi-val">${p.numero===null?"–":nf(p.numero)}</div>
-       ${p.texto?`<p class="kpi-note">${esc(p.texto)}</p>`:""}</div>`;
-     if(p.modelo==="lista") return `<div class="card">
-       <div class="card-h"><h3>${esc(p.rotulo)}</h3></div>
-       <ul class="pc-list">${p.itens.map(item=>`<li>${esc(item)}</li>`).join("")}</ul></div>`;
-     return `<div class="card">
-       <div class="card-h"><h3>${esc(p.rotulo)}</h3></div>
-       <p class="kpi-note">${esc(p.texto)}</p></div>`;
-   }).join("")}</div>`},
 
  {id:"encerramento", nav:"", bg:"ink", build:()=>`
    <div class="end reveal">

@@ -1,7 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { buscarBloco } from "@/lib/schema";
-import { resolverImagemDataUri } from "@/lib/relatorioHtml/imagens";
-import type { PerguntaCustom } from "@/lib/perguntasCustom";
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -41,12 +38,17 @@ const PILARES_ITENS = [
   },
 ];
 
+// Frase de encerramento fixa — mesma de RELATORIO-BASE-2026.html. Não vem de
+// respostas: todo cliente fecha com a mesma mensagem, por padronização.
+const ENCERRAMENTO_TEXTO_FIXO =
+  "Reputação não se compra e não se acelera. Constrói-se com consistência, ano após ano — e é isso que os números deste relatório mostram.";
+
 export const CHAVES_SECOES = [
   "pilares",
+  "valor",
   "resumo",
   "digital",
   "traficoPago",
-  "valor",
   "imprensa",
   "rankings",
   "destaques",
@@ -107,24 +109,42 @@ function metricasComVariacaoCalculada(bruto: Record<string, unknown>[]) {
 function canaisParaTemplate(respostas: Record<string, unknown>) {
   const brutos = lista<Record<string, unknown>>(respostas, "digital.canais");
   return brutos.map((canal) => ({
-    nome: String(canal.nome ?? ""),
-    tag: String(canal.tag ?? ""),
-    metricas: metricasComVariacaoCalculada(
-      Array.isArray(canal.metricas) ? (canal.metricas as Record<string, unknown>[]) : [],
-    ),
-    postagensOrganicas: (Array.isArray(canal.postagensOrganicas)
-      ? (canal.postagensOrganicas as Record<string, unknown>[])
-      : []
-    )
-      .filter((p) => String(p.link ?? "").trim() !== "")
-      .map((p) => ({
-        link: String(p.link ?? ""),
-        metrica: String(p.metrica ?? ""),
-        valor: String(p.valor ?? ""),
-      })),
-    videoDestaque: String(canal.videoDestaque ?? ""),
-    leitura: String(canal.leitura ?? ""),
-  }));
+      nome: String(canal.nome ?? ""),
+      metricas: metricasComVariacaoCalculada(
+        Array.isArray(canal.metricas) ? (canal.metricas as Record<string, unknown>[]) : [],
+      ),
+      postagensOrganicas: (Array.isArray(canal.postagensOrganicas)
+        ? (canal.postagensOrganicas as Record<string, unknown>[])
+        : []
+      )
+        .filter((p) => String(p.link ?? "").trim() !== "")
+        .map((p) => ({
+          link: String(p.link ?? ""),
+          metrica: String(p.metrica ?? ""),
+          valor: String(p.valor ?? ""),
+        })),
+      videoDestaque: String(canal.videoDestaque ?? ""),
+      leitura: String(canal.leitura ?? ""),
+    }));
+}
+
+async function campanhasParaTemplate(
+  respostas: Record<string, unknown>,
+  resolverImagem: (valor: unknown) => Promise<string | null>,
+) {
+  const brutos = lista<Record<string, unknown>>(respostas, "traficoPago.campanhas").filter(
+    (c) => String(c.objetivo ?? "").trim() !== "",
+  );
+  return Promise.all(
+    brutos.map(async (c) => ({
+      objetivo: String(c.objetivo ?? ""),
+      mes: String(c.mes ?? ""),
+      imagem: await resolverImagem(c.imagem),
+      metrica: String(c.metrica ?? ""),
+      valorMetrica: String(c.valorMetrica ?? ""),
+      resultado: String(c.resultado ?? ""),
+    })),
+  );
 }
 
 function trimestresParaTemplate(respostas: Record<string, unknown>) {
@@ -150,60 +170,13 @@ function blocosDeFrase(respostas: Record<string, unknown>, id: string) {
     .filter((frase) => frase !== "");
 }
 
-async function personalizadasParaTemplate(
-  perguntasCustom: PerguntaCustom[],
-  respostas: Record<string, unknown>,
-  supabase: SupabaseClient,
-) {
-  return Promise.all(
-    perguntasCustom.map(async (pergunta) => {
-      const valor = respostas[`custom:${pergunta.id}`];
-      const item = valor && typeof valor === "object" ? (valor as Record<string, unknown>) : {};
-
-      if (pergunta.modelo === "destaque") {
-        return {
-          modelo: "destaque" as const,
-          rotulo: pergunta.rotulo,
-          imagem: await resolverImagemDataUri(supabase, item.imagem),
-          texto: String(item.texto ?? ""),
-        };
-      }
-
-      if (pergunta.modelo === "numero") {
-        return {
-          modelo: "numero" as const,
-          rotulo: pergunta.rotulo,
-          numero: typeof item.numero === "number" ? item.numero : null,
-          texto: String(item.texto ?? ""),
-        };
-      }
-
-      if (pergunta.modelo === "lista") {
-        const itens = Array.isArray(item.itens) ? (item.itens as Record<string, unknown>[]) : [];
-        return {
-          modelo: "lista" as const,
-          rotulo: pergunta.rotulo,
-          itens: itens.map((linha) => String(linha.item ?? "")).filter((texto) => texto !== ""),
-        };
-      }
-
-      return {
-        modelo: "texto" as const,
-        rotulo: pergunta.rotulo,
-        texto: String(item.texto ?? ""),
-      };
-    }),
-  );
-}
-
 export async function montarDados(
   respostas: Record<string, unknown>,
   relatorio: { cliente: string; ano: number },
-  supabase: SupabaseClient,
-  perguntasCustom: PerguntaCustom[] = [],
+  resolverImagem: (valor: unknown) => Promise<string | null>,
 ) {
   const ano = numero(respostas, "cliente.ano", relatorio.ano);
-  const logo = await resolverImagemDataUri(supabase, respostas["cliente.logo"]);
+  const logo = await resolverImagem(respostas["cliente.logo"]);
 
   const destaquesBrutos = lista<Record<string, unknown>>(respostas, "destaques");
   const destaques = await Promise.all(
@@ -212,7 +185,7 @@ export async function montarDados(
       titulo: String(d.titulo ?? ""),
       descricao: String(d.descricao ?? ""),
       resultado: String(d.resultado ?? ""),
-      imagem: await resolverImagemDataUri(supabase, d.imagem),
+      imagem: await resolverImagem(d.imagem),
     })),
   );
 
@@ -226,11 +199,11 @@ export async function montarDados(
       anoAnterior: ano - 1,
       subtitulo: texto(respostas, "cliente.subtitulo"),
       inicioParceria: texto(respostas, "cliente.inicioParceria"),
-      frentes: texto(respostas, "cliente.frentes"),
+      frentes: lista<string>(respostas, "cliente.frentes").join(" · "),
       consultorResponsavel: texto(respostas, "cliente.consultorResponsavel"),
     },
     pilares: {
-      titulo: texto(respostas, "pilares.titulo", "Seis frentes, um método"),
+      titulo: "Seis frentes, um método",
       texto: "Seis frentes sustentam tudo o que a LETS entrega. Cada número deste relatório nasce de uma delas.",
       itens: PILARES_ITENS,
     },
@@ -244,7 +217,6 @@ export async function montarDados(
       titulo: texto(respostas, "digital.titulo", "Onde a marca foi vista"),
       site: {
         titulo: "Site institucional",
-        fonte: texto(respostas, "digital.site.fonte"),
         metricas: lista(respostas, "digital.site.metricas"),
         leitura: texto(respostas, "digital.site.leitura"),
       },
@@ -254,6 +226,7 @@ export async function montarDados(
       titulo: texto(respostas, "traficoPago.titulo", "Investimento com retorno"),
       metricas: lista(respostas, "traficoPago.metricas"),
       leitura: texto(respostas, "traficoPago.leitura"),
+      campanhas: await campanhasParaTemplate(respostas, resolverImagem),
     },
     valor: {
       titulo: texto(respostas, "valor.titulo", "O que a LETS executou"),
@@ -297,9 +270,8 @@ export async function montarDados(
     },
     encerramento: {
       titulo: texto(respostas, "encerramento.titulo", "Para o extraordinário"),
-      texto: texto(respostas, "encerramento.texto"),
+      texto: ENCERRAMENTO_TEXTO_FIXO,
       assinatura: texto(respostas, "encerramento.assinatura"),
     },
-    personalizadas: await personalizadasParaTemplate(perguntasCustom, respostas, supabase),
   };
 }

@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // importado) vá junto no bundle da função serverless na Vercel.
   outputFileTracingIncludes: {
     "/api/relatorio/[id]/html": ["./lib/relatorioHtml/template.html"],
+    "/api/relatorio-template": ["./lib/relatorioHtml/template.html"],
   },
 };
 

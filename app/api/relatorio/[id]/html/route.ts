@@ -3,9 +3,9 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buscarRelatorio, buscarRespostas } from "@/lib/data/relatorios";
-import { listarPerguntasCustom } from "@/lib/data/perguntasCustom";
 import { obterSecoesSelecionadas } from "@/lib/schema";
 import { montarDados, secoesParaTemplate } from "@/lib/relatorioHtml/mapearDados";
+import { resolverImagemDataUri } from "@/lib/relatorioHtml/imagens";
 import { injetarDados } from "@/lib/relatorioHtml/injetar";
 import { slug } from "@/lib/docx/estilo";
 
@@ -27,18 +27,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Relatório não encontrado." }, { status: 404 });
   }
 
-  const [respostas, perguntasCustom] = await Promise.all([
-    buscarRespostas(id),
-    listarPerguntasCustom(id),
-  ]);
+  const respostas = await buscarRespostas(id);
   const secoesSelecionadas = obterSecoesSelecionadas(respostas);
   const secoes = secoesParaTemplate(secoesSelecionadas);
-  secoes.personalizadas = perguntasCustom.length > 0;
   const dados = await montarDados(
     respostas,
     { cliente: relatorio.cliente, ano: relatorio.ano },
-    supabase,
-    perguntasCustom,
+    (valor) => resolverImagemDataUri(supabase, valor),
   );
 
   const caminhoTemplate = path.join(process.cwd(), "lib/relatorioHtml/template.html");

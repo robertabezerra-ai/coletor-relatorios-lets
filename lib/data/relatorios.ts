@@ -18,6 +18,7 @@ export type RelatorioComSquad = {
   ano: number;
   squad_id: string;
   status: string;
+  criador_nome: string | null;
   squads: { nome: string; cor: string } | null;
 };
 
@@ -25,7 +26,7 @@ export async function buscarRelatorio(id: string): Promise<RelatorioComSquad | n
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("relatorios")
-    .select("id, cliente, ano, squad_id, status, squads(nome, cor)")
+    .select("id, cliente, ano, squad_id, status, criador_nome, squads(nome, cor)")
     .eq("id", id)
     .maybeSingle();
 

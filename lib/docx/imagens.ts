@@ -1,5 +1,4 @@
 import { campoVisivel, type Bloco, type Campo } from "@/lib/schema";
-import { perguntaCustomParaCampo, type PerguntaCustom } from "@/lib/perguntasCustom";
 import { slug } from "@/lib/docx/estilo";
 
 export type ImagemColetada = { caminho: string; nome: string };
@@ -64,12 +63,6 @@ function coletarDeCampos(
         imagens.push(...coletarDeCampos(camposFilhos, (id) => item[id], contador));
       }
     }
-
-    if (campo.tipo === "grupoFixo" && valor && typeof valor === "object") {
-      const camposFilhos = campo.campos ?? [];
-      const item = valor as Record<string, unknown>;
-      imagens.push(...coletarDeCampos(camposFilhos, (id) => item[id], contador));
-    }
   }
 
   return imagens;
@@ -78,19 +71,14 @@ function coletarDeCampos(
 export function coletarImagens(
   blocosVisiveis: Bloco[],
   respostas: Record<string, unknown>,
-  perguntasCustom: PerguntaCustom[],
 ): ImagemColetada[] {
   const contador = { valor: 0 };
   const imagens: ImagemColetada[] = [];
 
   for (const bloco of blocosVisiveis) {
-    if (bloco.id === "b15") continue;
     const camposVisiveis = bloco.campos.filter((campo) => campoVisivel(campo, bloco, respostas));
     imagens.push(...coletarDeCampos(camposVisiveis, (campoId) => respostas[campoId], contador));
   }
-
-  const camposCustom = perguntasCustom.map(perguntaCustomParaCampo);
-  imagens.push(...coletarDeCampos(camposCustom, (campoId) => respostas[campoId], contador));
 
   return imagens;
 }

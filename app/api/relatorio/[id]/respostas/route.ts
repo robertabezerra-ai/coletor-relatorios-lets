@@ -23,6 +23,29 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Sessão expirada. Faça login de novo." }, { status: 401 });
   }
 
+  const identidadeAtual = await obterIdentidadeAtual();
+  const { data: relatorio, error: erroRelatorio } = await supabase
+    .from("relatorios")
+    .select("criador_nome")
+    .eq("id", relatorioId)
+    .maybeSingle();
+
+  if (erroRelatorio) {
+    return NextResponse.json({ error: erroRelatorio.message }, { status: 500 });
+  }
+  if (!relatorio) {
+    return NextResponse.json({ error: "Relatório não encontrado." }, { status: 404 });
+  }
+  // Relatório sem criador registrado (de antes do login compartilhado)
+  // continua editável por qualquer um — só passa a travar quando existe um
+  // nome de fato pra comparar.
+  if (relatorio.criador_nome && relatorio.criador_nome !== identidadeAtual) {
+    return NextResponse.json(
+      { error: "Só quem criou este relatório pode editá-lo." },
+      { status: 403 },
+    );
+  }
+
   // Conflito de edição simultânea (seção 11): se o cliente sabe de uma versão
   // e o banco já tem outra mais nova, não sobrescreve calado.
   if (atualizadoEmEsperado) {

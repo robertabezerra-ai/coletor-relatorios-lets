@@ -1,10 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buscarAtualizacoes, buscarRelatorio, buscarRespostas } from "@/lib/data/relatorios";
-import { listarPerguntasCustom } from "@/lib/data/perguntasCustom";
 import { listarBlocos } from "@/lib/schema";
 import { FormularioClient } from "@/components/formulario/FormularioClient";
 import { comRetentativa } from "@/lib/comRetentativa";
+import { obterIdentidadeAtual } from "@/lib/identidade";
 
 export default async function RelatorioPage({
   params,
@@ -22,11 +22,15 @@ export default async function RelatorioPage({
   const relatorio = await comRetentativa(() => buscarRelatorio(id));
   if (!relatorio) notFound();
 
-  const [respostas, atualizacoes, perguntasCustom] = await Promise.all([
+  const [respostas, atualizacoes, identidadeAtual] = await Promise.all([
     buscarRespostas(id),
     buscarAtualizacoes(id),
-    listarPerguntasCustom(id),
+    obterIdentidadeAtual(),
   ]);
+
+  // Relatório sem criador registrado (de antes do login compartilhado)
+  // continua editável por qualquer um.
+  const podeEditar = !relatorio.criador_nome || relatorio.criador_nome === identidadeAtual;
 
   return (
     <FormularioClient
@@ -37,7 +41,8 @@ export default async function RelatorioPage({
       blocos={listarBlocos()}
       respostas={respostas}
       atualizacoes={atualizacoes}
-      perguntasCustomIniciais={perguntasCustom}
+      podeEditar={podeEditar}
+      criadoPorNome={relatorio.criador_nome}
     />
   );
 }
