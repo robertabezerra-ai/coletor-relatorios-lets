@@ -41,7 +41,7 @@ const PILARES_ITENS = [
 // Frase de encerramento fixa — mesma de RELATORIO-BASE-2026.html. Não vem de
 // respostas: todo cliente fecha com a mesma mensagem, por padronização.
 const ENCERRAMENTO_TEXTO_FIXO =
-  "Reputação não se compra e não se acelera. Constrói-se com consistência, ano após ano — e é isso que os números deste relatório mostram.";
+  "Por trás das grandes marcas do Direito. Estratégia, criatividade e execução full service para escritórios que querem crescer com consistência.";
 
 export const CHAVES_SECOES = [
   "pilares",
@@ -137,6 +137,8 @@ async function campanhasParaTemplate(
   );
   return Promise.all(
     brutos.map(async (c) => ({
+      nomeCampanha: String(c.nomeCampanha ?? ""),
+      canal: String(c.canal ?? ""),
       objetivo: String(c.objetivo ?? ""),
       mes: String(c.mes ?? ""),
       imagem: await resolverImagem(c.imagem),
@@ -269,9 +271,9 @@ export async function montarDados(
       frases: blocosDeFrase(respostas, "acompanhamentos.blocos"),
     },
     encerramento: {
-      titulo: texto(respostas, "encerramento.titulo", "Para o extraordinário"),
+      titulo: "Para o extraordinário",
       texto: ENCERRAMENTO_TEXTO_FIXO,
-      assinatura: texto(respostas, "encerramento.assinatura"),
+      assinatura: "LETS Marketing · Consultoria líder em marketing jurídico",
     },
   };
 }

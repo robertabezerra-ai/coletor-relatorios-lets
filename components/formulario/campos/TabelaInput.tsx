@@ -3,6 +3,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { normalizarOpcoes, type ColunaTabela } from "@/lib/schema";
 import { EQUIPE_LETS } from "@/lib/equipeLets";
+import { useAnoRelatorio } from "@/components/formulario/AnoRelatorioContext";
 
 export type LinhaTabela = Record<string, unknown>;
 
@@ -10,9 +11,25 @@ export function linhaVaziaTabela(colunas: ColunaTabela[]): LinhaTabela {
   return Object.fromEntries(colunas.map((coluna) => [coluna.id, ""]));
 }
 
-function sugestoesDaColuna(coluna: ColunaTabela): string[] | undefined {
+function sugestoesDaColuna(
+  coluna: ColunaTabela,
+  itemContexto?: Record<string, unknown>,
+): string[] | undefined {
   if (coluna.autocompletar === "equipeLets") return EQUIPE_LETS.map((membro) => membro.nome);
+  if (coluna.sugestoesPorReferencia && itemContexto) {
+    const valorReferencia = itemContexto[coluna.sugestoesPorReferencia.campoId];
+    if (typeof valorReferencia === "string" && coluna.sugestoesPorReferencia.mapa[valorReferencia]) {
+      return coluna.sugestoesPorReferencia.mapa[valorReferencia];
+    }
+  }
   return coluna.sugestoes;
+}
+
+// Alguns rótulos e dicas usam {ano}/{anoAnterior} pra deixar a comparação
+// explícita (ex.: "Valor no ano atual (2026)") em vez de um genérico
+// "ano atual" que pode confundir quem preenche pela primeira vez.
+function substituirAno(texto: string, ano: number): string {
+  return texto.replace(/\{anoAnterior\}/g, String(ano - 1)).replace(/\{ano\}/g, String(ano));
 }
 
 export function TabelaInput({
@@ -22,6 +39,7 @@ export function TabelaInput({
   valor,
   onChange,
   max,
+  itemContexto,
 }: {
   idPrefix: string;
   relatorioId: string;
@@ -29,7 +47,10 @@ export function TabelaInput({
   valor: LinhaTabela[];
   onChange: (novoValor: LinhaTabela[]) => void;
   max?: number;
+  itemContexto?: Record<string, unknown>;
 }) {
+  const ano = useAnoRelatorio();
+
   function atualizarCelula(indiceLinha: number, colunaId: string, novoValor: unknown) {
     onChange(
       valor.map((linha, indice) =>
@@ -60,7 +81,7 @@ export function TabelaInput({
                   scope="col"
                   className="rotulo border-b border-tinta/20 px-2 py-2 text-left text-cinza"
                 >
-                  {coluna.rotulo}
+                  {substituirAno(coluna.rotulo, ano)}
                 </th>
               ))}
               <th scope="col" className="border-b border-tinta/20">
@@ -79,6 +100,8 @@ export function TabelaInput({
                       coluna={coluna}
                       valor={linha[coluna.id]}
                       onChange={(novoValor) => atualizarCelula(indiceLinha, coluna.id, novoValor)}
+                      itemContexto={itemContexto}
+                      ano={ano}
                     />
                   </td>
                 ))}
@@ -108,7 +131,7 @@ export function TabelaInput({
       </button>
 
       {colunas
-        .map((coluna) => ({ coluna, sugestoes: sugestoesDaColuna(coluna) }))
+        .map((coluna) => ({ coluna, sugestoes: sugestoesDaColuna(coluna, itemContexto) }))
         .filter((item) => item.sugestoes)
         .map(({ coluna, sugestoes }) => (
           <datalist key={coluna.id} id={`${idPrefix}-${coluna.id}-sugestoes`}>
@@ -127,13 +150,19 @@ function CelulaTabela({
   coluna,
   valor,
   onChange,
+  itemContexto,
+  ano,
 }: {
   idPrefix: string;
   relatorioId: string;
   coluna: ColunaTabela;
   valor: unknown;
   onChange: (valor: unknown) => void;
+  itemContexto?: Record<string, unknown>;
+  ano: number;
 }) {
+  const dica = coluna.dica ? substituirAno(coluna.dica, ano) : undefined;
+
   if (coluna.tipo === "imagem") {
     return (
       <CelulaImagem
@@ -153,6 +182,7 @@ function CelulaTabela({
         aria-label={coluna.rotulo}
         value={valor === null || valor === undefined ? "" : (valor as number)}
         onChange={(event) => onChange(event.target.value === "" ? null : Number(event.target.value))}
+        placeholder={dica}
         className="w-full border border-tinta/20 px-2 py-1 text-tinta focus-visible:border-vermelho"
       />
     );
@@ -176,7 +206,7 @@ function CelulaTabela({
     );
   }
 
-  const temSugestoes = Boolean(sugestoesDaColuna(coluna));
+  const temSugestoes = Boolean(sugestoesDaColuna(coluna, itemContexto));
 
   return (
     <input
@@ -185,7 +215,7 @@ function CelulaTabela({
       list={temSugestoes ? `${idPrefix}-${coluna.id}-sugestoes` : undefined}
       value={(valor as string) ?? ""}
       onChange={(event) => onChange(event.target.value)}
-      placeholder={coluna.dica}
+      placeholder={dica}
       className="w-full border border-tinta/20 px-2 py-1 text-tinta focus-visible:border-vermelho"
     />
   );

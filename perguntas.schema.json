@@ -1,5 +1,5 @@
 {
-  "versao": "2026.4",
+  "versao": "2026.5",
   "descricao": "Schema único do formulário do relatório anual LETS. É a fonte de verdade para: renderizar a página, calcular o progresso e gerar o .docx. Nunca duplique estas definições em outro lugar do código.",
   "niveis": {
     "essencial": "Sem isto o relatório não fecha. Conta para o progresso e bloqueia a exportação final.",
@@ -19,7 +19,6 @@
     "imagem": "upload de arquivo para o Supabase Storage",
     "pessoas": "tabela com autocomplete de nomes do time LETS na primeira coluna"
   },
-
   "blocos": [
     {
       "id": "b0",
@@ -31,49 +30,148 @@
           "rotulo": "Quais seções entram neste relatório",
           "tipo": "multiSelecao",
           "nivel": "essencial",
-          "padrao": ["pilares", "resumo", "plano", "encerramento"],
+          "padrao": [
+            "pilares",
+            "resumo",
+            "plano",
+            "encerramento"
+          ],
           "opcoes": [
-            { "valor": "pilares", "rotulo": "Nossas frentes", "ajuda": "As seis frentes do método da LETS. Texto fixo, não precisa preencher nada.", "recomendado": true },
-            { "valor": "valor", "rotulo": "Impacto gerado", "ajuda": "Entregas do ano e time dedicado à conta. Bom para contas com muitas horas." },
-            { "valor": "resumo", "rotulo": "Sumário executivo", "ajuda": "Os números que abrem o relatório, com variação sobre o ano anterior.", "recomendado": true },
-            { "valor": "digital", "rotulo": "Performance digital", "ajuda": "Site e canais, com métricas em destaque por título e número." },
-            { "valor": "traficoPago", "rotulo": "Performance digital — tráfego pago", "ajuda": "Métricas de campanhas pagas, separadas do orgânico." },
-            { "valor": "imprensa", "rotulo": "Assessoria de imprensa", "ajuda": "Volume de inserções e clipping, com curva mensal opcional." },
-            { "valor": "rankings", "rotulo": "Rankings", "ajuda": "Rankings e reconhecimentos conquistados ou mantidos." },
-            { "valor": "destaques", "rotulo": "Destaques do ano", "ajuda": "Linha do tempo dos momentos que moveram o ponteiro." },
-            { "valor": "inteligenciaAplicada", "rotulo": "Inteligência aplicada", "ajuda": "Texto introdutório e/ou tópicos — o que for útil." },
-            { "valor": "plano", "rotulo": "Planejamento do próximo ano", "ajuda": "Iniciativas por trimestre ou em blocos livres.", "recomendado": true },
-            { "valor": "acompanhamentosFuturos", "rotulo": "Acompanhamentos estratégicos futuros", "ajuda": "Frases curtas, organizadas em blocos." },
-            { "valor": "encerramento", "rotulo": "Encerramento", "ajuda": "Frase de fechamento fixa e assinatura.", "recomendado": true }
+            {
+              "valor": "pilares",
+              "rotulo": "Nossas frentes",
+              "ajuda": "As seis frentes do método da LETS. Texto fixo, não precisa preencher nada.",
+              "recomendado": true
+            },
+            {
+              "valor": "valor",
+              "rotulo": "Impacto gerado",
+              "ajuda": "Entregas do ano e time dedicado à conta. Bom para contas com muitas horas."
+            },
+            {
+              "valor": "resumo",
+              "rotulo": "Sumário executivo",
+              "ajuda": "Os números que abrem o relatório, com variação sobre o ano anterior.",
+              "recomendado": true
+            },
+            {
+              "valor": "digital",
+              "rotulo": "Performance digital",
+              "ajuda": "Site e canais, com métricas em destaque por título e número."
+            },
+            {
+              "valor": "traficoPago",
+              "rotulo": "Performance digital — tráfego pago",
+              "ajuda": "Métricas de campanhas pagas, separadas do orgânico."
+            },
+            {
+              "valor": "imprensa",
+              "rotulo": "Assessoria de imprensa",
+              "ajuda": "Volume de inserções e clipping, com curva mensal opcional."
+            },
+            {
+              "valor": "rankings",
+              "rotulo": "Rankings",
+              "ajuda": "Rankings e reconhecimentos conquistados ou mantidos."
+            },
+            {
+              "valor": "destaques",
+              "rotulo": "Destaques do ano",
+              "ajuda": "Linha do tempo dos momentos que moveram o ponteiro."
+            },
+            {
+              "valor": "inteligenciaAplicada",
+              "rotulo": "Inteligência aplicada",
+              "ajuda": "Texto introdutório e/ou tópicos — o que for útil."
+            },
+            {
+              "valor": "plano",
+              "rotulo": "Planejamento do próximo ano",
+              "ajuda": "Iniciativas por trimestre ou em blocos livres.",
+              "recomendado": true
+            },
+            {
+              "valor": "acompanhamentosFuturos",
+              "rotulo": "Acompanhamentos estratégicos futuros",
+              "ajuda": "Frases curtas, organizadas em blocos."
+            },
+            {
+              "valor": "encerramento",
+              "rotulo": "Encerramento",
+              "ajuda": "Frase de fechamento fixa e assinatura.",
+              "recomendado": true
+            }
           ]
-        },
-        {
-          "id": "secaoNova",
-          "rotulo": "Alguma seção fora desta lista que este cliente precisa?",
-          "tipo": "textoLongo",
-          "nivel": "opcional",
-          "formato": "Descreva o que ela mostraria e quais dados existem. O Claude cria a seção seguindo a identidade da LETS."
         }
       ]
     },
-
     {
       "id": "b1",
       "titulo": "Identificação",
       "campos": [
-        { "id": "cliente.nome", "rotulo": "Nome do cliente, como deve aparecer no relatório", "tipo": "texto", "nivel": "essencial", "formato": "Razão social ou nome fantasia. Ex.: Marques Vieira Advogados" },
-        { "id": "cliente.logo", "rotulo": "Logo do cliente", "tipo": "imagem", "nivel": "opcional", "formato": "PNG branco (só o traço branco, fundo transparente), mínimo 600 px de largura — a capa do relatório aplica a logo sobre um fundo preto. Sem logo, a capa mostra um espaço reservado." },
-        { "id": "cliente.ano", "rotulo": "Ano do relatório", "tipo": "numero", "nivel": "essencial", "formato": "Só o número. Ex.: 2026. O título da capa é montado sozinho: Resultados 2026 e Plano 2027." },
-        { "id": "cliente.subtitulo", "rotulo": "Frase de abertura", "tipo": "textoLongo", "nivel": "essencial", "limite": 220, "formato": "Uma ou duas frases que resumem o ano. Aparece logo abaixo do título na capa." },
-        { "id": "cliente.inicioParceria", "rotulo": "Início da parceria", "tipo": "texto", "nivel": "importante", "formato": "Mês por extenso e ano. Ex.: Março de 2023" },
-        { "id": "cliente.consultorResponsavel", "rotulo": "Consultor(a) responsável pela conta", "tipo": "selecaoEquipe", "nivel": "essencial", "formato": "Só nomes cadastrados no time LETS." },
         {
-          "id": "cliente.frentes", "rotulo": "Frentes ativas nesta conta", "tipo": "multiSelecao", "nivel": "importante",
-          "opcoes": ["Marketing & Comunicação", "Conteúdo", "Digital", "Branding", "Imprensa", "Rankings", "Eventos", "Dados", "Pessoas & Cultura", "BPO Financeiro"]
+          "id": "cliente.nome",
+          "rotulo": "Nome do cliente, como deve aparecer no relatório",
+          "tipo": "texto",
+          "nivel": "essencial",
+          "formato": "Razão social ou nome fantasia. Ex.: Marques Vieira Advogados"
+        },
+        {
+          "id": "cliente.logo",
+          "rotulo": "Logo do cliente",
+          "tipo": "imagem",
+          "nivel": "opcional",
+          "formato": "PNG branco (só o traço branco, fundo transparente), mínimo 600 px de largura — a capa do relatório aplica a logo sobre um fundo preto. Sem logo, a capa mostra um espaço reservado."
+        },
+        {
+          "id": "cliente.ano",
+          "rotulo": "Ano do relatório",
+          "tipo": "numero",
+          "nivel": "essencial",
+          "formato": "Só o número. Ex.: 2026. O título da capa é montado sozinho: Resultados 2026 e Plano 2027."
+        },
+        {
+          "id": "cliente.subtitulo",
+          "rotulo": "Frase de abertura",
+          "tipo": "textoLongo",
+          "nivel": "essencial",
+          "limite": 220,
+          "formato": "Uma ou duas frases que resumem o ano. Aparece logo abaixo do título na capa."
+        },
+        {
+          "id": "cliente.inicioParceria",
+          "rotulo": "Início da parceria",
+          "tipo": "texto",
+          "nivel": "importante",
+          "formato": "Mês por extenso e ano. Ex.: Março de 2023"
+        },
+        {
+          "id": "cliente.consultorResponsavel",
+          "rotulo": "Consultor(a) responsável pela conta",
+          "tipo": "selecaoEquipe",
+          "nivel": "essencial",
+          "formato": "Só nomes cadastrados no time LETS."
+        },
+        {
+          "id": "cliente.frentes",
+          "rotulo": "Frentes ativas nesta conta",
+          "tipo": "multiSelecao",
+          "nivel": "importante",
+          "opcoes": [
+            "Marketing & Comunicação",
+            "Conteúdo",
+            "Digital",
+            "Branding",
+            "Imprensa",
+            "Rankings",
+            "Eventos",
+            "Dados",
+            "Pessoas & Cultura",
+            "BPO Financeiro"
+          ]
         }
       ]
     },
-
     {
       "id": "b2",
       "titulo": "Nossas frentes",
@@ -81,297 +179,866 @@
       "somenteLeitura": true,
       "campos": []
     },
-
     {
       "id": "b3",
       "titulo": "Impacto gerado",
       "dependeDeSecao": "valor",
       "campos": [
-        { "id": "valor.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "O que a LETS executou", "formato": "Aparece em destaque no topo da seção \"Impacto gerado\"." },
-        { "id": "valor.texto", "rotulo": "Frase de abertura da seção", "tipo": "texto", "nivel": "opcional", "padrao": "O que a LETS executou para o escritório ao longo do ano, em números." },
         {
-          "id": "valor.entregas", "rotulo": "Entregas do ano", "tipo": "tabela",
-          "nivel": "essencial", "min": 4, "max": 8,
+          "id": "valor.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "O que a LETS executou",
+          "formato": "Aparece em destaque no topo da seção \"Impacto gerado\"."
+        },
+        {
+          "id": "valor.texto",
+          "rotulo": "Frase de abertura da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "O que a LETS executou para o escritório ao longo do ano, em números."
+        },
+        {
+          "id": "valor.entregas",
+          "rotulo": "Entregas do ano",
+          "tipo": "tabela",
+          "nivel": "essencial",
+          "min": 4,
+          "max": 8,
           "formato": "Descrição em letra minúscula, começando por substantivo no plural.",
           "colunas": [
-            { "id": "qtd", "rotulo": "Quantidade", "tipo": "texto" },
-            { "id": "un", "rotulo": "Unidade", "tipo": "texto", "dica": "h, %, k ou vazio" },
-            { "id": "oq", "rotulo": "O que foi entregue", "tipo": "texto" }
+            {
+              "id": "qtd",
+              "rotulo": "Quantidade",
+              "tipo": "texto",
+              "dica": "Ex.: 12"
+            },
+            {
+              "id": "un",
+              "rotulo": "Unidade",
+              "tipo": "texto",
+              "dica": "h, %, k ou vazio"
+            },
+            {
+              "id": "oq",
+              "rotulo": "O que foi entregue",
+              "tipo": "texto",
+              "dica": "Ex.: processos analisados"
+            }
           ]
         },
         {
-          "id": "valor.time", "rotulo": "Time dedicado à conta", "tipo": "pessoas",
-          "nivel": "importante", "min": 3, "max": 10,
+          "id": "valor.time",
+          "rotulo": "Time dedicado à conta",
+          "tipo": "pessoas",
+          "nivel": "importante",
+          "min": 3,
+          "max": 10,
           "formato": "Escreva só o nome. Foto e cargo vêm automaticamente do diretório do time LETS. Preencha a segunda coluna só quando a pessoa tiver papel específico nesta conta.",
           "colunas": [
-            { "id": "nome", "rotulo": "Nome", "tipo": "texto", "autocompletar": "equipeLets" },
-            { "id": "papelNaConta", "rotulo": "Papel nesta conta (opcional)", "tipo": "texto" }
+            {
+              "id": "nome",
+              "rotulo": "Nome",
+              "tipo": "texto",
+              "autocompletar": "equipeLets"
+            },
+            {
+              "id": "papelNaConta",
+              "rotulo": "Papel nesta conta (opcional)",
+              "tipo": "texto"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b4",
       "titulo": "Sumário executivo",
       "dependeDeSecao": "resumo",
       "campos": [
-        { "id": "resumo.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "O ano em números", "formato": "Aparece em destaque no topo do Sumário executivo." },
-        { "id": "resumo.texto", "rotulo": "Leitura do ano", "tipo": "textoLongo", "nivel": "essencial", "formato": "Um parágrafo de 4 a 6 linhas. O que mudou, por quê e qual a evidência. Evite adjetivo sem número." },
         {
-          "id": "resumo.kpis", "rotulo": "Os números que abrem o relatório", "tipo": "tabela",
-          "nivel": "essencial", "min": 4, "max": 6,
+          "id": "resumo.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "O ano em números",
+          "formato": "Aparece em destaque no topo do Sumário executivo."
+        },
+        {
+          "id": "resumo.texto",
+          "rotulo": "Leitura do ano",
+          "tipo": "textoLongo",
+          "nivel": "essencial",
+          "formato": "Um parágrafo de 4 a 6 linhas. O que mudou, por quê e qual a evidência. Evite adjetivo sem número."
+        },
+        {
+          "id": "resumo.kpis",
+          "rotulo": "Os números que abrem o relatório",
+          "tipo": "tabela",
+          "nivel": "essencial",
+          "min": 4,
+          "max": 6,
           "formato": "Sufixo = k, M, % ou vazio — pode deixar em branco, não afeta o visual. Variação = número inteiro comparando com o ano anterior, também opcional. Deixe a variação em branco quando não houver comparação — some do relatório em vez de aparecer cinza.",
           "colunas": [
-            { "id": "label", "rotulo": "Rótulo", "tipo": "texto", "dica": "Ex.: Taxa de abertura RD" },
-            { "id": "valor", "rotulo": "Valor", "tipo": "texto", "dica": "Ex.: 60" },
-            { "id": "sufixo", "rotulo": "Sufixo", "tipo": "selecao", "opcoes": ["", "k", "M", "%"] },
-            { "id": "variacao", "rotulo": "Variação % (opcional)", "tipo": "numero", "dica": "Ex.: 12" },
-            { "id": "nota", "rotulo": "Nota de uma linha (opcional)", "tipo": "texto", "dica": "Ex.: Maior alta em três anos" }
+            {
+              "id": "label",
+              "rotulo": "Rótulo",
+              "tipo": "texto",
+              "dica": "Ex.: Taxa de abertura RD"
+            },
+            {
+              "id": "valor",
+              "rotulo": "Valor",
+              "tipo": "texto",
+              "dica": "Ex.: 60"
+            },
+            {
+              "id": "sufixo",
+              "rotulo": "Sufixo",
+              "tipo": "selecao",
+              "opcoes": [
+                "",
+                "k",
+                "M",
+                "%"
+              ]
+            },
+            {
+              "id": "variacao",
+              "rotulo": "Variação % (opcional)",
+              "tipo": "numero",
+              "dica": "Ex.: 12"
+            },
+            {
+              "id": "nota",
+              "rotulo": "Nota de uma linha (opcional)",
+              "tipo": "texto",
+              "dica": "Ex.: Maior alta em três anos"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b5",
       "titulo": "Site institucional",
       "dependeDeSecao": "digital",
       "campos": [
-        { "id": "digital.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Onde a marca foi vista", "formato": "Aparece em destaque no topo da seção \"Performance digital\" (cobre site e redes)." },
         {
-          "id": "digital.site.metricas", "rotulo": "Métricas do site", "tipo": "tabela",
-          "nivel": "importante", "min": 2, "max": 10,
+          "id": "digital.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Onde a marca foi vista",
+          "formato": "Aparece em destaque no topo da seção \"Performance digital\" (cobre site e redes)."
+        },
+        {
+          "id": "digital.site.metricas",
+          "rotulo": "Métricas do site",
+          "tipo": "tabela",
+          "nivel": "importante",
+          "min": 2,
+          "max": 10,
           "formato": "Caixas abertas: um título e um número grande por linha. Ex.: Usuários ativos · 18,4 k — adicione quantas quiser.",
           "colunas": [
-            { "id": "label", "rotulo": "Título", "tipo": "texto", "sugestoes": ["Usuários ativos", "Novos usuários", "Sessões", "Taxa de conversão", "Tempo médio na página", "Taxa de rejeição"] },
-            { "id": "valor", "rotulo": "Valor", "tipo": "texto", "dica": "Já formatado. Ex.: 18,4 k" },
-            { "id": "variacao", "rotulo": "Variação % (opcional)", "tipo": "numero" }
+            {
+              "id": "label",
+              "rotulo": "Título",
+              "tipo": "texto",
+              "sugestoes": [
+                "Usuários ativos",
+                "Novos usuários",
+                "Sessões",
+                "Taxa de conversão",
+                "Tempo médio na página",
+                "Taxa de rejeição"
+              ]
+            },
+            {
+              "id": "valor",
+              "rotulo": "Valor",
+              "tipo": "texto",
+              "dica": "Já formatado. Ex.: 18,4 k"
+            },
+            {
+              "id": "variacao",
+              "rotulo": "Variação % (opcional)",
+              "tipo": "numero"
+            }
           ]
         },
-        { "id": "digital.site.leitura", "rotulo": "Leitura do canal", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma ou duas frases interpretando o número. O que ele significa para o cliente." }
+        {
+          "id": "digital.site.leitura",
+          "rotulo": "Leitura do canal",
+          "tipo": "textoLongo",
+          "nivel": "importante",
+          "formato": "Uma ou duas frases interpretando o número. O que ele significa para o cliente."
+        }
       ]
     },
-
     {
       "id": "b6",
       "titulo": "Redes sociais e demais canais",
       "dependeDeSecao": "digital",
       "campos": [
         {
-          "id": "digital.canais", "rotulo": "Canais ativos", "tipo": "grupoRepetivel",
-          "nivel": "importante", "min": 1, "max": 6, "rotuloItem": "Canal",
+          "id": "digital.canais",
+          "rotulo": "Canais ativos",
+          "tipo": "grupoRepetivel",
+          "nivel": "importante",
+          "min": 1,
+          "max": 6,
+          "rotuloItem": "Canal",
           "campos": [
-            { "id": "nome", "rotulo": "Nome do canal", "tipo": "texto", "sugestoes": ["LinkedIn", "Instagram", "Facebook", "YouTube", "Google Meu Negócio", "TikTok"] },
             {
-              "id": "metricas", "rotulo": "Métricas do canal", "tipo": "tabela", "min": 1, "max": 10,
+              "id": "nome",
+              "rotulo": "Nome do canal",
+              "tipo": "texto",
+              "sugestoes": [
+                "LinkedIn",
+                "Instagram",
+                "Facebook",
+                "YouTube",
+                "Google Meu Negócio",
+                "TikTok"
+              ]
+            },
+            {
+              "id": "metricas",
+              "rotulo": "Métricas do canal",
+              "tipo": "tabela",
+              "min": 1,
+              "max": 10,
               "formato": "Um título e um número grande por linha — adicione quantas quiser. Ex.: Novos seguidores — ano atual: 50, ano anterior: 35. A variação é calculada sozinha.",
               "colunas": [
-                { "id": "label", "rotulo": "Título", "tipo": "texto", "sugestoes": ["Seguidores", "Novos seguidores", "Alcance", "Impressões", "Engajamento", "Curtidas", "Comentários", "Compartilhamentos", "Cliques no link", "Visualizações"] },
-                { "id": "valorAtual", "rotulo": "Valor no ano atual", "tipo": "numero", "dica": "Ex.: 50" },
-                { "id": "valorAnterior", "rotulo": "Valor no ano anterior (opcional)", "tipo": "numero", "dica": "Ex.: 35 — deixe em branco se não houver histórico" }
+                {
+                  "id": "label",
+                  "rotulo": "Título",
+                  "tipo": "texto",
+                  "sugestoesPorReferencia": {
+                    "campoId": "nome",
+                    "mapa": {
+                      "Instagram": [
+                        "Número de seguidores",
+                        "Número de postagens no feed",
+                        "Alcance total das postagens",
+                        "Visualizações das postagens",
+                        "Compartilhamentos",
+                        "Visitas ao perfil"
+                      ],
+                      "LinkedIn": [
+                        "Número atual de seguidores",
+                        "Novos seguidores",
+                        "Alcance",
+                        "Impressões",
+                        "Engajamento",
+                        "Total de reações",
+                        "Número de postagens"
+                      ]
+                    }
+                  },
+                  "sugestoes": [
+                    "Seguidores",
+                    "Novos seguidores",
+                    "Alcance",
+                    "Impressões",
+                    "Engajamento",
+                    "Curtidas",
+                    "Comentários",
+                    "Compartilhamentos",
+                    "Cliques no link",
+                    "Visualizações"
+                  ]
+                },
+                {
+                  "id": "valorAtual",
+                  "rotulo": "Valor no ano atual ({ano})",
+                  "tipo": "numero",
+                  "dica": "Ex.: 50"
+                },
+                {
+                  "id": "valorAnterior",
+                  "rotulo": "Valor no ano anterior ({anoAnterior}, opcional)",
+                  "tipo": "numero",
+                  "dica": "Ex.: 35 — deixe em branco se não houver histórico"
+                }
               ]
             },
             {
-              "id": "postagensOrganicas", "rotulo": "Postagens em destaque (opcional)", "tipo": "tabela", "min": 0, "max": 10,
+              "id": "postagensOrganicas",
+              "rotulo": "Postagens em destaque (opcional)",
+              "tipo": "tabela",
+              "min": 0,
+              "max": 10,
               "formato": "Cole o link da postagem, escolha a métrica e informe o valor. Adicione quantas postagens quiser — útil para Instagram e LinkedIn.",
               "colunas": [
-                { "id": "link", "rotulo": "Link da postagem", "tipo": "texto", "validacao": "url" },
-                { "id": "metrica", "rotulo": "Métrica", "tipo": "selecao", "opcoes": ["Alcance", "Visualizações", "Impressões", "Taxa de interação", "Taxa de engajamento", "Curtidas", "Comentários", "Salvos", "Compartilhamentos", "Cliques"] },
-                { "id": "valor", "rotulo": "Valor", "tipo": "texto", "dica": "Já formatado. Ex.: 8,4 % ou 1.240" }
+                {
+                  "id": "link",
+                  "rotulo": "Link da postagem",
+                  "tipo": "texto",
+                  "validacao": "url"
+                },
+                {
+                  "id": "metrica",
+                  "rotulo": "Métrica",
+                  "tipo": "selecao",
+                  "opcoes": [
+                    "Alcance",
+                    "Visualizações",
+                    "Impressões",
+                    "Taxa de interação",
+                    "Taxa de engajamento",
+                    "Curtidas",
+                    "Comentários",
+                    "Salvos",
+                    "Compartilhamentos",
+                    "Cliques"
+                  ]
+                },
+                {
+                  "id": "valor",
+                  "rotulo": "Valor",
+                  "tipo": "texto",
+                  "dica": "Já formatado. Ex.: 8,4 % ou 1.240"
+                }
               ]
             },
-            { "id": "videoDestaque", "rotulo": "Vídeo em destaque (opcional)", "tipo": "texto", "validacao": "url", "formato": "Link do vídeo, ex.: YouTube. Útil para o canal YouTube." },
-            { "id": "leitura", "rotulo": "Leitura do canal", "tipo": "textoLongo", "formato": "O que funciona e o que não funciona neste canal para este cliente." }
+            {
+              "id": "videoDestaque",
+              "rotulo": "Vídeo em destaque (opcional)",
+              "tipo": "texto",
+              "validacao": "url",
+              "formato": "Link do vídeo, ex.: YouTube. Útil para o canal YouTube."
+            },
+            {
+              "id": "leitura",
+              "rotulo": "Leitura do canal",
+              "tipo": "textoLongo",
+              "formato": "O que funciona e o que não funciona neste canal para este cliente."
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b7",
       "titulo": "Performance digital — tráfego pago",
+      "descricao": "Nas imagens de campanha, crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço.",
       "dependeDeSecao": "traficoPago",
       "campos": [
-        { "id": "traficoPago.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Investimento com retorno", "formato": "Aparece em destaque no topo da seção de tráfego pago." },
         {
-          "id": "traficoPago.metricas", "rotulo": "Métricas de tráfego pago", "tipo": "tabela",
-          "nivel": "importante", "min": 2, "max": 10,
+          "id": "traficoPago.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Investimento com retorno",
+          "formato": "Aparece em destaque no topo da seção de tráfego pago."
+        },
+        {
+          "id": "traficoPago.metricas",
+          "rotulo": "Métricas de tráfego pago",
+          "tipo": "tabela",
+          "nivel": "importante",
+          "min": 2,
+          "max": 10,
           "formato": "Caixas abertas: um título e um número grande por linha. Ex.: Cliques, CPC, Conversões, Investimento — adicione quantas quiser.",
           "colunas": [
-            { "id": "label", "rotulo": "Título", "tipo": "texto", "sugestoes": ["Investimento", "Cliques", "CPC", "CPM", "Conversões", "Custo por conversão", "Impressões"] },
-            { "id": "valor", "rotulo": "Valor", "tipo": "texto", "dica": "Já formatado. Ex.: R$ 12,4 k" },
-            { "id": "variacao", "rotulo": "Variação % (opcional)", "tipo": "numero" }
+            {
+              "id": "label",
+              "rotulo": "Título",
+              "tipo": "texto",
+              "sugestoes": [
+                "Investimento",
+                "Cliques",
+                "CPC",
+                "CPM",
+                "Conversões",
+                "Custo por conversão",
+                "Impressões"
+              ]
+            },
+            {
+              "id": "valor",
+              "rotulo": "Valor",
+              "tipo": "texto",
+              "dica": "Já formatado. Ex.: R$ 12,4 k"
+            },
+            {
+              "id": "variacao",
+              "rotulo": "Variação % (opcional)",
+              "tipo": "numero"
+            }
           ]
         },
-        { "id": "traficoPago.leitura", "rotulo": "Leitura do investimento", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma ou duas frases sobre o retorno das campanhas pagas." },
         {
-          "id": "traficoPago.campanhas", "rotulo": "Destaques das campanhas", "tipo": "tabela",
-          "nivel": "opcional", "min": 0, "max": 10,
+          "id": "traficoPago.leitura",
+          "rotulo": "Leitura do investimento",
+          "tipo": "textoLongo",
+          "nivel": "importante",
+          "formato": "Uma ou duas frases sobre o retorno das campanhas pagas."
+        },
+        {
+          "id": "traficoPago.campanhas",
+          "rotulo": "Destaques das campanhas",
+          "tipo": "tabela",
+          "nivel": "opcional",
+          "min": 0,
+          "max": 10,
           "formato": "Uma linha por campanha em destaque. Nada aqui é obrigatório.",
           "colunas": [
-            { "id": "objetivo", "rotulo": "Objetivo", "tipo": "texto", "sugestoes": ["Leads", "Alcance", "Visualizações", "Inscrições", "Seguidores", "Engajamento"] },
-            { "id": "mes", "rotulo": "Quando foi feita", "tipo": "selecao", "opcoes": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"] },
-            { "id": "imagem", "rotulo": "Imagem da campanha", "tipo": "imagem", "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço" },
-            { "id": "metrica", "rotulo": "Métrica", "tipo": "selecao", "opcoes": ["Contas alcançadas", "Tempo médio de permanência", "Engajamento total", "Curtidas", "Comentários", "Salvamentos", "Compartilhamentos", "Novos seguidores"] },
-            { "id": "valorMetrica", "rotulo": "Valor da métrica", "tipo": "texto", "dica": "Já formatado. Ex.: 8,4 k" },
-            { "id": "resultado", "rotulo": "Resultado da campanha", "tipo": "textoLongo" }
+            {
+              "id": "nomeCampanha",
+              "rotulo": "Nome da campanha",
+              "tipo": "texto"
+            },
+            {
+              "id": "canal",
+              "rotulo": "Canal",
+              "tipo": "selecao",
+              "opcoes": [
+                "Instagram",
+                "LinkedIn",
+                "Outro"
+              ]
+            },
+            {
+              "id": "objetivo",
+              "rotulo": "Objetivo",
+              "tipo": "texto",
+              "sugestoes": [
+                "Leads",
+                "Alcance",
+                "Visualizações",
+                "Inscrições",
+                "Seguidores",
+                "Engajamento"
+              ]
+            },
+            {
+              "id": "mes",
+              "rotulo": "Quando foi feita",
+              "tipo": "selecao",
+              "opcoes": [
+                "Janeiro",
+                "Fevereiro",
+                "Março",
+                "Abril",
+                "Maio",
+                "Junho",
+                "Julho",
+                "Agosto",
+                "Setembro",
+                "Outubro",
+                "Novembro",
+                "Dezembro"
+              ]
+            },
+            {
+              "id": "imagem",
+              "rotulo": "Imagem da campanha",
+              "tipo": "imagem",
+              "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço"
+            },
+            {
+              "id": "metrica",
+              "rotulo": "Métrica",
+              "tipo": "selecao",
+              "opcoes": [
+                "Contas alcançadas",
+                "Tempo médio de permanência",
+                "Engajamento total",
+                "Curtidas",
+                "Comentários",
+                "Salvamentos",
+                "Compartilhamentos",
+                "Novos seguidores"
+              ]
+            },
+            {
+              "id": "valorMetrica",
+              "rotulo": "Valor da métrica",
+              "tipo": "texto",
+              "dica": "Já formatado. Ex.: 8,4 k"
+            },
+            {
+              "id": "resultado",
+              "rotulo": "Resultado da campanha",
+              "tipo": "textoLongo"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b8",
       "titulo": "Assessoria de imprensa",
       "dependeDeSecao": "imprensa",
       "campos": [
-        { "id": "imprensa.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Presença espontânea", "formato": "Aparece em destaque no topo da seção \"Assessoria de imprensa\"." },
-        { "id": "imprensa.insercoes", "rotulo": "Total de inserções", "tipo": "numero", "nivel": "essencial" },
-        { "id": "imprensa.veiculos", "rotulo": "Veículos distintos", "tipo": "numero", "nivel": "importante" },
-        { "id": "imprensa.alcanceEstimado", "rotulo": "Alcance estimado", "tipo": "texto", "nivel": "importante", "formato": "Já formatado. Ex.: 18,6 M" },
-        { "id": "imprensa.valorEquivalente", "rotulo": "Valor equivalente", "tipo": "texto", "nivel": "opcional", "formato": "Já formatado. Ex.: R$ 1,4 mi" },
-        { "id": "imprensa.porMes", "rotulo": "Inserções mês a mês (opcional)", "tipo": "serie12", "nivel": "opcional", "formato": "Deixe vazio se não quiser mostrar a curva mensal — o gráfico some do relatório." },
-        { "id": "imprensa.leitura", "rotulo": "Leitura da imprensa", "tipo": "textoLongo", "nivel": "importante", "formato": "Uma ou duas frases explicando o comportamento da curva ao longo do ano." },
         {
-          "id": "imprensa.principais", "rotulo": "Destaques de cobertura", "tipo": "tabela",
-          "nivel": "importante", "min": 4, "max": 10,
+          "id": "imprensa.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Presença espontânea",
+          "formato": "Aparece em destaque no topo da seção \"Assessoria de imprensa\"."
+        },
+        {
+          "id": "imprensa.insercoes",
+          "rotulo": "Total de inserções",
+          "tipo": "numero",
+          "nivel": "essencial"
+        },
+        {
+          "id": "imprensa.veiculos",
+          "rotulo": "Veículos distintos",
+          "tipo": "numero",
+          "nivel": "importante"
+        },
+        {
+          "id": "imprensa.alcanceEstimado",
+          "rotulo": "Alcance estimado",
+          "tipo": "texto",
+          "nivel": "importante",
+          "formato": "Já formatado. Ex.: 18,6 M"
+        },
+        {
+          "id": "imprensa.valorEquivalente",
+          "rotulo": "Valor equivalente",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "formato": "Já formatado. Ex.: R$ 1,4 mi"
+        },
+        {
+          "id": "imprensa.porMes",
+          "rotulo": "Inserções mês a mês (opcional)",
+          "tipo": "serie12",
+          "nivel": "opcional",
+          "formato": "Deixe vazio se não quiser mostrar a curva mensal — o gráfico some do relatório."
+        },
+        {
+          "id": "imprensa.leitura",
+          "rotulo": "Leitura da imprensa",
+          "tipo": "textoLongo",
+          "nivel": "importante",
+          "formato": "Uma ou duas frases explicando o comportamento da curva ao longo do ano."
+        },
+        {
+          "id": "imprensa.principais",
+          "rotulo": "Destaques de cobertura",
+          "tipo": "tabela",
+          "nivel": "importante",
+          "min": 4,
+          "max": 10,
           "colunas": [
-            { "id": "veiculo", "rotulo": "Veículo", "tipo": "texto" },
-            { "id": "titulo", "rotulo": "Título da matéria", "tipo": "texto" },
-            { "id": "data", "rotulo": "Data", "tipo": "texto", "dica": "Mês · Ano" },
-            { "id": "url", "rotulo": "Link", "tipo": "texto", "validacao": "url" }
+            {
+              "id": "veiculo",
+              "rotulo": "Veículo",
+              "tipo": "texto"
+            },
+            {
+              "id": "titulo",
+              "rotulo": "Título da matéria",
+              "tipo": "texto"
+            },
+            {
+              "id": "data",
+              "rotulo": "Data",
+              "tipo": "texto",
+              "dica": "Mês · Ano"
+            },
+            {
+              "id": "url",
+              "rotulo": "Link",
+              "tipo": "texto",
+              "validacao": "url"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b9",
       "titulo": "Rankings e reconhecimentos",
       "dependeDeSecao": "rankings",
       "campos": [
-        { "id": "rankings.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Validação externa", "formato": "Aparece em destaque no topo da seção \"Rankings e reconhecimentos\"." },
         {
-          "id": "rankings", "rotulo": "Rankings do ano", "tipo": "tabela",
-          "nivel": "essencial", "min": 3, "max": 15,
+          "id": "rankings.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Validação externa",
+          "formato": "Aparece em destaque no topo da seção \"Rankings e reconhecimentos\"."
+        },
+        {
+          "id": "rankings",
+          "rotulo": "Rankings do ano",
+          "tipo": "tabela",
+          "nivel": "essencial",
+          "min": 3,
+          "max": 15,
           "colunas": [
-            { "id": "nome", "rotulo": "Ranking", "tipo": "texto", "sugestoes": ["Chambers Brazil", "Leaders League", "The Legal 500", "Análise Advocacia 500", "Análise Advocacia Mulher", "ITR World Tax", "IFLR1000", "LACCA Approved"] },
-            { "id": "categoria", "rotulo": "Categoria e posição", "tipo": "texto" }
+            {
+              "id": "nome",
+              "rotulo": "Ranking",
+              "tipo": "texto",
+              "sugestoes": [
+                "Chambers Brazil",
+                "Leaders League",
+                "The Legal 500",
+                "Análise Advocacia 500",
+                "Análise Advocacia Mulher",
+                "ITR World Tax",
+                "IFLR1000",
+                "LACCA Approved"
+              ]
+            },
+            {
+              "id": "categoria",
+              "rotulo": "Categoria e posição",
+              "tipo": "texto"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b10",
       "titulo": "Destaques do ano",
+      "descricao": "Crie a arte de cada imagem no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço.",
       "dependeDeSecao": "destaques",
       "campos": [
-        { "id": "destaques.frase", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Os momentos que moveram o ponteiro", "formato": "Aparece em destaque no topo da seção \"Destaques do ano\" do relatório em HTML. Curto, no estilo manchete." },
         {
-          "id": "destaques", "rotulo": "Momentos que marcaram o ano", "tipo": "tabela",
-          "nivel": "importante", "min": 3, "max": 6,
+          "id": "destaques.frase",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Os momentos que moveram o ponteiro",
+          "formato": "Aparece em destaque no topo da seção \"Destaques do ano\" do relatório em HTML. Curto, no estilo manchete."
+        },
+        {
+          "id": "destaques",
+          "rotulo": "Momentos que marcaram o ano",
+          "tipo": "tabela",
+          "nivel": "importante",
+          "min": 3,
+          "max": 6,
           "formato": "Em ordem cronológica. O resultado precisa conter pelo menos um número.",
           "colunas": [
-            { "id": "quando", "rotulo": "Quando", "tipo": "texto", "dica": "Mês · Ano" },
-            { "id": "titulo", "rotulo": "Título", "tipo": "texto" },
-            { "id": "descricao", "rotulo": "Descrição", "tipo": "textoLongo" },
-            { "id": "resultado", "rotulo": "Resultado", "tipo": "texto" },
-            { "id": "imagem", "rotulo": "Imagem", "tipo": "imagem", "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço" }
+            {
+              "id": "quando",
+              "rotulo": "Quando",
+              "tipo": "texto",
+              "dica": "Mês · Ano"
+            },
+            {
+              "id": "titulo",
+              "rotulo": "Título",
+              "tipo": "texto"
+            },
+            {
+              "id": "descricao",
+              "rotulo": "Descrição",
+              "tipo": "textoLongo"
+            },
+            {
+              "id": "resultado",
+              "rotulo": "Resultado",
+              "tipo": "texto"
+            },
+            {
+              "id": "imagem",
+              "rotulo": "Imagem",
+              "tipo": "imagem",
+              "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b11",
       "titulo": "Inteligência aplicada",
       "descricao": "Fica a critério: só o texto introdutório, só os tópicos, ou os dois.",
       "dependeDeSecao": "inteligenciaAplicada",
       "campos": [
-        { "id": "inteligencia.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Inteligência aplicada", "formato": "Aparece em destaque no topo da seção." },
-        { "id": "inteligencia.texto", "rotulo": "Texto introdutório (opcional)", "tipo": "textoLongo", "nivel": "opcional", "formato": "Pode deixar em branco se preferir só os tópicos abaixo." },
         {
-          "id": "inteligencia.bullets", "rotulo": "Tópicos (opcional)", "tipo": "tabela",
-          "nivel": "opcional", "min": 0, "max": 8,
+          "id": "inteligencia.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Inteligência aplicada",
+          "formato": "Aparece em destaque no topo da seção."
+        },
+        {
+          "id": "inteligencia.texto",
+          "rotulo": "Texto introdutório (opcional)",
+          "tipo": "textoLongo",
+          "nivel": "opcional",
+          "formato": "Pode deixar em branco se preferir só os tópicos abaixo."
+        },
+        {
+          "id": "inteligencia.bullets",
+          "rotulo": "Tópicos (opcional)",
+          "tipo": "tabela",
+          "nivel": "opcional",
+          "min": 0,
+          "max": 8,
           "formato": "Pode deixar vazio se preferir só o texto acima.",
           "colunas": [
-            { "id": "item", "rotulo": "Tópico", "tipo": "texto" }
+            {
+              "id": "item",
+              "rotulo": "Tópico",
+              "tipo": "texto"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b12",
       "titulo": "Planejamento do próximo ano",
       "dependeDeSecao": "plano",
       "campos": [
-        { "id": "planejamento.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "O que vem a seguir", "formato": "Aparece em destaque no topo da seção \"Planejamento do próximo ano\"." },
-        { "id": "planejamento.texto", "rotulo": "Direção geral do ano seguinte (opcional)", "tipo": "textoLongo", "nivel": "opcional", "formato": "Uma ou duas frases sobre a prioridade estratégica. Pode deixar em branco." },
         {
-          "id": "planejamento.modo", "rotulo": "Como organizar o próximo ano?", "tipo": "selecao",
-          "nivel": "opcional", "padrao": "trimestres",
+          "id": "planejamento.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "O que vem a seguir",
+          "formato": "Aparece em destaque no topo da seção \"Planejamento do próximo ano\"."
+        },
+        {
+          "id": "planejamento.texto",
+          "rotulo": "Direção geral do ano seguinte (opcional)",
+          "tipo": "textoLongo",
+          "nivel": "opcional",
+          "formato": "Uma ou duas frases sobre a prioridade estratégica. Pode deixar em branco."
+        },
+        {
+          "id": "planejamento.modo",
+          "rotulo": "Como organizar o próximo ano?",
+          "tipo": "selecao",
+          "nivel": "opcional",
+          "padrao": "trimestres",
           "opcoes": [
-            { "valor": "trimestres", "rotulo": "Por trimestre", "ajuda": "Quatro colunas fixas, iniciativas dentro de cada uma." },
-            { "valor": "blocos", "rotulo": "Em blocos livres", "ajuda": "Uma lista de iniciativas, sem dividir por trimestre." }
+            {
+              "valor": "trimestres",
+              "rotulo": "Por trimestre",
+              "ajuda": "Quatro colunas fixas, iniciativas dentro de cada uma."
+            },
+            {
+              "valor": "blocos",
+              "rotulo": "Em blocos livres",
+              "ajuda": "Uma lista de iniciativas, sem dividir por trimestre."
+            }
           ]
         },
         {
-          "id": "planejamento.trimestres", "rotulo": "Iniciativas por trimestre", "tipo": "grupoRepetivel",
-          "nivel": "essencial", "min": 4, "max": 4, "fixo": true,
-          "itensFixos": ["1º Trimestre", "2º Trimestre", "3º Trimestre", "4º Trimestre"],
-          "mostrarSe": { "campoId": "planejamento.modo", "valorEsperado": "trimestres" },
+          "id": "planejamento.trimestres",
+          "rotulo": "Iniciativas por trimestre",
+          "tipo": "grupoRepetivel",
+          "nivel": "essencial",
+          "min": 4,
+          "max": 4,
+          "fixo": true,
+          "itensFixos": [
+            "1º Trimestre",
+            "2º Trimestre",
+            "3º Trimestre",
+            "4º Trimestre"
+          ],
+          "mostrarSe": {
+            "campoId": "planejamento.modo",
+            "valorEsperado": "trimestres"
+          },
           "campos": [
             {
-              "id": "itens", "rotulo": "Iniciativas", "tipo": "tabela", "min": 2, "max": 4,
+              "id": "itens",
+              "rotulo": "Iniciativas",
+              "tipo": "tabela",
+              "min": 2,
+              "max": 4,
               "colunas": [
-                { "id": "t", "rotulo": "Iniciativa", "tipo": "texto" },
-                { "id": "d", "rotulo": "Descrição", "tipo": "texto" }
+                {
+                  "id": "t",
+                  "rotulo": "Iniciativa",
+                  "tipo": "texto"
+                },
+                {
+                  "id": "d",
+                  "rotulo": "Descrição",
+                  "tipo": "texto"
+                }
               ]
             }
           ]
         },
         {
-          "id": "planejamento.blocos", "rotulo": "Iniciativas do próximo ano", "tipo": "tabela",
-          "nivel": "essencial", "min": 1, "max": 8,
+          "id": "planejamento.blocos",
+          "rotulo": "Iniciativas do próximo ano",
+          "tipo": "tabela",
+          "nivel": "essencial",
+          "min": 1,
+          "max": 8,
           "formato": "Um bloco por iniciativa, sem divisão por trimestre.",
-          "mostrarSe": { "campoId": "planejamento.modo", "valorEsperado": "blocos" },
+          "mostrarSe": {
+            "campoId": "planejamento.modo",
+            "valorEsperado": "blocos"
+          },
           "colunas": [
-            { "id": "titulo", "rotulo": "Título", "tipo": "texto" },
-            { "id": "texto", "rotulo": "Descrição", "tipo": "textoLongo" }
+            {
+              "id": "titulo",
+              "rotulo": "Título",
+              "tipo": "texto"
+            },
+            {
+              "id": "texto",
+              "rotulo": "Descrição",
+              "tipo": "textoLongo"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b13",
       "titulo": "Acompanhamentos estratégicos futuros",
       "dependeDeSecao": "acompanhamentosFuturos",
       "campos": [
-        { "id": "acompanhamentos.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Acompanhamentos estratégicos futuros", "formato": "Aparece em destaque no topo da seção." },
         {
-          "id": "acompanhamentos.blocos", "rotulo": "Blocos", "tipo": "tabela",
-          "nivel": "importante", "min": 1, "max": 8,
+          "id": "acompanhamentos.titulo",
+          "rotulo": "Título estilizado da seção",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Acompanhamentos estratégicos futuros",
+          "formato": "Aparece em destaque no topo da seção."
+        },
+        {
+          "id": "acompanhamentos.blocos",
+          "rotulo": "Blocos",
+          "tipo": "tabela",
+          "nivel": "importante",
+          "min": 1,
+          "max": 8,
           "formato": "Uma frase por bloco.",
           "colunas": [
-            { "id": "frase", "rotulo": "Frase", "tipo": "textoLongo" }
+            {
+              "id": "frase",
+              "rotulo": "Frase",
+              "tipo": "textoLongo"
+            }
           ]
         }
       ]
     },
-
     {
       "id": "b14",
       "titulo": "Encerramento",
-      "descricao": "A frase de fechamento é fixa, igual para todos os clientes — só o título estilizado e a assinatura são editáveis.",
+      "descricao": "Texto fixo, igual para todos os clientes. Nada a preencher aqui.",
       "dependeDeSecao": "encerramento",
-      "campos": [
-        { "id": "encerramento.titulo", "rotulo": "Título estilizado da seção", "tipo": "texto", "nivel": "opcional", "padrao": "Para o extraordinário", "formato": "Aparece em destaque no topo da seção de encerramento." },
-        { "id": "encerramento.assinatura", "rotulo": "Assinatura", "tipo": "texto", "nivel": "opcional", "padrao": "LETS Marketing · Consultoria líder em marketing jurídico" }
-      ]
+      "campos": [],
+      "somenteLeitura": true
     }
   ]
 }

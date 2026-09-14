@@ -38,6 +38,10 @@ export function PreviaAoVivo({
   const [templateTexto, setTemplateTexto] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Só rola a prévia até a seção quando o bloco ativo muda de verdade —
+  // a cada resposta digitada o iframe é recarregado, e sem isso ele
+  // pulava pro topo da seção a cada letra, atrapalhando quem preenche.
+  const blocoRoladoRef = useRef<string | null>(null);
 
   useEffect(() => {
     fetch("/api/relatorio-template")
@@ -62,10 +66,20 @@ export function PreviaAoVivo({
       const iframe = iframeRef.current;
       if (!iframe) return;
 
+      const scrollAtual = iframe.contentWindow?.scrollY ?? 0;
+      const mudouDeBloco = blocoRoladoRef.current !== blocoAtivoId;
       const secaoAlvo = SECAO_POR_BLOCO[blocoAtivoId];
+
       iframe.onload = () => {
-        if (!secaoAlvo) return;
-        iframe.contentDocument?.getElementById(secaoAlvo)?.scrollIntoView({ block: "start" });
+        if (mudouDeBloco && secaoAlvo) {
+          iframe.contentDocument?.getElementById(secaoAlvo)?.scrollIntoView({ block: "start" });
+          blocoRoladoRef.current = blocoAtivoId;
+        } else {
+          // Sem "instant" aqui, o scroll-behavior:smooth do próprio template
+          // faz esse reposicionamento deslizar visivelmente a cada resposta
+          // digitada — exatamente o movimento que estamos evitando.
+          iframe.contentWindow?.scrollTo({ top: scrollAtual, left: 0, behavior: "instant" });
+        }
       };
       iframe.srcdoc = html;
     }, 400);

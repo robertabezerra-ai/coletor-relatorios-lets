@@ -88,6 +88,7 @@ export function CampoGrupoRepetivel({
                   relatorioId={relatorioId}
                   subCampo={subCampo}
                   valor={item[subCampo.id]}
+                  itemContexto={item}
                   onChange={(novoValor) => atualizarItem(indice, subCampo.id, novoValor)}
                 />
               ))}
@@ -114,12 +115,14 @@ function CampoFilho({
   relatorioId,
   subCampo,
   valor,
+  itemContexto,
   onChange,
 }: {
   idPrefix: string;
   relatorioId: string;
   subCampo: Campo;
   valor: unknown;
+  itemContexto: ItemGrupo;
   onChange: (novoValor: unknown) => void;
 }) {
   const rotulo = (
@@ -152,6 +155,7 @@ function CampoFilho({
           valor={Array.isArray(valor) ? (valor as LinhaTabela[]) : []}
           onChange={onChange}
           max={subCampo.max}
+          itemContexto={itemContexto}
         />
       </div>
     );

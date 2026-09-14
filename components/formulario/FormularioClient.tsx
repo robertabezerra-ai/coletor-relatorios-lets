@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { EstadoSalvamentoProvider } from "@/components/formulario/EstadoSalvamentoContext";
 import { RespostasProvider, useRespostas } from "@/components/formulario/RespostasContext";
+import { AnoRelatorioProvider } from "@/components/formulario/AnoRelatorioContext";
 import { MenuBlocos } from "@/components/formulario/MenuBlocos";
 import { SeletorBlocosMobile } from "@/components/formulario/SeletorBlocosMobile";
 import { CabecalhoFormulario } from "@/components/formulario/CabecalhoFormulario";
@@ -36,17 +37,19 @@ export function FormularioClient({
 }) {
   return (
     <EstadoSalvamentoProvider>
-      <RespostasProvider respostasIniciais={respostas} atualizacoesIniciais={atualizacoes}>
-        <FormularioInterno
-          relatorioId={relatorioId}
-          cliente={cliente}
-          squadNome={squadNome}
-          ano={ano}
-          blocos={blocos}
-          podeEditar={podeEditar}
-          criadoPorNome={criadoPorNome}
-        />
-      </RespostasProvider>
+      <AnoRelatorioProvider ano={ano}>
+        <RespostasProvider respostasIniciais={respostas} atualizacoesIniciais={atualizacoes}>
+          <FormularioInterno
+            relatorioId={relatorioId}
+            cliente={cliente}
+            squadNome={squadNome}
+            ano={ano}
+            blocos={blocos}
+            podeEditar={podeEditar}
+            criadoPorNome={criadoPorNome}
+          />
+        </RespostasProvider>
+      </AnoRelatorioProvider>
     </EstadoSalvamentoProvider>
   );
 }

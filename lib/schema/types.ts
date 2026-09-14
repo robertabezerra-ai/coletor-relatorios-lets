@@ -25,6 +25,10 @@ export type ColunaTabela = {
   dica?: string;
   autocompletar?: string;
   sugestoes?: string[];
+  // Sugestões que variam de acordo com outro campo do mesmo item (ex.: a
+  // lista de métricas sugeridas muda se o canal é Instagram ou LinkedIn).
+  // Sem valor correspondente no mapa, cai pra `sugestoes` acima.
+  sugestoesPorReferencia?: { campoId: string; mapa: Record<string, string[]> };
   validacao?: string;
 };
 

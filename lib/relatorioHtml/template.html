@@ -814,12 +814,13 @@ const REGISTRO = [
    ${D.traficoPago.campanhas.length?`
    <div class="subhead reveal">Destaques das campanhas</div>
    <div class="tl reveal">${D.traficoPago.campanhas.map(c=>`<div class="tl-item">
-     <div class="tl-when">${esc(c.mes)}${c.objetivo?` · ${esc(c.objetivo)}`:""}</div>
+     <div class="tl-when">${esc(c.mes)}${c.canal?` · ${esc(c.canal)}`:""}${c.objetivo?` · ${esc(c.objetivo)}`:""}</div>
      <div class="tl-body">
-       <div>${c.metrica?`<h3>${esc(c.metrica)}</h3>`:""}
+       <div>${c.nomeCampanha?`<h3>${esc(c.nomeCampanha)}</h3>`:c.metrica?`<h3>${esc(c.metrica)}</h3>`:""}
+         ${c.nomeCampanha&&c.metrica?`<p class="kpi-label" style="margin-top:.4rem">${esc(c.metrica)}</p>`:""}
          ${c.valorMetrica?`<p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(c.valorMetrica)}</p>`:""}
          ${c.resultado?`<span class="tl-res">${esc(c.resultado)}</span>`:""}</div>
-       <figure>${IMG(c.imagem,c.objetivo,900,675)}</figure>
+       <figure>${IMG(c.imagem,c.nomeCampanha||c.objetivo,900,675)}</figure>
      </div></div>`).join("")}</div>`:""}`},
 
  {id:"imprensa", nav:"Imprensa", bg:"white", build:n=>{const ip=D.imprensa; return `
