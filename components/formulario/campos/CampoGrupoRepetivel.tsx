@@ -4,7 +4,8 @@ import { useAutosaveCampo } from "@/hooks/useAutosaveCampo";
 import { CampoWrapper } from "@/components/formulario/campos/CampoWrapper";
 import { SerieMensalInput } from "@/components/formulario/campos/SerieMensalInput";
 import { TabelaInput, linhaVaziaTabela, type LinhaTabela } from "@/components/formulario/campos/TabelaInput";
-import { normalizarOpcoes, type Campo } from "@/lib/schema";
+import { useRespostas } from "@/components/formulario/RespostasContext";
+import { resolverOpcoes, subCampoVisivel, type Campo } from "@/lib/schema";
 
 type ItemGrupo = Record<string, unknown>;
 
@@ -16,11 +17,21 @@ function itemVazio(camposFilhos: Campo[]): ItemGrupo {
     } else if (subCampo.tipo === "tabela") {
       const colunas = subCampo.colunas ?? [];
       item[subCampo.id] = Array.from({ length: subCampo.min ?? 1 }, () => linhaVaziaTabela(colunas));
+    } else if (subCampo.tipo === "grupoRepetivel") {
+      item[subCampo.id] = Array.from({ length: subCampo.min ?? 1 }, () => itemVazio(subCampo.campos ?? []));
+    } else if (subCampo.tipo === "multiSelecao") {
+      item[subCampo.id] = [];
     } else {
       item[subCampo.id] = "";
     }
   }
   return item;
+}
+
+function valorInicialDoGrupo(campo: Campo): ItemGrupo[] {
+  const camposFilhos = campo.campos ?? [];
+  if (campo.fixo && campo.itensFixos) return campo.itensFixos.map(() => itemVazio(camposFilhos));
+  return Array.from({ length: campo.min ?? 1 }, () => itemVazio(camposFilhos));
 }
 
 export function CampoGrupoRepetivel({
@@ -30,38 +41,64 @@ export function CampoGrupoRepetivel({
   campo: Campo;
   relatorioId: string;
 }) {
-  const camposFilhos = campo.campos ?? [];
-  const minimo = campo.min ?? 1;
-  const maximo = campo.max;
-  const ehFixo = Boolean(campo.fixo && campo.itensFixos);
-
-  const valorInicial = ehFixo
-    ? campo.itensFixos!.map(() => itemVazio(camposFilhos))
-    : Array.from({ length: minimo }, () => itemVazio(camposFilhos));
-
   const [valor, setValor, conflito, resolverConflito] = useAutosaveCampo(
     relatorioId,
     campo.id,
-    campo.padrao ?? valorInicial,
+    campo.padrao ?? valorInicialDoGrupo(campo),
   );
-  const itens = Array.isArray(valor) && valor.length > 0 ? (valor as ItemGrupo[]) : valorInicial;
-
-  function atualizarItem(indice: number, subCampoId: string, novoValor: unknown) {
-    setValor(itens.map((item, i) => (i === indice ? { ...item, [subCampoId]: novoValor } : item)));
-  }
-
-  function adicionarItem() {
-    setValor([...itens, itemVazio(camposFilhos)]);
-  }
-
-  function removerItem(indice: number) {
-    setValor(itens.filter((_, i) => i !== indice));
-  }
-
-  const podeAdicionar = !ehFixo && (maximo === undefined || itens.length < maximo);
 
   return (
     <CampoWrapper campo={campo} conflito={conflito} onResolverConflito={resolverConflito}>
+      <ListaDeItens
+        campo={campo}
+        idPrefix={campo.id}
+        relatorioId={relatorioId}
+        valor={valor}
+        onChange={setValor}
+      />
+    </CampoWrapper>
+  );
+}
+
+// A lista em si (itens + botão de adicionar). Separada do campo pra poder ser
+// usada também dentro de um item de outra lista (ex.: números de cada campanha).
+function ListaDeItens({
+  campo,
+  idPrefix,
+  relatorioId,
+  valor,
+  onChange,
+}: {
+  campo: Campo;
+  idPrefix: string;
+  relatorioId: string;
+  valor: unknown;
+  onChange: (novoValor: ItemGrupo[]) => void;
+}) {
+  const camposFilhos = campo.campos ?? [];
+  const maximo = campo.max;
+  const ehFixo = Boolean(campo.fixo && campo.itensFixos);
+
+  const valorInicial = valorInicialDoGrupo(campo);
+  const itens = Array.isArray(valor) && valor.length > 0 ? (valor as ItemGrupo[]) : valorInicial;
+
+  function atualizarItem(indice: number, subCampoId: string, novoValor: unknown) {
+    onChange(itens.map((item, i) => (i === indice ? { ...item, [subCampoId]: novoValor } : item)));
+  }
+
+  function adicionarItem() {
+    onChange([...itens, itemVazio(camposFilhos)]);
+  }
+
+  function removerItem(indice: number) {
+    onChange(itens.filter((_, i) => i !== indice));
+  }
+
+  const podeAdicionar = !ehFixo && (maximo === undefined || itens.length < maximo);
+  const passouDoRecomendado = campo.avisoAcima !== undefined && itens.length > campo.avisoAcima.quantidade;
+
+  return (
+    <>
       <div className="flex flex-col gap-6">
         {itens.map((item, indice) => (
           <div key={indice} className="border border-tinta/10 p-4">
@@ -81,21 +118,30 @@ export function CampoGrupoRepetivel({
             </div>
 
             <div className="flex flex-col gap-4">
-              {camposFilhos.map((subCampo) => (
-                <CampoFilho
-                  key={subCampo.id}
-                  idPrefix={`${campo.id}-${indice}-${subCampo.id}`}
-                  relatorioId={relatorioId}
-                  subCampo={subCampo}
-                  valor={item[subCampo.id]}
-                  itemContexto={item}
-                  onChange={(novoValor) => atualizarItem(indice, subCampo.id, novoValor)}
-                />
-              ))}
+              {camposFilhos
+                .filter((subCampo) => subCampoVisivel(subCampo, item))
+                .map((subCampo) => (
+                  <CampoFilho
+                    key={subCampo.id}
+                    idPrefix={`${idPrefix}-${indice}-${subCampo.id}`}
+                    relatorioId={relatorioId}
+                    subCampo={subCampo}
+                    valor={item[subCampo.id]}
+                    itemContexto={item}
+                    onChange={(novoValor) => atualizarItem(indice, subCampo.id, novoValor)}
+                    onChangeOutro={(texto) => atualizarItem(indice, `${subCampo.id}Outro`, texto)}
+                  />
+                ))}
             </div>
           </div>
         ))}
       </div>
+
+      {passouDoRecomendado && (
+        <p role="status" className="mt-3 text-sm italic text-cinza">
+          {campo.avisoAcima!.texto}
+        </p>
+      )}
 
       {podeAdicionar && (
         <button
@@ -103,10 +149,10 @@ export function CampoGrupoRepetivel({
           onClick={adicionarItem}
           className="rotulo mt-3 self-start border border-tinta/20 px-3 py-1.5 text-tinta hover:border-vermelho hover:text-vermelho"
         >
-          + Adicionar {campo.rotuloItem ?? "item"}
+          + {campo.rotuloAdicionar ?? `Adicionar ${campo.rotuloItem ?? "item"}`}
         </button>
       )}
-    </CampoWrapper>
+    </>
   );
 }
 
@@ -117,6 +163,7 @@ function CampoFilho({
   valor,
   itemContexto,
   onChange,
+  onChangeOutro,
 }: {
   idPrefix: string;
   relatorioId: string;
@@ -124,11 +171,16 @@ function CampoFilho({
   valor: unknown;
   itemContexto: ItemGrupo;
   onChange: (novoValor: unknown) => void;
+  onChangeOutro: (texto: string) => void;
 }) {
+  const { respostas } = useRespostas();
   const rotulo = (
-    <label htmlFor={idPrefix} className="rotulo text-cinza">
-      {subCampo.rotulo}
-    </label>
+    <>
+      <label htmlFor={idPrefix} className="rotulo text-cinza">
+        {subCampo.rotulo}
+      </label>
+      {subCampo.formato && <p className="text-sm italic text-cinza">{subCampo.formato}</p>}
+    </>
   );
 
   if (subCampo.tipo === "serie12") {
@@ -140,6 +192,63 @@ function CampoFilho({
           valor={Array.isArray(valor) ? (valor as (number | null)[]) : Array(12).fill(null)}
           onChange={onChange}
         />
+      </div>
+    );
+  }
+
+  if (subCampo.tipo === "grupoRepetivel") {
+    return (
+      <div className="flex flex-col gap-2">
+        {rotulo}
+        <ListaDeItens
+          campo={subCampo}
+          idPrefix={idPrefix}
+          relatorioId={relatorioId}
+          valor={valor}
+          onChange={onChange}
+        />
+      </div>
+    );
+  }
+
+  if (subCampo.tipo === "multiSelecao") {
+    const marcadas = subCampo.opcoesDoCampo ? respostas[subCampo.opcoesDoCampo] : undefined;
+    const textoOutra = subCampo.opcoesDoCampo
+      ? String(respostas[`${subCampo.opcoesDoCampo}Outra`] ?? "").trim()
+      : "";
+    const opcoes = Array.isArray(marcadas)
+      ? (marcadas as string[]).map((rede) => ({
+          valor: rede,
+          rotulo: rede === "Outra" && textoOutra !== "" ? textoOutra : rede,
+        }))
+      : resolverOpcoes(subCampo);
+    const selecionados = Array.isArray(valor) ? (valor as string[]) : [];
+    return (
+      <div className="flex flex-col gap-2">
+        {rotulo}
+        {opcoes.length === 0 ? (
+          <p className="text-sm text-cinza">Marque as redes no bloco 1 (Abertura) para escolher aqui.</p>
+        ) : (
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
+            {opcoes.map((opcao) => (
+              <label key={opcao.valor} className="flex items-center gap-2 py-1">
+                <input
+                  type="checkbox"
+                  checked={selecionados.includes(opcao.valor)}
+                  onChange={() =>
+                    onChange(
+                      selecionados.includes(opcao.valor)
+                        ? selecionados.filter((item) => item !== opcao.valor)
+                        : [...selecionados, opcao.valor],
+                    )
+                  }
+                  className="h-4 w-4 accent-vermelho"
+                />
+                <span className="text-tinta">{opcao.rotulo}</span>
+              </label>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -192,7 +301,10 @@ function CampoFilho({
   }
 
   if (subCampo.tipo === "selecao") {
-    const opcoes = normalizarOpcoes(subCampo.opcoes);
+    const opcoes = resolverOpcoes(subCampo);
+    const todasAsOpcoes = subCampo.permiteOutro
+      ? [...opcoes, { valor: "Outro", rotulo: "Outro" }]
+      : opcoes;
     return (
       <div className="flex flex-col gap-2">
         {rotulo}
@@ -202,12 +314,22 @@ function CampoFilho({
           onChange={(event) => onChange(event.target.value)}
           className="border border-tinta/20 bg-white px-3 py-2 text-tinta"
         >
-          {opcoes.map((opcao) => (
+          {todasAsOpcoes.map((opcao) => (
             <option key={opcao.valor} value={opcao.valor}>
               {opcao.rotulo}
             </option>
           ))}
         </select>
+        {subCampo.permiteOutro && valor === "Outro" && (
+          <input
+            type="text"
+            aria-label={`${subCampo.rotulo} — descreva`}
+            placeholder="Descreva qual"
+            value={(itemContexto[`${subCampo.id}Outro`] as string) ?? ""}
+            onChange={(event) => onChangeOutro(event.target.value)}
+            className="border border-tinta/20 px-3 py-2 text-tinta focus-visible:border-vermelho"
+          />
+        )}
       </div>
     );
   }
@@ -221,7 +343,6 @@ function CampoFilho({
         list={subCampo.sugestoes ? `${idPrefix}-sugestoes` : undefined}
         value={(valor as string) ?? ""}
         onChange={(event) => onChange(event.target.value)}
-        placeholder={subCampo.formato}
         className="border border-tinta/20 px-3 py-2 text-tinta focus-visible:border-vermelho"
       />
       {subCampo.sugestoes && (

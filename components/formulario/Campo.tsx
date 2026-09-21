@@ -9,6 +9,7 @@ import { CampoSerie12 } from "@/components/formulario/campos/CampoSerie12";
 import { CampoTabela } from "@/components/formulario/campos/CampoTabela";
 import { CampoGrupoRepetivel } from "@/components/formulario/campos/CampoGrupoRepetivel";
 import { CampoImagem } from "@/components/formulario/campos/CampoImagem";
+import { CampoCabecalho } from "@/components/formulario/campos/CampoCabecalho";
 import { CampoPendente } from "@/components/formulario/campos/CampoPendente";
 
 export function Campo({
@@ -40,6 +41,8 @@ export function Campo({
       return <CampoGrupoRepetivel campo={campo} relatorioId={relatorioId} />;
     case "imagem":
       return <CampoImagem campo={campo} relatorioId={relatorioId} />;
+    case "cabecalho":
+      return <CampoCabecalho campo={campo} />;
     default:
       return <CampoPendente campo={campo} />;
   }

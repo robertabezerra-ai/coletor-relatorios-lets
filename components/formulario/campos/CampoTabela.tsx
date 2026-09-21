@@ -31,6 +31,7 @@ export function CampoTabela({
         valor={linhas}
         onChange={setValor}
         max={campo.max}
+        rotuloBotao={campo.rotuloAdicionar}
       />
     </CampoWrapper>
   );

@@ -11,7 +11,8 @@ export type TipoCampo =
   | "tabela"
   | "grupoRepetivel"
   | "imagem"
-  | "pessoas";
+  | "pessoas"
+  | "cabecalho";
 
 export type OpcaoCampo =
   | string
@@ -53,7 +54,24 @@ export type Campo = {
   multiplo?: boolean;
   dica?: string;
   validacao?: string;
-  mostrarSe?: { campoId: string; valorEsperado: string };
+  // valorEsperado aceita uma lista; se o campo controlador for uma
+  // multiSelecao, basta que UM dos valores esperados esteja marcado.
+  mostrarSe?: { campoId: string; valorEsperado: string | string[] };
+  // selecao: acrescenta a opção "Outro", que abre um campo de texto livre.
+  permiteOutro?: boolean;
+  // numero: mostra o campo como valor em reais (R$).
+  moeda?: boolean;
+  // Texto do botão de adicionar em tabelas/grupos repetíveis ("Adicionar objetivo").
+  rotuloAdicionar?: string;
+  // Nome de uma lista em `listas` (topo do schema) — assim a mesma lista de
+  // opções serve a vários selects sem ser repetida.
+  opcoesLista?: string;
+  // multiSelecao dentro de grupo repetível: as opções são as marcadas em outro
+  // campo do formulário (ex.: as redes escolhidas na Abertura). Um campo
+  // "<id>Outra" guarda o texto quando a opção "Outra" está marcada.
+  opcoesDoCampo?: string;
+  // grupoRepetivel: mostra um aviso discreto (sem bloquear) ao passar da quantidade.
+  avisoAcima?: { quantidade: number; texto: string };
 };
 
 export type Bloco = {
@@ -71,5 +89,6 @@ export type FormularioSchema = {
   descricao: string;
   niveis: Record<string, string>;
   tipos: Record<string, string>;
+  listas?: Record<string, OpcaoCampo[]>;
   blocos: Bloco[];
 };

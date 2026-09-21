@@ -326,6 +326,47 @@ em{font-style:italic;color:var(--red);font-weight:300}
 .post-row:last-child{border-bottom:0}
 .post-row b{font-weight:600;color:var(--red)}
 
+/* ══ TRÁFEGO PAGO — cantos retos, sem etiquetas em caixa alta, sem linhas ══ */
+.tp{max-width:940px}
+.tp-h{font-size:clamp(1.8rem,3.2vw,2.5rem);font-weight:300;letter-spacing:-.03em;line-height:1.12}
+.tp-meta{margin-top:.5rem;font-size:.95rem;color:var(--ink-70)}
+.tp-t{font-size:1.15rem;font-weight:500;margin:1.7rem 0 .65rem}
+.tp-obj{background:rgba(29,29,27,.055);padding:.95rem 1.15rem;margin-bottom:.4rem}
+.tp-obj strong{display:block;font-weight:500;font-size:1rem}
+.tp-obj p{margin-top:.25rem;font-size:.9rem;color:var(--ink-70);line-height:1.5}
+.tp-cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.4rem}
+.tp-cfg div{background:rgba(29,29,27,.055);padding:.85rem 1.1rem}
+.tp-cfg b{display:block;font-size:1.25rem;font-weight:400;letter-spacing:-.02em;line-height:1.25}
+.tp-cfg span{font-size:.82rem;color:var(--ink-70)}
+.tp-big{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.4rem}
+.tp-big div{background:var(--ink);color:var(--cream);padding:1.25rem 1.2rem 1.1rem}
+.tp-big b{display:block;font-size:clamp(2.3rem,4.4vw,3.2rem);font-weight:300;letter-spacing:-.04em;line-height:1}
+.tp-big span{display:block;margin-top:.5rem;font-size:.95rem;color:var(--cream)}
+.tp-big em{display:block;font-style:normal;margin-top:.15rem;font-size:.78rem;color:var(--cream-70)}
+.tp-camp{background:rgba(29,29,27,.055);padding:1.05rem 1.2rem 1.15rem;margin-bottom:.4rem}
+.tp-camp h4{font-size:1.08rem;font-weight:500;line-height:1.3}
+.tp-cm{margin-top:.2rem;font-size:.85rem;color:var(--ink-70)}
+.tp-camp .tp-big{margin-top:.8rem}
+.tp-big--sm b{font-size:clamp(1.8rem,3vw,2.3rem)}
+.tp-big--sm div{padding:.95rem 1rem .85rem}
+.tp-camp>p{margin-top:.8rem;font-size:.93rem;line-height:1.55;color:var(--ink-70)}
+.tp-list p{font-size:.93rem;padding:.28rem 0;line-height:1.45}
+.tp-list b{font-weight:500}
+.tp-list span{color:var(--ink-70)}
+.sec--ink .tp-camp{background:rgba(238,231,214,.07)}
+.sec--ink .tp-cm,.sec--ink .tp-camp>p,.sec--ink .tp-list span{color:var(--cream-70)}
+.tp-pub{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.4rem}
+.tp-pub div{background:rgba(29,29,27,.055);padding:.95rem 1.15rem}
+.tp-pub h4{font-size:.95rem;font-weight:500;margin-bottom:.4rem}
+.tp-pub p{display:flex;justify-content:space-between;gap:1rem;font-size:.88rem;padding:.15rem 0}
+.tp-pub p b{font-weight:500;color:var(--red)}
+.sec--ink .tp-obj,.sec--ink .tp-cfg div,.sec--ink .tp-pub div,.sec--ink .tp-an{background:rgba(238,231,214,.07)}
+.sec--ink .tp-obj p,.sec--ink .tp-cfg span,.sec--ink .tp-an,.sec--ink .tp-meta{color:var(--cream-70)}
+.sec--ink .tp-big div{background:var(--cream);color:var(--ink)}
+.sec--ink .tp-big span{color:var(--ink)}
+.sec--ink .tp-big em{color:var(--ink-70)}
+.tp-an{background:rgba(29,29,27,.055);padding:1.1rem 1.25rem;font-size:.98rem;line-height:1.6;color:var(--ink-70);white-space:pre-line}
+
 /* ══ FECHAMENTO ══ */
 .end{max-width:880px}
 .end p{font-size:clamp(1.35rem,3.2vw,2.3rem);font-weight:300;line-height:1.28;
@@ -760,7 +801,7 @@ const REGISTRO = [
      <h3>${esc(p.t)}</h3><span class="k">${esc(p.k)}</span><p>${esc(p.d)}</p></div>`).join("")}</div>`},
 
  {id:"valor", nav:"Impacto", bg:"ink", build:n=>`
-   ${head(n,"Impacto gerado",esc(D.valor.titulo),D.valor.texto)}
+   ${head(n,"Impacto gerado",esc(D.valor.titulo))}
    <div class="deliv-grid reveal">${D.valor.entregas.map(e=>`<div class="deliv">
      <b>${esc(e.qtd)}${e.un?`<i>${esc(e.un)}</i>`:""}</b><span>${esc(e.oq)}</span></div>`).join("")}</div>
    <div class="subhead reveal">Time dedicado à conta</div>
@@ -794,34 +835,30 @@ const REGISTRO = [
        <div class="kpi-label">${esc(m.label)}</div>
        <div class="kpi-val">${m.valor===null?"–":nf(m.valor)}</div>
        ${delta(m.variacao)}</div>`).join("")}</div>
-     ${c.postagensOrganicas.length?`<div style="margin-top:1.1rem">${c.postagensOrganicas.map(p=>`
-       <a class="post-row" href="${esc(p.link)}" target="_blank" rel="noopener">
-         <span>${esc(p.metrica)||"Ver postagem"} ↗</span><b>${esc(p.valor)}</b></a>`).join("")}</div>`:""}
-     ${c.videoDestaque?`<a class="post-row" href="${esc(c.videoDestaque)}" target="_blank" rel="noopener">
-       <span>Vídeo em destaque</span><b>Assistir ↗</b></a>`:""}
      ${c.leitura?`<p class="kpi-note" style="margin-top:1.1rem">${esc(c.leitura)}</p>`:""}</div>`).join("")}</div>`}},
 
- {id:"traficoPago", nav:"Tráfego pago", bg:"cream", build:n=>`
-   ${head(n,"Performance digital — tráfego pago",esc(D.traficoPago.titulo),
-     "Investimento em mídia paga, separado do orgânico.")}
-   <div class="card reveal">
-     <div class="kpi-grid tight" style="margin-top:0">${D.traficoPago.metricas.map(m=>`<div class="kpi">
-       <div class="kpi-label">${esc(m.label)}</div>
-       <div class="kpi-val">${esc(m.valor)}</div>
-       ${delta(m.variacao)}</div>`).join("")}</div>
-     ${D.traficoPago.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(D.traficoPago.leitura)}</p>`:""}
-   </div>
-   ${D.traficoPago.campanhas.length?`
-   <div class="subhead reveal">Destaques das campanhas</div>
-   <div class="tl reveal">${D.traficoPago.campanhas.map(c=>`<div class="tl-item">
-     <div class="tl-when">${esc(c.mes)}${c.canal?` · ${esc(c.canal)}`:""}${c.objetivo?` · ${esc(c.objetivo)}`:""}</div>
-     <div class="tl-body">
-       <div>${c.nomeCampanha?`<h3>${esc(c.nomeCampanha)}</h3>`:c.metrica?`<h3>${esc(c.metrica)}</h3>`:""}
-         ${c.nomeCampanha&&c.metrica?`<p class="kpi-label" style="margin-top:.4rem">${esc(c.metrica)}</p>`:""}
-         ${c.valorMetrica?`<p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(c.valorMetrica)}</p>`:""}
-         ${c.resultado?`<span class="tl-res">${esc(c.resultado)}</span>`:""}</div>
-       <figure>${IMG(c.imagem,c.nomeCampanha||c.objetivo,900,675)}</figure>
-     </div></div>`).join("")}</div>`:""}`},
+ {id:"traficoPago", nav:"Tráfego pago", bg:"cream", build:n=>{const tp=D.traficoPago; return `
+   <div class="tp">
+   <div class="reveal"><h2 class="tp-h">${esc(tp.titulo)}</h2>
+     ${tp.periodo?`<p class="tp-meta">${esc(tp.periodo)}</p>`:""}</div>
+   ${tp.objetivos.length?`<div class="reveal"><h3 class="tp-t">Objetivos estratégicos</h3>
+     ${tp.objetivos.map(o=>`<div class="tp-obj"><strong>${esc(o.titulo)}</strong>${o.descricao?`<p>${esc(o.descricao)}</p>`:""}</div>`).join("")}</div>`:""}
+   ${tp.configuracoes.length?`<div class="reveal"><h3 class="tp-t">Configurações das campanhas</h3>
+     <div class="tp-cfg">${tp.configuracoes.map(c=>`<div><b>${esc(c.valor)}</b><span>${esc(c.rotulo)}</span></div>`).join("")}</div></div>`:""}
+   ${tp.bigNumbers.length?`<div class="reveal"><h3 class="tp-t">Big numbers do ano</h3>
+     <div class="tp-big">${tp.bigNumbers.map(b=>`<div><b>${esc(b.valor)}</b>${b.referente?`<span>${esc(b.referente)}</span>`:""}${b.comparadoA?`<em>${esc(b.comparadoA)}</em>`:""}</div>`).join("")}</div></div>`:""}
+   ${tp.destaques.length?`<div class="reveal"><h3 class="tp-t">Campanhas em destaque</h3>
+     ${tp.destaques.map(c=>{const meta=[c.redes.join(", "),c.objetivo,c.periodo].filter(Boolean).map(esc).join(" · ");
+       return `<div class="tp-camp"><h4>${esc(c.nome)}</h4>${meta?`<p class="tp-cm">${meta}</p>`:""}
+       ${c.numeros.length?`<div class="tp-big tp-big--sm">${c.numeros.map(b=>`<div><b>${esc(b.valor)}</b>${b.referente?`<span>${esc(b.referente)}</span>`:""}${b.comparadoA?`<em>${esc(b.comparadoA)}</em>`:""}</div>`).join("")}</div>`:""}
+       ${c.resumo?`<p>${esc(c.resumo)}</p>`:""}</div>`;}).join("")}</div>`:""}
+   ${tp.outras.length?`<div class="reveal"><h3 class="tp-t">Outras campanhas</h3><div class="tp-list">
+     ${tp.outras.map(c=>`<p><b>${esc(c.nome)}</b>${[c.redes.join(", "),c.objetivo].filter(Boolean).map(x=>` <span>· ${esc(x)}</span>`).join("")}</p>`).join("")}</div></div>`:""}
+   ${tp.fraseOutras?`<div class="reveal"><p class="tp-meta" style="margin-top:1.2rem">${esc(tp.fraseOutras)}</p></div>`:""}
+   ${tp.publico.length?`<div class="reveal"><h3 class="tp-t">Perfil do público atingido</h3>
+     <div class="tp-pub">${tp.publico.map(g=>`<div><h4>${esc(g.categoria)}</h4>${g.itens.map(i=>`<p><span>${esc(i.item)}</span>${i.valor?`<b>${esc(i.valor)}</b>`:""}</p>`).join("")}</div>`).join("")}</div></div>`:""}
+   ${tp.analise?`<div class="reveal"><h3 class="tp-t">Análise geral</h3><div class="tp-an">${esc(tp.analise)}</div></div>`:""}
+   </div>`}},
 
  {id:"imprensa", nav:"Imprensa", bg:"white", build:n=>{const ip=D.imprensa; return `
    ${head(n,"Assessoria de imprensa",esc(D.imprensa.titulo),ip.leitura)}
@@ -844,12 +881,11 @@ const REGISTRO = [
    ${head(n,"Reconhecimentos",esc(D.rankings.titulo),
      `Rankings e premiações conquistados ou mantidos em ${D.cliente.ano}.`)}
    <div class="grid g3 reveal">${D.rankings.itens.map(r=>`<div class="rk">
-     <div class="n">${esc(r.nome)}</div><div class="c">${esc(r.categoria)}</div></div>`).join("")}</div>`},
+     <div class="n">${esc(r.nome)}</div>${r.categoria?`<div class="c">${esc(r.categoria)}</div>`:""}</div>`).join("")}</div>`},
 
  {id:"destaques", nav:"Destaques", bg:"cream", build:n=>`
-   ${head(n,"Destaques do ano",esc(D.destaques.frase))}
+   ${head(n,"Destaques do ano",esc(D.destaques.frase),D.destaques.entregaGrowth)}
    <div class="tl reveal">${D.destaques.itens.map(d=>`<div class="tl-item">
-     <div class="tl-when">${esc(d.quando)}</div>
      <div class="tl-body">
        <div><h3>${esc(d.titulo)}</h3>
          <p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(d.descricao)}</p>

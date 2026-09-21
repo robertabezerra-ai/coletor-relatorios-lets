@@ -113,40 +113,166 @@ function canaisParaTemplate(respostas: Record<string, unknown>) {
       metricas: metricasComVariacaoCalculada(
         Array.isArray(canal.metricas) ? (canal.metricas as Record<string, unknown>[]) : [],
       ),
-      postagensOrganicas: (Array.isArray(canal.postagensOrganicas)
-        ? (canal.postagensOrganicas as Record<string, unknown>[])
-        : []
-      )
-        .filter((p) => String(p.link ?? "").trim() !== "")
-        .map((p) => ({
-          link: String(p.link ?? ""),
-          metrica: String(p.metrica ?? ""),
-          valor: String(p.valor ?? ""),
-        })),
-      videoDestaque: String(canal.videoDestaque ?? ""),
       leitura: String(canal.leitura ?? ""),
     }));
 }
 
-async function campanhasParaTemplate(
-  respostas: Record<string, unknown>,
-  resolverImagem: (valor: unknown) => Promise<string | null>,
-) {
-  const brutos = lista<Record<string, unknown>>(respostas, "traficoPago.campanhas").filter(
-    (c) => String(c.objetivo ?? "").trim() !== "",
-  );
-  return Promise.all(
-    brutos.map(async (c) => ({
-      nomeCampanha: String(c.nomeCampanha ?? ""),
-      canal: String(c.canal ?? ""),
-      objetivo: String(c.objetivo ?? ""),
-      mes: String(c.mes ?? ""),
-      imagem: await resolverImagem(c.imagem),
-      metrica: String(c.metrica ?? ""),
-      valorMetrica: String(c.valorMetrica ?? ""),
-      resultado: String(c.resultado ?? ""),
-    })),
-  );
+const numeroBR = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
+
+// Big numbers: o usuário digita só o número, o sinal/%/milhar saem daqui.
+// Aumento em número abrevia de mil pra cima (100000 -> "+100 mil").
+export function formatarBigNumber(tipo: string, valor: number): string {
+  const sinal = valor < 0 ? "−" : "+";
+  const absoluto = Math.abs(valor);
+  switch (tipo) {
+    case "numero":
+      return numeroBR.format(valor);
+    case "aumentoNumero": {
+      const compacto =
+        absoluto >= 1_000_000
+          ? `${numeroBR.format(absoluto / 1_000_000)} mi`
+          : absoluto >= 1_000
+            ? `${numeroBR.format(absoluto / 1_000)} mil`
+            : numeroBR.format(absoluto);
+      return `${sinal}${compacto}`;
+    }
+    case "porcentagem":
+      return `${numeroBR.format(valor)}%`;
+    case "aumentoPorcentagem":
+      return `${sinal}${numeroBR.format(absoluto)}%`;
+    default:
+      return numeroBR.format(valor);
+  }
+}
+
+function formatarReais(valor: number): string {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: Number.isInteger(valor) ? 0 : 2,
+    maximumFractionDigits: 2,
+  })
+    .format(valor)
+    .replace(/\u00a0/g, " ");
+}
+
+function numeroOuNull(respostas: Record<string, unknown>, id: string): number | null {
+  const v = respostas[id];
+  return typeof v === "number" ? v : null;
+}
+
+// Os números dos big numbers e os de cada campanha em destaque têm a mesma
+// estrutura (tipo, valor, a que se refere, comparado a) e a mesma formatação.
+function numerosParaTemplate(brutos: Record<string, unknown>[]) {
+  return brutos
+    .filter((b) => typeof b.valor === "number" && String(b.tipo ?? "") !== "")
+    .map((b) => {
+      const tipo = String(b.tipo);
+      const ehAumento = tipo === "aumentoNumero" || tipo === "aumentoPorcentagem";
+      return {
+        valor: formatarBigNumber(tipo, b.valor as number),
+        referente: String(b.referente ?? ""),
+        comparadoA: ehAumento ? String(b.comparadoA ?? "") : "",
+      };
+    });
+}
+
+function trafegoPagoParaTemplate(respostas: Record<string, unknown>) {
+  const redes = lista<string>(respostas, "tpago.redes")
+    .map((rede) => (rede === "Outra" ? texto(respostas, "tpago.redesOutra") : rede))
+    .filter((rede) => rede.trim() !== "");
+
+  const objetivos = lista<Record<string, unknown>>(respostas, "tpago.objetivos")
+    .map((o) => ({
+      titulo: String(o.objetivo) === "Outro" ? String(o.objetivoOutro ?? "") : String(o.objetivo ?? ""),
+      descricao: String(o.descricao ?? ""),
+    }))
+    .filter((o) => o.titulo.trim() !== "");
+
+  const investimento = numeroOuNull(respostas, "tpago.investimento");
+  const configuracoes = [
+    { rotulo: "Campanhas", valor: numeroOuNull(respostas, "tpago.numCampanhas") },
+    { rotulo: "Anúncios ativos no período", valor: numeroOuNull(respostas, "tpago.numAnuncios") },
+  ]
+    .filter((c) => c.valor !== null)
+    .map((c) => ({ rotulo: c.rotulo, valor: numeroBR.format(c.valor as number) }));
+  if (investimento !== null) {
+    configuracoes.push({ rotulo: "Investimento total", valor: formatarReais(investimento) });
+  }
+  if (redes.length > 0) configuracoes.push({ rotulo: "Redes", valor: redes.join(", ") });
+  for (const extra of lista<Record<string, unknown>>(respostas, "tpago.configExtras")) {
+    const rotulo = String(extra.rotulo ?? "").trim();
+    const valor = String(extra.valor ?? "").trim();
+    if (rotulo !== "" && valor !== "") configuracoes.push({ rotulo, valor });
+  }
+
+  const bigNumbers = numerosParaTemplate(lista(respostas, "tpago.bigNumbers"));
+
+  const textoOutraRede = texto(respostas, "tpago.redesOutra");
+  const redesLegiveis = (valor: unknown) =>
+    (Array.isArray(valor) ? (valor as string[]) : [])
+      .map((rede) => (rede === "Outra" ? textoOutraRede : rede))
+      .filter((rede) => rede.trim() !== "");
+  const objetivoLegivel = (item: Record<string, unknown>) =>
+    String(item.objetivo ?? "") === "Outro" ? String(item.objetivoOutro ?? "") : String(item.objetivo ?? "");
+
+  const destaques = lista<Record<string, unknown>>(respostas, "tpago.destaques")
+    .map((c) => ({
+      nome: String(c.nome ?? "").trim(),
+      redes: redesLegiveis(c.redes),
+      objetivo: objetivoLegivel(c),
+      periodo: String(c.periodo ?? "").trim(),
+      numeros: numerosParaTemplate(Array.isArray(c.numeros) ? (c.numeros as Record<string, unknown>[]) : []),
+      resumo: String(c.resumo ?? "").trim(),
+    }))
+    .filter((c) => c.nome !== "");
+
+  const outras = lista<Record<string, unknown>>(respostas, "tpago.outras")
+    .map((c) => ({
+      nome: String(c.nome ?? "").trim(),
+      redes: redesLegiveis(c.redes),
+      objetivo: objetivoLegivel(c),
+    }))
+    .filter((c) => c.nome !== "");
+
+  // Sem "Outras campanhas" listadas, mas com mais campanhas no total do que em
+  // destaque: a diferença vira uma frase automática. N <= 0 não mostra nada.
+  const totalCampanhas = numeroOuNull(respostas, "tpago.numCampanhas");
+  const restantes = totalCampanhas !== null ? totalCampanhas - destaques.length : 0;
+  const fraseOutras =
+    outras.length === 0 && restantes > 0
+      ? `Além das campanhas em destaque, foram realizadas outras ${numeroBR.format(restantes)} campanhas ao longo do ano.`
+      : "";
+
+  // Perfil do público só existe quando LinkedIn está marcado nas redes.
+  const grupos: { categoria: string; itens: { item: string; valor: string }[] }[] = [];
+  if (lista<string>(respostas, "tpago.redes").includes("LinkedIn")) {
+    for (const p of lista<Record<string, unknown>>(respostas, "tpago.publico")) {
+      const categoria = String(p.categoria ?? "").trim();
+      const item = String(p.item ?? "").trim();
+      if (categoria === "" || item === "") continue;
+      let grupo = grupos.find((g) => g.categoria === categoria);
+      if (!grupo) {
+        grupo = { categoria, itens: [] };
+        grupos.push(grupo);
+      }
+      grupo.itens.push({ item, valor: String(p.valor ?? "") });
+    }
+  }
+
+  return {
+    titulo: texto(respostas, "tpago.titulo", "Relatório de resultados de campanhas patrocinadas"),
+    periodo: texto(respostas, "tpago.periodo"),
+    redes,
+    objetivos,
+    configuracoes,
+    bigNumbers,
+    destaques,
+    outras,
+    fraseOutras,
+    publico: grupos,
+    analise: texto(respostas, "tpago.analise"),
+  };
 }
 
 function trimestresParaTemplate(respostas: Record<string, unknown>) {
@@ -183,7 +309,6 @@ export async function montarDados(
   const destaquesBrutos = lista<Record<string, unknown>>(respostas, "destaques");
   const destaques = await Promise.all(
     destaquesBrutos.map(async (d) => ({
-      quando: String(d.quando ?? ""),
       titulo: String(d.titulo ?? ""),
       descricao: String(d.descricao ?? ""),
       resultado: String(d.resultado ?? ""),
@@ -201,7 +326,9 @@ export async function montarDados(
       anoAnterior: ano - 1,
       subtitulo: texto(respostas, "cliente.subtitulo"),
       inicioParceria: texto(respostas, "cliente.inicioParceria"),
-      frentes: lista<string>(respostas, "cliente.frentes").join(" · "),
+      frentes: [...lista<string>(respostas, "cliente.frentes"), texto(respostas, "cliente.frentesOutras")]
+        .filter((frente) => frente.trim() !== "")
+        .join(" · "),
       consultorResponsavel: texto(respostas, "cliente.consultorResponsavel"),
     },
     pilares: {
@@ -224,15 +351,9 @@ export async function montarDados(
       },
       canais: canaisParaTemplate(respostas),
     },
-    traficoPago: {
-      titulo: texto(respostas, "traficoPago.titulo", "Investimento com retorno"),
-      metricas: lista(respostas, "traficoPago.metricas"),
-      leitura: texto(respostas, "traficoPago.leitura"),
-      campanhas: await campanhasParaTemplate(respostas, resolverImagem),
-    },
+    traficoPago: trafegoPagoParaTemplate(respostas),
     valor: {
       titulo: texto(respostas, "valor.titulo", "O que a LETS executou"),
-      texto: texto(respostas, "valor.texto"),
       entregas: lista(respostas, "valor.entregas"),
       time: lista(respostas, "valor.time"),
     },
@@ -252,6 +373,7 @@ export async function montarDados(
     },
     destaques: {
       frase: texto(respostas, "destaques.frase", "Os momentos que moveram o ponteiro"),
+      entregaGrowth: texto(respostas, "destaques.entregaGrowth"),
       itens: destaques,
     },
     inteligencia: {

@@ -11,7 +11,15 @@ import {
 } from "docx";
 import sharp from "sharp";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { campoVisivel, normalizarOpcoes, numeroDoBloco, type Bloco, type Campo } from "@/lib/schema";
+import {
+  campoVisivel,
+  normalizarOpcoes,
+  numeroDoBloco,
+  resolverOpcoes,
+  subCampoVisivel,
+  type Bloco,
+  type Campo,
+} from "@/lib/schema";
 import { campoPreenchido } from "@/lib/progresso";
 import { CORES, FONTE } from "@/lib/docx/estilo";
 
@@ -121,6 +129,7 @@ async function conteudoDoValor(
   campo: Campo,
   valor: unknown,
   supabase: SupabaseClient,
+  respostas: Record<string, unknown> = {},
 ): Promise<Bloco2[]> {
   const vazio = !campoPreenchido(campo, valor);
 
@@ -134,8 +143,14 @@ async function conteudoDoValor(
   if (campo.tipo === "multiSelecao") {
     if (vazio) return [paragrafoResposta("")];
     const opcoes = normalizarOpcoes(campo.opcoes);
+    const textoOutra = campo.opcoesDoCampo
+      ? String(respostas[`${campo.opcoesDoCampo}Outra`] ?? "").trim()
+      : "";
     const selecionados = (valor as string[]).map(
-      (item) => opcoes.find((opcao) => opcao.valor === item)?.rotulo ?? item,
+      (item) =>
+        (item === "Outra" && textoOutra !== "" ? textoOutra : undefined) ??
+        opcoes.find((opcao) => opcao.valor === item)?.rotulo ??
+        item,
     );
     return [paragrafoResposta(selecionados.join(", "))];
   }
@@ -183,6 +198,11 @@ async function conteudoDoValor(
       );
 
       for (const subCampo of camposFilhos) {
+        if (!subCampoVisivel(subCampo, item)) continue;
+        const valorSubCampo =
+          subCampo.permiteOutro && item[subCampo.id] === "Outro"
+            ? item[`${subCampo.id}Outro`]
+            : item[subCampo.id];
         blocos.push(
           new Paragraph({
             spacing: { after: 20 },
@@ -191,14 +211,19 @@ async function conteudoDoValor(
             ],
           }),
         );
-        blocos.push(...(await conteudoDoValor(subCampo, item[subCampo.id], supabase)));
+        blocos.push(...(await conteudoDoValor(subCampo, valorSubCampo, supabase, respostas)));
       }
     }
 
     return blocos;
   }
 
-  // texto, numero, selecao, selecaoEquipe e qualquer outro tipo simples
+  if (campo.tipo === "selecao" && !vazio) {
+    const opcao = resolverOpcoes(campo).find((item) => item.valor === valor);
+    return [paragrafoResposta(opcao?.rotulo ?? String(valor))];
+  }
+
+  // texto, numero, selecaoEquipe e qualquer outro tipo simples
   return [paragrafoResposta(vazio ? "" : String(valor))];
 }
 
@@ -207,11 +232,12 @@ async function renderizarCampo(
   valor: unknown,
   supabase: SupabaseClient,
   contador: Contador,
+  respostas: Record<string, unknown>,
 ): Promise<Bloco2[]> {
   return [
     rotuloCampo(campo.rotulo, contador),
     ...linhaFormato(campo.formato),
-    ...(await conteudoDoValor(campo, valor, supabase)),
+    ...(await conteudoDoValor(campo, valor, supabase, respostas)),
   ];
 }
 
@@ -236,7 +262,17 @@ export async function montarConteudo(
 
     for (const campo of bloco.campos) {
       if (!campoVisivel(campo, bloco, respostas)) continue;
-      partes.push(...(await renderizarCampo(campo, respostas[campo.id], supabase, contador)));
+      if (campo.tipo === "cabecalho") {
+        partes.push(
+          new Paragraph({
+            spacing: { before: 320, after: 40 },
+            children: [new TextRun({ text: campo.rotulo, bold: true, color: CORES.tinta, font: FONTE })],
+          }),
+          ...linhaFormato(campo.formato),
+        );
+        continue;
+      }
+      partes.push(...(await renderizarCampo(campo, respostas[campo.id], supabase, contador, respostas)));
     }
   }
 

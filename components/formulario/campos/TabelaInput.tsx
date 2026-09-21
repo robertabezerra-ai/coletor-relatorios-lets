@@ -40,6 +40,7 @@ export function TabelaInput({
   onChange,
   max,
   itemContexto,
+  rotuloBotao,
 }: {
   idPrefix: string;
   relatorioId: string;
@@ -48,6 +49,7 @@ export function TabelaInput({
   onChange: (novoValor: LinhaTabela[]) => void;
   max?: number;
   itemContexto?: Record<string, unknown>;
+  rotuloBotao?: string;
 }) {
   const ano = useAnoRelatorio();
 
@@ -127,7 +129,7 @@ export function TabelaInput({
         disabled={!podeAdicionar}
         className="rotulo self-start border border-tinta/20 px-3 py-1.5 text-tinta hover:border-vermelho hover:text-vermelho disabled:opacity-40"
       >
-        + Adicionar linha
+        + {rotuloBotao ?? "Adicionar linha"}
       </button>
 
       {colunas

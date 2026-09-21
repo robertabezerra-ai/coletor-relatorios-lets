@@ -1,5 +1,5 @@
 {
-  "versao": "2026.5",
+  "versao": "2026.9",
   "descricao": "Schema único do formulário do relatório anual LETS. É a fonte de verdade para: renderizar a página, calcular o progresso e gerar o .docx. Nunca duplique estas definições em outro lugar do código.",
   "niveis": {
     "essencial": "Sem isto o relatório não fecha. Conta para o progresso e bloqueia a exportação final.",
@@ -18,6 +18,43 @@
     "grupoRepetivel": "bloco inteiro repetível, campos definidos em campos[]",
     "imagem": "upload de arquivo para o Supabase Storage",
     "pessoas": "tabela com autocomplete de nomes do time LETS na primeira coluna"
+  },
+  "listas": {
+    "objetivosTrafego": [
+      {
+        "valor": "",
+        "rotulo": "Selecione…"
+      },
+      "Fortalecer posicionamento e autoridade no Google",
+      "Geração de leads para demanda de busca ativa",
+      "Geração de leads para tema em alta / demanda do momento",
+      "Lançamento de nova área ou serviço",
+      "Aumento de audiência nas redes sociais",
+      "Aumento de visibilidade para a audiência existente",
+      "Reconhecimento de marca"
+    ],
+    "tiposMetricaTrafego": [
+      {
+        "valor": "",
+        "rotulo": "Selecione…"
+      },
+      {
+        "valor": "numero",
+        "rotulo": "Número — aparece como 6.000"
+      },
+      {
+        "valor": "aumentoNumero",
+        "rotulo": "Aumento em número — aparece como +100 mil"
+      },
+      {
+        "valor": "porcentagem",
+        "rotulo": "Porcentagem — aparece como 12%"
+      },
+      {
+        "valor": "aumentoPorcentagem",
+        "rotulo": "Aumento em porcentagem — aparece como +50%"
+      }
+    ]
   },
   "blocos": [
     {
@@ -57,12 +94,12 @@
             {
               "valor": "digital",
               "rotulo": "Performance digital",
-              "ajuda": "Site e canais, com métricas em destaque por título e número."
+              "ajuda": "Frente trabalhada, objetivo e resultado, mais métricas por canal (redes sociais)."
             },
             {
               "valor": "traficoPago",
               "rotulo": "Performance digital — tráfego pago",
-              "ajuda": "Métricas de campanhas pagas, separadas do orgânico."
+              "ajuda": "Relatório de campanhas patrocinadas: objetivos, configurações, big numbers e análise."
             },
             {
               "valor": "imprensa",
@@ -160,15 +197,19 @@
           "opcoes": [
             "Marketing & Comunicação",
             "Conteúdo",
-            "Digital",
+            "Performance digital",
             "Branding",
             "Imprensa",
             "Rankings",
-            "Eventos",
-            "Dados",
-            "Pessoas & Cultura",
-            "BPO Financeiro"
+            "Dados"
           ]
+        },
+        {
+          "id": "cliente.frentesOutras",
+          "rotulo": "Outra frente (opcional)",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "formato": "Alguma frente ativa nesta conta que não está na lista acima? Escreva aqui — some do relatório se ficar em branco."
         }
       ]
     },
@@ -191,13 +232,6 @@
           "nivel": "opcional",
           "padrao": "O que a LETS executou",
           "formato": "Aparece em destaque no topo da seção \"Impacto gerado\"."
-        },
-        {
-          "id": "valor.texto",
-          "rotulo": "Frase de abertura da seção",
-          "tipo": "texto",
-          "nivel": "opcional",
-          "padrao": "O que a LETS executou para o escritório ao longo do ano, em números."
         },
         {
           "id": "valor.entregas",
@@ -308,7 +342,7 @@
               "id": "variacao",
               "rotulo": "Variação % (opcional)",
               "tipo": "numero",
-              "dica": "Ex.: 12"
+              "dica": "Ex.: 12 — compara com o ano anterior. Só preencha se for um ganho que vale destacar."
             },
             {
               "id": "nota",
@@ -364,7 +398,8 @@
             {
               "id": "variacao",
               "rotulo": "Variação % (opcional)",
-              "tipo": "numero"
+              "tipo": "numero",
+              "dica": "Ex.: 12 — compara com o ano anterior. Só preencha se for um ganho que vale destacar."
             }
           ]
         },
@@ -466,56 +501,11 @@
               ]
             },
             {
-              "id": "postagensOrganicas",
-              "rotulo": "Postagens em destaque (opcional)",
-              "tipo": "tabela",
-              "min": 0,
-              "max": 10,
-              "formato": "Cole o link da postagem, escolha a métrica e informe o valor. Adicione quantas postagens quiser — útil para Instagram e LinkedIn.",
-              "colunas": [
-                {
-                  "id": "link",
-                  "rotulo": "Link da postagem",
-                  "tipo": "texto",
-                  "validacao": "url"
-                },
-                {
-                  "id": "metrica",
-                  "rotulo": "Métrica",
-                  "tipo": "selecao",
-                  "opcoes": [
-                    "Alcance",
-                    "Visualizações",
-                    "Impressões",
-                    "Taxa de interação",
-                    "Taxa de engajamento",
-                    "Curtidas",
-                    "Comentários",
-                    "Salvos",
-                    "Compartilhamentos",
-                    "Cliques"
-                  ]
-                },
-                {
-                  "id": "valor",
-                  "rotulo": "Valor",
-                  "tipo": "texto",
-                  "dica": "Já formatado. Ex.: 8,4 % ou 1.240"
-                }
-              ]
-            },
-            {
-              "id": "videoDestaque",
-              "rotulo": "Vídeo em destaque (opcional)",
-              "tipo": "texto",
-              "validacao": "url",
-              "formato": "Link do vídeo, ex.: YouTube. Útil para o canal YouTube."
-            },
-            {
               "id": "leitura",
               "rotulo": "Leitura do canal",
               "tipo": "textoLongo",
-              "formato": "O que funciona e o que não funciona neste canal para este cliente."
+              "formato": "Pra que serve: o que funciona e o que não funciona neste canal para este cliente. Fica opcional — some do relatório se ficar em branco.",
+              "nivel": "opcional"
             }
           ]
         }
@@ -524,149 +514,380 @@
     {
       "id": "b7",
       "titulo": "Performance digital — tráfego pago",
-      "descricao": "Nas imagens de campanha, crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço.",
       "dependeDeSecao": "traficoPago",
       "campos": [
         {
-          "id": "traficoPago.titulo",
-          "rotulo": "Título estilizado da seção",
-          "tipo": "texto",
-          "nivel": "opcional",
-          "padrao": "Investimento com retorno",
-          "formato": "Aparece em destaque no topo da seção de tráfego pago."
+          "id": "tpago.cab1",
+          "rotulo": "1. Abertura",
+          "tipo": "cabecalho",
+          "formato": "Título, período analisado e onde as campanhas rodaram. Tudo opcional — o que ficar em branco some do relatório."
         },
         {
-          "id": "traficoPago.metricas",
-          "rotulo": "Métricas de tráfego pago",
-          "tipo": "tabela",
-          "nivel": "importante",
-          "min": 2,
+          "id": "tpago.titulo",
+          "rotulo": "Título do relatório",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "padrao": "Relatório de resultados de campanhas patrocinadas"
+        },
+        {
+          "id": "tpago.periodo",
+          "rotulo": "Período de análise",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "formato": "Texto livre. Ex.: Jan–Dez 2026, ou 01/03/2026 a 30/09/2026."
+        },
+        {
+          "id": "tpago.redes",
+          "rotulo": "Redes",
+          "tipo": "multiSelecao",
+          "nivel": "opcional",
+          "formato": "Marque todas em que houve campanha. Marcar LinkedIn libera o bloco 7 (perfil do público).",
+          "opcoes": [
+            "Instagram",
+            "Facebook",
+            "LinkedIn",
+            "Google Ads",
+            "YouTube",
+            "TikTok",
+            "Outra"
+          ]
+        },
+        {
+          "id": "tpago.redesOutra",
+          "rotulo": "Qual outra rede?",
+          "tipo": "texto",
+          "nivel": "opcional",
+          "mostrarSe": {
+            "campoId": "tpago.redes",
+            "valorEsperado": "Outra"
+          }
+        },
+        {
+          "id": "tpago.cab2",
+          "rotulo": "2. Objetivos estratégicos",
+          "tipo": "cabecalho",
+          "formato": "O que as campanhas buscavam neste ano. Os objetivos valem para o conjunto das campanhas, independem da rede ou plataforma. Adicione um por vez."
+        },
+        {
+          "id": "tpago.objetivos",
+          "rotulo": "Objetivos",
+          "tipo": "grupoRepetivel",
+          "nivel": "opcional",
+          "min": 0,
           "max": 10,
-          "formato": "Caixas abertas: um título e um número grande por linha. Ex.: Cliques, CPC, Conversões, Investimento — adicione quantas quiser.",
+          "rotuloItem": "Objetivo",
+          "rotuloAdicionar": "Adicionar objetivo",
+          "campos": [
+            {
+              "id": "objetivo",
+              "rotulo": "Objetivo",
+              "tipo": "selecao",
+              "permiteOutro": true,
+              "formato": "Escolha na lista ou selecione \"Outro\" para escrever o seu.",
+              "opcoesLista": "objetivosTrafego"
+            },
+            {
+              "id": "descricao",
+              "rotulo": "Descrição (opcional)",
+              "tipo": "textoLongo",
+              "formato": "Contexto deste objetivo para este cliente, em uma ou duas frases."
+            }
+          ]
+        },
+        {
+          "id": "tpago.cab3",
+          "rotulo": "3. Configurações das campanhas",
+          "tipo": "cabecalho",
+          "formato": "Aqui vão os dados de estrutura das campanhas (como foram montadas), não os resultados — os resultados entram nos big numbers do bloco 4. As redes já vêm do bloco 1, não precisa repetir."
+        },
+        {
+          "id": "tpago.numCampanhas",
+          "rotulo": "Número de campanhas",
+          "tipo": "numero",
+          "nivel": "opcional"
+        },
+        {
+          "id": "tpago.numAnuncios",
+          "rotulo": "Número de anúncios ativos no período",
+          "tipo": "numero",
+          "nivel": "opcional"
+        },
+        {
+          "id": "tpago.investimento",
+          "rotulo": "Investimento total",
+          "tipo": "numero",
+          "moeda": true,
+          "nivel": "opcional",
+          "formato": "Só o número, em reais. Ex.: 12500"
+        },
+        {
+          "id": "tpago.configExtras",
+          "rotulo": "Outras configurações (opcional)",
+          "tipo": "tabela",
+          "nivel": "opcional",
+          "min": 0,
+          "max": 8,
+          "rotuloAdicionar": "Adicionar configuração",
+          "formato": "Para qualquer outro dado de estrutura que valha mostrar. Ex.: Públicos segmentados — 4.",
           "colunas": [
             {
-              "id": "label",
-              "rotulo": "Título",
-              "tipo": "texto",
-              "sugestoes": [
-                "Investimento",
-                "Cliques",
-                "CPC",
-                "CPM",
-                "Conversões",
-                "Custo por conversão",
-                "Impressões"
-              ]
+              "id": "rotulo",
+              "rotulo": "Configuração",
+              "tipo": "texto"
             },
             {
               "id": "valor",
               "rotulo": "Valor",
-              "tipo": "texto",
-              "dica": "Já formatado. Ex.: R$ 12,4 k"
-            },
-            {
-              "id": "variacao",
-              "rotulo": "Variação % (opcional)",
-              "tipo": "numero"
+              "tipo": "texto"
             }
           ]
         },
         {
-          "id": "traficoPago.leitura",
-          "rotulo": "Leitura do investimento",
-          "tipo": "textoLongo",
-          "nivel": "importante",
-          "formato": "Uma ou duas frases sobre o retorno das campanhas pagas."
+          "id": "tpago.cab4",
+          "rotulo": "4. Big numbers do ano",
+          "tipo": "cabecalho",
+          "formato": "Os números do ano todo que mais representam o resultado. Escolha o tipo e digite só o número — o sinal de +, o % e o separador de milhar são aplicados sozinhos."
         },
         {
-          "id": "traficoPago.campanhas",
-          "rotulo": "Destaques das campanhas",
-          "tipo": "tabela",
+          "id": "tpago.bigNumbers",
+          "rotulo": "Big numbers do ano",
+          "tipo": "grupoRepetivel",
           "nivel": "opcional",
           "min": 0,
-          "max": 10,
-          "formato": "Uma linha por campanha em destaque. Nada aqui é obrigatório.",
-          "colunas": [
+          "max": 8,
+          "rotuloItem": "Número",
+          "rotuloAdicionar": "Adicionar número",
+          "campos": [
             {
-              "id": "nomeCampanha",
-              "rotulo": "Nome da campanha",
+              "id": "tipo",
+              "rotulo": "Tipo de métrica",
+              "tipo": "selecao",
+              "opcoesLista": "tiposMetricaTrafego"
+            },
+            {
+              "id": "valor",
+              "rotulo": "Valor",
+              "tipo": "numero",
+              "formato": "Só o número, sem ponto, sinal ou %. Ex.: para +100 mil, digite 100000."
+            },
+            {
+              "id": "referente",
+              "rotulo": "A que se refere",
+              "tipo": "texto",
+              "formato": "Ex.: impressões, leads, seguidores."
+            },
+            {
+              "id": "comparadoA",
+              "rotulo": "Comparado a",
+              "tipo": "texto",
+              "formato": "Ex.: em relação ao ano anterior.",
+              "mostrarSe": {
+                "campoId": "tipo",
+                "valorEsperado": [
+                  "aumentoNumero",
+                  "aumentoPorcentagem"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tpago.cab4b",
+          "rotulo": "5. Campanhas em destaque",
+          "tipo": "cabecalho",
+          "formato": "Escolha as campanhas mais importantes do ano. Não é preciso incluir todas."
+        },
+        {
+          "id": "tpago.destaques",
+          "rotulo": "Campanhas em destaque",
+          "tipo": "grupoRepetivel",
+          "nivel": "opcional",
+          "min": 0,
+          "max": 12,
+          "rotuloItem": "Campanha",
+          "rotuloAdicionar": "Adicionar campanha em destaque",
+          "avisoAcima": {
+            "quantidade": 4,
+            "texto": "Você já tem mais de 4 campanhas em destaque. Vale manter só as principais — o que não for destaque pode ir em \"Outras campanhas\", sem detalhar resultados."
+          },
+          "campos": [
+            {
+              "id": "nome",
+              "rotulo": "Nome da campanha / frente",
               "tipo": "texto"
             },
             {
-              "id": "canal",
-              "rotulo": "Canal",
-              "tipo": "selecao",
-              "opcoes": [
-                "Instagram",
-                "LinkedIn",
-                "Outro"
-              ]
+              "id": "redes",
+              "rotulo": "Rede(s)",
+              "tipo": "multiSelecao",
+              "opcoesDoCampo": "tpago.redes",
+              "formato": "Aparecem aqui as redes que você marcou no bloco 1."
             },
             {
               "id": "objetivo",
               "rotulo": "Objetivo",
-              "tipo": "texto",
-              "sugestoes": [
-                "Leads",
-                "Alcance",
-                "Visualizações",
-                "Inscrições",
-                "Seguidores",
-                "Engajamento"
-              ]
-            },
-            {
-              "id": "mes",
-              "rotulo": "Quando foi feita",
               "tipo": "selecao",
-              "opcoes": [
-                "Janeiro",
-                "Fevereiro",
-                "Março",
-                "Abril",
-                "Maio",
-                "Junho",
-                "Julho",
-                "Agosto",
-                "Setembro",
-                "Outubro",
-                "Novembro",
-                "Dezembro"
-              ]
+              "permiteOutro": true,
+              "opcoesLista": "objetivosTrafego"
             },
             {
-              "id": "imagem",
-              "rotulo": "Imagem da campanha",
-              "tipo": "imagem",
-              "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço"
-            },
-            {
-              "id": "metrica",
-              "rotulo": "Métrica",
-              "tipo": "selecao",
-              "opcoes": [
-                "Contas alcançadas",
-                "Tempo médio de permanência",
-                "Engajamento total",
-                "Curtidas",
-                "Comentários",
-                "Salvamentos",
-                "Compartilhamentos",
-                "Novos seguidores"
-              ]
-            },
-            {
-              "id": "valorMetrica",
-              "rotulo": "Valor da métrica",
+              "id": "periodo",
+              "rotulo": "Período",
               "tipo": "texto",
-              "dica": "Já formatado. Ex.: 8,4 k"
+              "formato": "Texto curto. Ex.: Mar–Jun."
             },
             {
-              "id": "resultado",
-              "rotulo": "Resultado da campanha",
-              "tipo": "textoLongo"
+              "id": "numeros",
+              "rotulo": "Números da campanha",
+              "tipo": "grupoRepetivel",
+              "min": 0,
+              "max": 6,
+              "rotuloItem": "Número",
+              "rotuloAdicionar": "Adicionar número",
+              "formato": "Mesma lógica dos big numbers: escolha o tipo e digite só o número.",
+              "campos": [
+                {
+                  "id": "tipo",
+                  "rotulo": "Tipo de métrica",
+                  "tipo": "selecao",
+                  "opcoesLista": "tiposMetricaTrafego"
+                },
+                {
+                  "id": "valor",
+                  "rotulo": "Valor",
+                  "tipo": "numero",
+                  "formato": "Só o número, sem ponto, sinal ou %. Ex.: para +100 mil, digite 100000."
+                },
+                {
+                  "id": "referente",
+                  "rotulo": "A que se refere",
+                  "tipo": "texto",
+                  "formato": "Ex.: impressões, leads, seguidores."
+                },
+                {
+                  "id": "comparadoA",
+                  "rotulo": "Comparado a",
+                  "tipo": "texto",
+                  "formato": "Ex.: em relação ao ano anterior.",
+                  "mostrarSe": {
+                    "campoId": "tipo",
+                    "valorEsperado": [
+                      "aumentoNumero",
+                      "aumentoPorcentagem"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "resumo",
+              "rotulo": "Resumo",
+              "tipo": "textoLongo",
+              "formato": "Uma ou duas frases sobre o resultado."
             }
           ]
+        },
+        {
+          "id": "tpago.cab4c",
+          "rotulo": "6. Outras campanhas",
+          "tipo": "cabecalho",
+          "formato": "Liste as demais campanhas sem detalhar resultados."
+        },
+        {
+          "id": "tpago.outras",
+          "rotulo": "Outras campanhas",
+          "tipo": "grupoRepetivel",
+          "nivel": "opcional",
+          "min": 0,
+          "max": 30,
+          "rotuloItem": "Campanha",
+          "rotuloAdicionar": "Adicionar campanha",
+          "campos": [
+            {
+              "id": "nome",
+              "rotulo": "Nome da campanha",
+              "tipo": "texto"
+            },
+            {
+              "id": "redes",
+              "rotulo": "Rede(s)",
+              "tipo": "multiSelecao",
+              "opcoesDoCampo": "tpago.redes",
+              "formato": "Aparecem aqui as redes que você marcou no bloco 1."
+            },
+            {
+              "id": "objetivo",
+              "rotulo": "Objetivo",
+              "tipo": "selecao",
+              "permiteOutro": true,
+              "opcoesLista": "objetivosTrafego"
+            }
+          ]
+        },
+        {
+          "id": "tpago.cab5",
+          "rotulo": "7. Perfil do público atingido",
+          "tipo": "cabecalho",
+          "formato": "Só para campanhas no LinkedIn: quem foi alcançado. Adicione um item por linha (ex.: Cargos → Diretor jurídico → 32%).",
+          "mostrarSe": {
+            "campoId": "tpago.redes",
+            "valorEsperado": "LinkedIn"
+          }
+        },
+        {
+          "id": "tpago.publico",
+          "rotulo": "Perfil do público",
+          "tipo": "grupoRepetivel",
+          "nivel": "opcional",
+          "min": 0,
+          "max": 30,
+          "rotuloItem": "Item",
+          "rotuloAdicionar": "Adicionar item",
+          "mostrarSe": {
+            "campoId": "tpago.redes",
+            "valorEsperado": "LinkedIn"
+          },
+          "campos": [
+            {
+              "id": "categoria",
+              "rotulo": "Categoria",
+              "tipo": "selecao",
+              "opcoes": [
+                {
+                  "valor": "",
+                  "rotulo": "Selecione…"
+                },
+                "Cargos",
+                "Setores",
+                "Senioridade",
+                "Porte da empresa"
+              ]
+            },
+            {
+              "id": "item",
+              "rotulo": "Item",
+              "tipo": "texto",
+              "formato": "Ex.: Diretor jurídico."
+            },
+            {
+              "id": "valor",
+              "rotulo": "Percentual ou quantidade (opcional)",
+              "tipo": "texto",
+              "formato": "Como quiser mostrar. Ex.: 32% ou 1.200 pessoas."
+            }
+          ]
+        },
+        {
+          "id": "tpago.cab6",
+          "rotulo": "8. Análise geral",
+          "tipo": "cabecalho"
+        },
+        {
+          "id": "tpago.analise",
+          "rotulo": "Leitura geral das campanhas",
+          "tipo": "textoLongo",
+          "nivel": "opcional",
+          "formato": "O que a equipe entendeu dos resultados: o que funcionou, o que aprendemos, o que muda daqui pra frente."
         }
       ]
     },
@@ -790,13 +1011,24 @@
                 "Análise Advocacia Mulher",
                 "ITR World Tax",
                 "IFLR1000",
-                "LACCA Approved"
-              ]
+                "LACCA Approved",
+                "LACCA Who Represents Latin America's Biggest Companies",
+                "LACCA Who Represents Latin America's Biggest Banks",
+                "Prêmio Análise DNA+FENALAW",
+                "Análise Regional",
+                "Análise Mulheres",
+                "Latin Lawyer 250",
+                "Women In Business Law",
+                "Lexology Index (antigo Who's Who Legal)",
+                "BRALLAW"
+              ],
+              "formato": "Escolha da lista ou escreva outro reconhecimento que não esteja aqui."
             },
             {
               "id": "categoria",
-              "rotulo": "Categoria e posição",
-              "tipo": "texto"
+              "rotulo": "Categoria e posição (opcional)",
+              "tipo": "texto",
+              "dica": "Ex.: Banda 1 em Direito Tributário — pode deixar em branco, some do relatório."
             }
           ]
         }
@@ -805,7 +1037,7 @@
     {
       "id": "b10",
       "titulo": "Destaques do ano",
-      "descricao": "Crie a arte de cada imagem no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço.",
+      "descricao": "Teve alguma campanha que foi destaque na produção? Insira a imagem e o descritivo do que foi feito dentro de um dos momentos abaixo. Crie a arte de cada imagem no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço.",
       "dependeDeSecao": "destaques",
       "campos": [
         {
@@ -817,20 +1049,21 @@
           "formato": "Aparece em destaque no topo da seção \"Destaques do ano\" do relatório em HTML. Curto, no estilo manchete."
         },
         {
+          "id": "destaques.entregaGrowth",
+          "rotulo": "Principal entrega/ação de Growth do ano (opcional)",
+          "tipo": "textoLongo",
+          "nivel": "opcional",
+          "formato": "Qual foi a principal entrega ou ação de Growth do ano para este cliente? Fica opcional — some do relatório se ficar em branco."
+        },
+        {
           "id": "destaques",
           "rotulo": "Momentos que marcaram o ano",
           "tipo": "tabela",
           "nivel": "importante",
           "min": 3,
           "max": 6,
-          "formato": "Em ordem cronológica. O resultado precisa conter pelo menos um número.",
+          "formato": "O resultado precisa conter pelo menos um número.",
           "colunas": [
-            {
-              "id": "quando",
-              "rotulo": "Quando",
-              "tipo": "texto",
-              "dica": "Mês · Ano"
-            },
             {
               "id": "titulo",
               "rotulo": "Título",
