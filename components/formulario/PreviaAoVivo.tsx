@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRespostas } from "@/components/formulario/RespostasContext";
 import { montarDados, secoesParaTemplate } from "@/lib/relatorioHtml/mapearDados";
 import { injetarDados } from "@/lib/relatorioHtml/injetar";
+import { carregarTemplate, prepararParaPrevia } from "@/lib/relatorioHtml/modoPrevia";
 import { obterSecoesSelecionadas } from "@/lib/schema";
+import { TelaCheiaRelatorio } from "@/components/formulario/TelaCheiaRelatorio";
 
 // Cada bloco do formulário corresponde a uma seção do relatório em HTML —
 // usado só pra rolar a prévia até o pedaço relevante do que está sendo
@@ -25,17 +27,28 @@ const SECAO_POR_BLOCO: Record<string, string> = {
   b14: "encerramento",
 };
 
+// Só existe enquanto a prévia está aberta: no painel lateral (telas largas)
+// e/ou em tela cheia, pra conferir tudo antes de baixar.
 export function PreviaAoVivo({
   cliente,
   ano,
   blocoAtivoId,
+  ampliada,
+  onAmpliar,
+  onFecharAmpliada,
+  onFechar,
 }: {
   cliente: string;
   ano: number;
   blocoAtivoId: string;
+  ampliada: boolean;
+  onAmpliar: () => void;
+  onFecharAmpliada: () => void;
+  onFechar: () => void;
 }) {
   const { respostas } = useRespostas();
   const [templateTexto, setTemplateTexto] = useState<string | null>(null);
+  const [htmlAtual, setHtmlAtual] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Só rola a prévia até a seção quando o bloco ativo muda de verdade —
@@ -44,8 +57,7 @@ export function PreviaAoVivo({
   const blocoRoladoRef = useRef<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/relatorio-template")
-      .then((resposta) => resposta.text())
+    carregarTemplate()
       .then(setTemplateTexto)
       .catch(() => {});
   }, []);
@@ -61,7 +73,8 @@ export function PreviaAoVivo({
       // template já mostra o tamanho/proporção certos, sem gastar tempo
       // buscando a imagem enviada.
       const dados = await montarDados(respostas, { cliente, ano }, async () => null);
-      const html = injetarDados(templateTexto, secoes, dados);
+      const html = prepararParaPrevia(injetarDados(templateTexto, secoes, dados));
+      setHtmlAtual(html);
 
       const iframe = iframeRef.current;
       if (!iframe) return;
@@ -90,19 +103,48 @@ export function PreviaAoVivo({
   }, [respostas, templateTexto, blocoAtivoId, cliente, ano]);
 
   return (
-    <div className="flex h-full flex-col">
-      <p className="rotulo border-b border-tinta/10 px-4 py-3 text-cinza">
-        Prévia do relatório
-      </p>
-      {!templateTexto && (
-        <p className="px-4 py-6 text-sm text-cinza">Carregando prévia…</p>
+    <>
+      <aside className="sticky top-0 hidden h-screen w-[440px] self-start shrink-0 flex-col border-l border-tinta/10 xl:flex">
+        <div className="flex items-center justify-between gap-2 border-b border-tinta/10 px-4 py-3">
+          <p className="rotulo text-cinza">Prévia do relatório</p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onAmpliar}
+              className="rotulo text-tinta hover:text-vermelho"
+            >
+              Ampliar ⤢
+            </button>
+            <button
+              type="button"
+              onClick={onFechar}
+              aria-label="Fechar prévia"
+              className="text-cinza hover:text-vermelho"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        {!templateTexto && (
+          <p className="px-4 py-6 text-sm text-cinza">Carregando prévia…</p>
+        )}
+        <iframe
+          ref={iframeRef}
+          title="Prévia do relatório"
+          className="flex-1 border-0"
+          style={{ colorScheme: "light" }}
+        />
+      </aside>
+
+      {ampliada && (
+        <TelaCheiaRelatorio
+          titulo="Prévia do relatório"
+          subtitulo="É assim que o relatório vai ficar com as respostas preenchidas até agora."
+          html={htmlAtual}
+          secaoInicial={SECAO_POR_BLOCO[blocoAtivoId]}
+          onClose={onFecharAmpliada}
+        />
       )}
-      <iframe
-        ref={iframeRef}
-        title="Prévia do relatório"
-        className="flex-1 border-0"
-        style={{ colorScheme: "light" }}
-      />
-    </div>
+    </>
   );
 }

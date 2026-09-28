@@ -77,6 +77,10 @@ function FormularioInterno({
 
   const [blocoAtivoId, setBlocoAtivoId] = useState(blocos[0]?.id ?? "");
   const [campoParaFocar, setCampoParaFocar] = useState<string | null>(null);
+  // A prévia começa oculta: abre no painel lateral em telas largas e direto
+  // em tela cheia nas menores, onde não cabe ao lado do formulário.
+  const [previaAberta, setPreviaAberta] = useState(false);
+  const [previaAmpliada, setPreviaAmpliada] = useState(false);
 
   useEffect(() => {
     if (visiveis.length > 0 && !visiveis.some((bloco) => bloco.id === blocoAtivoId)) {
@@ -117,6 +121,21 @@ function FormularioInterno({
   const essenciaisVazios = camposEssenciaisVazios(visiveis, respostas);
   const temImagens = coletarImagens(visiveis, respostas).length > 0;
 
+  function alternarPrevia() {
+    if (previaAberta) {
+      setPreviaAberta(false);
+      setPreviaAmpliada(false);
+      return;
+    }
+    setPreviaAberta(true);
+    if (!window.matchMedia("(min-width: 1280px)").matches) setPreviaAmpliada(true);
+  }
+
+  function fecharAmpliada() {
+    setPreviaAmpliada(false);
+    if (!window.matchMedia("(min-width: 1280px)").matches) setPreviaAberta(false);
+  }
+
   function irParaCampo(blocoId: string, campoId: string) {
     setBlocoAtivoId(blocoId);
     setCampoParaFocar(campoId);
@@ -130,6 +149,8 @@ function FormularioInterno({
         squadNome={squadNome}
         ano={ano}
         temImagens={temImagens}
+        previaAberta={previaAberta}
+        onAlternarPrevia={alternarPrevia}
       />
 
       {!podeEditar && (
@@ -183,9 +204,17 @@ function FormularioInterno({
           )}
         </main>
 
-        <aside className="hidden w-[440px] shrink-0 border-l border-tinta/10 xl:block">
-          <PreviaAoVivo cliente={cliente} ano={ano} blocoAtivoId={blocoAtivoId} />
-        </aside>
+        {previaAberta && (
+          <PreviaAoVivo
+            cliente={cliente}
+            ano={ano}
+            blocoAtivoId={blocoAtivoId}
+            ampliada={previaAmpliada}
+            onAmpliar={() => setPreviaAmpliada(true)}
+            onFecharAmpliada={fecharAmpliada}
+            onFechar={() => setPreviaAberta(false)}
+          />
+        )}
       </div>
     </div>
   );

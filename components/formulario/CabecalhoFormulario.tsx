@@ -16,12 +16,16 @@ export function CabecalhoFormulario({
   squadNome,
   ano,
   temImagens,
+  previaAberta,
+  onAlternarPrevia,
 }: {
   relatorioId: string;
   cliente: string;
   squadNome: string;
   ano: number;
   temImagens: boolean;
+  previaAberta: boolean;
+  onAlternarPrevia: () => void;
 }) {
   const { estado } = useEstadoSalvamento();
 
@@ -37,6 +41,18 @@ export function CabecalhoFormulario({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          <button
+            type="button"
+            onClick={onAlternarPrevia}
+            aria-pressed={previaAberta}
+            className={`rotulo border px-3 py-1.5 ${
+              previaAberta
+                ? "border-tinta bg-tinta text-creme hover:opacity-90"
+                : "border-tinta/20 text-tinta hover:border-vermelho hover:text-vermelho"
+            }`}
+          >
+            {previaAberta ? "Ocultar prévia" : "Ver prévia"}
+          </button>
           <a
             href={`/api/relatorio/${relatorioId}/html`}
             className="rotulo bg-vermelho px-3 py-1.5 text-creme hover:opacity-90"

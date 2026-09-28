@@ -1,6 +1,7 @@
 "use client";
 
 import { Campo } from "@/components/formulario/Campo";
+import { ExemploSecao } from "@/components/formulario/ExemploSecao";
 import { useRespostas } from "@/components/formulario/RespostasContext";
 import { campoVisivel, numeroDoBloco, type Bloco } from "@/lib/schema";
 
@@ -27,6 +28,8 @@ export function BlocoAtivo({
           guardadas e voltam se você marcar de novo.
         </p>
       )}
+
+      <ExemploSecao key={bloco.id} blocoId={bloco.id} />
 
       {bloco.somenteLeitura && bloco.campos.length === 0 && (
         <p className="mt-6 text-sm text-cinza">
