@@ -149,8 +149,6 @@ function FormularioInterno({
         squadNome={squadNome}
         ano={ano}
         temImagens={temImagens}
-        previaAberta={previaAberta}
-        onAlternarPrevia={alternarPrevia}
       />
 
       {!podeEditar && (
@@ -182,7 +180,7 @@ function FormularioInterno({
           />
         </aside>
 
-        <main className="flex-1 px-4 py-6 sm:px-8 sm:py-8">
+        <main className="flex-1 px-4 pb-24 pt-6 sm:px-8 sm:pt-8">
           {essenciaisVazios.length > 0 && (
             <PainelFaltaPreencher itens={essenciaisVazios} onIrPara={irParaCampo} />
           )}
@@ -203,6 +201,21 @@ function FormularioInterno({
             </div>
           )}
         </main>
+
+        {/* Fixo no canto da tela pra acompanhar a rolagem; com o painel aberto,
+            desloca pra não ficar em cima dele. */}
+        <button
+          type="button"
+          onClick={alternarPrevia}
+          aria-pressed={previaAberta}
+          className={`rotulo fixed bottom-4 right-4 z-40 border px-4 py-3 shadow-lg sm:bottom-6 sm:right-6 ${
+            previaAberta
+              ? "border-tinta bg-tinta text-creme hover:opacity-90 xl:right-[464px]"
+              : "border-vermelho bg-vermelho text-creme hover:opacity-90"
+          }`}
+        >
+          {previaAberta ? "Ocultar prévia ✕" : "Ver prévia do relatório"}
+        </button>
 
         {previaAberta && (
           <PreviaAoVivo
