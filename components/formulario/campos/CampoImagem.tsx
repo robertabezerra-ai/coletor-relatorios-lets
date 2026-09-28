@@ -3,6 +3,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useAutosaveCampo } from "@/hooks/useAutosaveCampo";
 import { CampoWrapper } from "@/components/formulario/campos/CampoWrapper";
+import { AvisoImagemPrevia } from "@/components/formulario/campos/AvisoImagemPrevia";
 import type { Campo } from "@/lib/schema";
 
 type ImagemValor = { caminho: string } | null;
@@ -66,6 +67,7 @@ export function CampoImagem({
 
   return (
     <CampoWrapper campo={campo} conflito={conflito} onResolverConflito={resolverConflito}>
+      <AvisoImagemPrevia />
       <div className="flex flex-col gap-3">
         {itens.length > 0 && (
           <div className="flex flex-wrap gap-3">

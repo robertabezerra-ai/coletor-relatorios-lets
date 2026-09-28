@@ -91,6 +91,15 @@ export function NovoRelatorioModal({
           </select>
         </div>
 
+        <p
+          role="note"
+          className="border-l-2 border-vermelho bg-vermelho/5 px-3 py-2 text-sm text-tinta"
+        >
+          <strong className="font-semibold">Revise bem o squad:</strong> confira se você está
+          criando este cliente dentro do <strong className="font-semibold">seu</strong> squad —
+          assim o painel continua organizado para todos.
+        </p>
+
         {erro && (
           <p role="alert" className="text-sm text-vermelho">
             {erro}

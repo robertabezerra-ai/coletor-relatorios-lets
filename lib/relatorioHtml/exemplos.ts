@@ -181,10 +181,22 @@ export const RESPOSTAS_EXEMPLO: Record<string, unknown> = {
   ],
 };
 
+export type VariacaoExemplo = {
+  // Valor do campo controlador que corresponde a esta opção.
+  valor: string;
+  rotulo: string;
+  legenda: string;
+  // Respostas que substituem as de RESPOSTAS_EXEMPLO só nesta opção.
+  respostas: Record<string, unknown>;
+};
+
 export type ExemploBloco = {
   recorte: RecorteExemplo;
   // Uma frase curta dizendo o que o consultor está vendo no exemplo.
   legenda: string;
+  // Blocos em que o consultor escolhe entre formatos diferentes mostram um
+  // exemplo de cada; a aba inicial segue o que já está escolhido no campo.
+  variacoes?: { campoId: string; opcoes: VariacaoExemplo[] };
 };
 
 // Qual pedaço do relatório cada bloco do formulário preenche. Blocos 5 e 6
@@ -236,7 +248,31 @@ export const EXEMPLO_POR_BLOCO: Record<string, ExemploBloco> = {
   },
   b12: {
     recorte: { secao: "plano" },
-    legenda: "As iniciativas do próximo ano, organizadas por trimestre (ou em blocos livres).",
+    legenda: "As iniciativas do próximo ano.",
+    variacoes: {
+      campoId: "planejamento.modo",
+      opcoes: [
+        {
+          valor: "trimestres",
+          rotulo: "Por trimestre",
+          legenda: "Quatro colunas fixas (1º a 4º trimestre), com as iniciativas de cada uma: título + descrição curta.",
+          respostas: { "planejamento.modo": "trimestres" },
+        },
+        {
+          valor: "blocos",
+          rotulo: "Em blocos livres",
+          legenda: "Um card por iniciativa, sem dividir por trimestre: título + descrição.",
+          respostas: {
+            "planejamento.modo": "blocos",
+            "planejamento.blocos": [
+              { titulo: "Novo e-book", texto: "Material rico sobre a reforma tributária para captação de leads." },
+              { titulo: "Landing pages por área", texto: "Páginas de conversão para as três áreas principais." },
+              { titulo: "Podcast institucional", texto: "Piloto de seis episódios com convidados do mercado." },
+            ],
+          },
+        },
+      ],
+    },
   },
   b13: {
     recorte: { secao: "acompanhamentosFuturos" },

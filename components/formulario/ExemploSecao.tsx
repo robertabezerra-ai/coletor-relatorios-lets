@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { TelaCheiaRelatorio } from "@/components/formulario/TelaCheiaRelatorio";
+import { useRespostas } from "@/components/formulario/RespostasContext";
 import { montarDados, secoesParaTemplate } from "@/lib/relatorioHtml/mapearDados";
 import { injetarDados } from "@/lib/relatorioHtml/injetar";
 import { carregarTemplate, prepararParaPrevia } from "@/lib/relatorioHtml/modoPrevia";
@@ -17,20 +18,6 @@ const LARGURA_RELATORIO = 1200;
 const ALTURA_MAXIMA_MINIATURA = 340;
 const CHAVE_OCULTOS = "exemplos-secao-ocultos";
 
-let htmlBasePromessa: Promise<{ template: string; dados: unknown }> | null = null;
-
-function carregarBase() {
-  if (!htmlBasePromessa) {
-    htmlBasePromessa = Promise.all([
-      carregarTemplate(),
-      montarDados(RESPOSTAS_EXEMPLO, CLIENTE_EXEMPLO, async () => null),
-    ]).then(([template, dados]) => ({ template, dados }));
-    htmlBasePromessa.catch(() => {
-      htmlBasePromessa = null;
-    });
-  }
-  return htmlBasePromessa;
-}
 
 function lerOcultos(): boolean {
   try {
@@ -50,6 +37,14 @@ function salvarOcultos(ocultos: boolean) {
 
 export function ExemploSecao({ blocoId }: { blocoId: string }) {
   const exemplo = EXEMPLO_POR_BLOCO[blocoId];
+  const { respostas } = useRespostas();
+  const variacoes = exemplo?.variacoes;
+  const valorEscolhido = variacoes ? String(respostas[variacoes.campoId] ?? "") : "";
+  const [valorVariacao, setValorVariacao] = useState(
+    () => valorEscolhido || variacoes?.opcoes[0]?.valor || "",
+  );
+  const variacao = variacoes?.opcoes.find((opcao) => opcao.valor === valorVariacao);
+  const legenda = variacao?.legenda ?? exemplo?.legenda ?? "";
   const [html, setHtml] = useState<string | null>(null);
   const [oculto, setOculto] = useState(false);
   const [ampliado, setAmpliado] = useState(false);
@@ -62,13 +57,22 @@ export function ExemploSecao({ blocoId }: { blocoId: string }) {
     setOculto(lerOcultos());
   }, []);
 
+  // Quando o consultor troca a opção no formulário, o exemplo acompanha.
+  useEffect(() => {
+    if (valorEscolhido) setValorVariacao(valorEscolhido);
+  }, [valorEscolhido]);
+
   useEffect(() => {
     if (!exemplo) return;
     let cancelado = false;
     setHtml(null);
     setAlturaConteudo(0);
-    carregarBase()
-      .then(({ template, dados }) => {
+    const respostasExemplo = { ...RESPOSTAS_EXEMPLO, ...variacao?.respostas };
+    Promise.all([
+      carregarTemplate(),
+      montarDados(respostasExemplo, CLIENTE_EXEMPLO, async () => null),
+    ])
+      .then(([template, dados]) => {
         if (cancelado) return;
         const secoes = secoesParaTemplate(RESPOSTAS_EXEMPLO.secoes as string[]);
         setHtml(prepararParaPrevia(injetarDados(template, secoes, dados), exemplo.recorte));
@@ -77,7 +81,7 @@ export function ExemploSecao({ blocoId }: { blocoId: string }) {
     return () => {
       cancelado = true;
     };
-  }, [exemplo]);
+  }, [exemplo, variacao]);
 
   useEffect(() => {
     const caixa = caixaRef.current;
@@ -123,7 +127,7 @@ export function ExemploSecao({ blocoId }: { blocoId: string }) {
           <p className="rotulo text-tinta">Exemplo: como esta seção fica no relatório</p>
           {!oculto && (
             <p className="mt-1 text-sm text-cinza">
-              {exemplo.legenda} <span className="text-vermelho">Dados fictícios.</span>
+              {legenda} <span className="text-vermelho">Dados fictícios.</span>
             </p>
           )}
         </div>
@@ -139,6 +143,35 @@ export function ExemploSecao({ blocoId }: { blocoId: string }) {
 
       {!oculto && (
         <div className="px-4 pb-4">
+          {variacoes && (
+            <div className="mb-3">
+              <p className="mb-2 text-sm text-cinza">
+                Esta seção tem mais de um formato — veja como fica cada opção:
+              </p>
+              <div role="tablist" className="flex flex-wrap gap-2">
+                {variacoes.opcoes.map((opcao) => {
+                  const ativa = opcao.valor === valorVariacao;
+                  return (
+                    <button
+                      key={opcao.valor}
+                      type="button"
+                      role="tab"
+                      aria-selected={ativa}
+                      onClick={() => setValorVariacao(opcao.valor)}
+                      className={`rotulo border px-3 py-1.5 ${
+                        ativa
+                          ? "border-tinta bg-tinta text-creme"
+                          : "border-tinta/20 bg-white text-tinta hover:border-vermelho hover:text-vermelho"
+                      }`}
+                    >
+                      {opcao.rotulo}
+                      {opcao.valor === valorEscolhido && " · sua escolha"}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <div
             ref={caixaRef}
             className="relative overflow-hidden border border-tinta/10 bg-white"
@@ -182,7 +215,7 @@ export function ExemploSecao({ blocoId }: { blocoId: string }) {
       {ampliado && (
         <TelaCheiaRelatorio
           titulo="Exemplo com dados fictícios"
-          subtitulo={exemplo.legenda}
+          subtitulo={variacao ? `${variacao.rotulo} — ${legenda}` : legenda}
           html={html}
           onClose={() => setAmpliado(false)}
         />

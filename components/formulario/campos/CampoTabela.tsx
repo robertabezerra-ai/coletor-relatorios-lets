@@ -2,6 +2,7 @@
 
 import { useAutosaveCampo } from "@/hooks/useAutosaveCampo";
 import { CampoWrapper } from "@/components/formulario/campos/CampoWrapper";
+import { AvisoImagemPrevia } from "@/components/formulario/campos/AvisoImagemPrevia";
 import { TabelaInput, linhaVaziaTabela, type LinhaTabela } from "@/components/formulario/campos/TabelaInput";
 import type { Campo } from "@/lib/schema";
 
@@ -24,6 +25,7 @@ export function CampoTabela({
 
   return (
     <CampoWrapper campo={campo} conflito={conflito} onResolverConflito={resolverConflito}>
+      {colunas.some((coluna) => coluna.tipo === "imagem") && <AvisoImagemPrevia />}
       <TabelaInput
         idPrefix={campo.id}
         relatorioId={relatorioId}
