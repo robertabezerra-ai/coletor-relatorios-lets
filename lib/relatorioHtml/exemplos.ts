@@ -121,18 +121,29 @@ export const RESPOSTAS_EXEMPLO: Record<string, unknown> = {
   "tpago.analise":
     "As campanhas de busca ativa trouxeram o menor custo por lead do ano. Para 2027, a recomendação é concentrar verba no LinkedIn nos temas tributários.",
 
-  "imprensa.insercoes": 96,
-  "imprensa.veiculos": 44,
-  "imprensa.alcanceEstimado": "38 mi",
-  "imprensa.valorEquivalente": "R$ 1,2 mi",
-  "imprensa.porMes": [4, 6, 9, 7, 8, 11, 6, 9, 10, 8, 12, 6],
   "imprensa.leitura":
-    "A presença em imprensa dobrou em relação a 2025, com destaque para veículos econômicos nacionais.",
+    "A presença em imprensa dobrou em relação a 2025, com os sócios se tornando fonte recorrente de veículos econômicos nacionais.",
   "imprensa.principais": [
-    { veiculo: "Valor Econômico", titulo: "Os impactos da reforma tributária nas empresas", data: "Mar 2026", url: "" },
-    { veiculo: "Folha de S.Paulo", titulo: "Especialista explica novas regras trabalhistas", data: "Jun 2026", url: "" },
-    { veiculo: "JOTA", titulo: "Entrevista sobre compliance no setor financeiro", data: "Set 2026", url: "" },
+    {
+      veiculo: "Valor Econômico",
+      titulo: "Os impactos da reforma tributária nas empresas",
+      data: "Março · 2026",
+      url: "https://exemplo.com/materia-1",
+    },
+    {
+      veiculo: "Folha de S.Paulo",
+      titulo: "Especialista explica as novas regras trabalhistas",
+      data: "Junho · 2026",
+      url: "https://exemplo.com/materia-2",
+    },
+    {
+      veiculo: "JOTA",
+      titulo: "Entrevista sobre compliance no setor financeiro",
+      data: "Setembro · 2026",
+      url: "https://exemplo.com/materia-3",
+    },
   ],
+  "imprensa.insercoes": 96,
 
   rankings: [
     { nome: "Chambers Brazil", categoria: "Tributário" },
@@ -220,11 +231,11 @@ export const EXEMPLO_POR_BLOCO: Record<string, ExemploBloco> = {
   },
   b5: {
     recorte: { secao: "digital", cssExtra: "#digital .wrap>.grid{display:none!important}" },
-    legenda: "Métricas do site com a variação em % frente ao ano anterior, e uma leitura curta do que os números mostram.",
+    legenda: "Métricas do site com a variação em % frente ao ano anterior, e uma leitura curta. Opcional: em branco, o card some.",
   },
   b6: {
     recorte: { secao: "digital", cssExtra: "#digital .wrap>.card{display:none!important}" },
-    legenda: "Um card por rede: métricas com valor deste ano e do anterior (a variação é calculada sozinha) e uma leitura.",
+    legenda: "Um card por rede: métricas com valor deste ano e do anterior (a variação é calculada sozinha) e uma leitura. Coloque só as redes que fazem sentido.",
   },
   b7: {
     recorte: { secao: "traficoPago" },
@@ -232,7 +243,7 @@ export const EXEMPLO_POR_BLOCO: Record<string, ExemploBloco> = {
   },
   b8: {
     recorte: { secao: "imprensa" },
-    legenda: "Totais da assessoria, gráfico mês a mês (opcional) e as principais matérias com veículo, título e data.",
+    legenda: "Uma introdução, o total de inserções e as matérias em destaque (veículo, título, data e link). Tudo opcional: o que ficar em branco some.",
   },
   b9: {
     recorte: { secao: "rankings" },

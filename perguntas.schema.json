@@ -369,12 +369,12 @@
         },
         {
           "id": "digital.site.metricas",
-          "rotulo": "Métricas do site",
+          "rotulo": "Métricas do site (opcional)",
           "tipo": "tabela",
-          "nivel": "importante",
-          "min": 2,
+          "nivel": "opcional",
+          "min": 1,
           "max": 10,
-          "formato": "Caixas abertas: um título e um número grande por linha. Ex.: Usuários ativos · 18,4 k — adicione quantas quiser.",
+          "formato": "Caixas abertas: um título e um número grande por linha. Ex.: Usuários ativos · 18,4 k — adicione quantas quiser. Em branco, o card do site some do relatório.",
           "colunas": [
             {
               "id": "label",
@@ -405,9 +405,9 @@
         },
         {
           "id": "digital.site.leitura",
-          "rotulo": "Leitura do canal",
+          "rotulo": "Leitura do canal (opcional)",
           "tipo": "textoLongo",
-          "nivel": "importante",
+          "nivel": "opcional",
           "formato": "Uma ou duas frases interpretando o número. O que ele significa para o cliente."
         }
       ]
@@ -419,9 +419,9 @@
       "campos": [
         {
           "id": "digital.canais",
-          "rotulo": "Canais ativos",
+          "rotulo": "Canais ativos (opcional)",
           "tipo": "grupoRepetivel",
-          "nivel": "importante",
+          "nivel": "opcional",
           "min": 1,
           "max": 6,
           "rotuloItem": "Canal",
@@ -507,7 +507,8 @@
               "formato": "Pra que serve: o que funciona e o que não funciona neste canal para este cliente. Fica opcional — some do relatório se ficar em branco.",
               "nivel": "opcional"
             }
-          ]
+          ],
+          "formato": "Adicione só os canais que fazem sentido para este cliente. Canal sem nome e sem métricas não aparece no relatório."
         }
       ]
     },
@@ -905,51 +906,18 @@
           "formato": "Aparece em destaque no topo da seção \"Assessoria de imprensa\"."
         },
         {
-          "id": "imprensa.insercoes",
-          "rotulo": "Total de inserções",
-          "tipo": "numero",
-          "nivel": "essencial"
-        },
-        {
-          "id": "imprensa.veiculos",
-          "rotulo": "Veículos distintos",
-          "tipo": "numero",
-          "nivel": "importante"
-        },
-        {
-          "id": "imprensa.alcanceEstimado",
-          "rotulo": "Alcance estimado",
-          "tipo": "texto",
-          "nivel": "importante",
-          "formato": "Já formatado. Ex.: 18,6 M"
-        },
-        {
-          "id": "imprensa.valorEquivalente",
-          "rotulo": "Valor equivalente",
-          "tipo": "texto",
-          "nivel": "opcional",
-          "formato": "Já formatado. Ex.: R$ 1,4 mi"
-        },
-        {
-          "id": "imprensa.porMes",
-          "rotulo": "Inserções mês a mês (opcional)",
-          "tipo": "serie12",
-          "nivel": "opcional",
-          "formato": "Deixe vazio se não quiser mostrar a curva mensal — o gráfico some do relatório."
-        },
-        {
           "id": "imprensa.leitura",
-          "rotulo": "Leitura da imprensa",
+          "rotulo": "Introdução (opcional)",
           "tipo": "textoLongo",
-          "nivel": "importante",
-          "formato": "Uma ou duas frases explicando o comportamento da curva ao longo do ano."
+          "nivel": "opcional",
+          "formato": "Uma ou duas frases sobre a presença do cliente na imprensa no ano. Aparece logo abaixo do título. Em branco, some do relatório."
         },
         {
           "id": "imprensa.principais",
-          "rotulo": "Destaques de cobertura",
+          "rotulo": "Matérias e veículos em destaque (opcional)",
           "tipo": "tabela",
-          "nivel": "importante",
-          "min": 4,
+          "nivel": "opcional",
+          "min": 1,
           "max": 10,
           "colunas": [
             {
@@ -964,17 +932,26 @@
             },
             {
               "id": "data",
-              "rotulo": "Data",
+              "rotulo": "Data (opcional)",
               "tipo": "texto",
               "dica": "Mês · Ano"
             },
             {
               "id": "url",
-              "rotulo": "Link",
+              "rotulo": "Link (opcional)",
               "tipo": "texto",
               "validacao": "url"
             }
-          ]
+          ],
+          "formato": "Uma linha por matéria: veículo, título, data e link. Aparecem em destaque logo depois da introdução. Linhas em branco são ignoradas.",
+          "rotuloAdicionar": "Adicionar matéria"
+        },
+        {
+          "id": "imprensa.insercoes",
+          "rotulo": "Total de inserções no ano (opcional)",
+          "tipo": "numero",
+          "nivel": "opcional",
+          "formato": "Aparece como um número em destaque antes das matérias. Em branco, some do relatório."
         }
       ]
     },

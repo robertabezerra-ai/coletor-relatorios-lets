@@ -77,13 +77,6 @@ function lista<T>(respostas: Record<string, unknown>, id: string): T[] {
   return Array.isArray(v) ? (v as T[]) : [];
 }
 
-function serieOuNull(respostas: Record<string, unknown>, id: string): (number | null)[] | null {
-  const v = respostas[id];
-  if (!Array.isArray(v) || v.length !== 12) return null;
-  const serie = v as (number | null)[];
-  return serie.some((mes) => mes !== null && mes !== undefined) ? serie : null;
-}
-
 // resumo.kpis pode ter uma linha em branco sobrando de um rascunho antigo —
 // não faz sentido mostrar um card vazio no relatório.
 function kpisPreenchidos(respostas: Record<string, unknown>) {
@@ -106,15 +99,37 @@ function metricasComVariacaoCalculada(bruto: Record<string, unknown>[]) {
     });
 }
 
+// Tudo em Performance digital é opcional: canal sem nome e sem métricas (o
+// item em branco que o formulário cria) não vira card vazio no relatório.
 function canaisParaTemplate(respostas: Record<string, unknown>) {
   const brutos = lista<Record<string, unknown>>(respostas, "digital.canais");
-  return brutos.map((canal) => ({
-      nome: String(canal.nome ?? ""),
+  return brutos
+    .map((canal) => ({
+      nome: String(canal.nome ?? "").trim(),
       metricas: metricasComVariacaoCalculada(
         Array.isArray(canal.metricas) ? (canal.metricas as Record<string, unknown>[]) : [],
       ),
-      leitura: String(canal.leitura ?? ""),
-    }));
+      leitura: String(canal.leitura ?? "").trim(),
+    }))
+    .filter((canal) => canal.nome !== "" || canal.metricas.length > 0);
+}
+
+function metricasSitePreenchidas(respostas: Record<string, unknown>) {
+  return lista<Record<string, unknown>>(respostas, "digital.site.metricas").filter(
+    (m) => String(m.label ?? "").trim() !== "",
+  );
+}
+
+// Matérias da imprensa: basta veículo ou título — linha em branco é ignorada.
+function materiasPreenchidas(respostas: Record<string, unknown>) {
+  return lista<Record<string, unknown>>(respostas, "imprensa.principais")
+    .map((m) => ({
+      veiculo: String(m.veiculo ?? "").trim(),
+      titulo: String(m.titulo ?? "").trim(),
+      data: String(m.data ?? "").trim(),
+      url: String(m.url ?? "").trim(),
+    }))
+    .filter((m) => m.veiculo !== "" || m.titulo !== "");
 }
 
 const numeroBR = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
@@ -346,7 +361,7 @@ export async function montarDados(
       titulo: texto(respostas, "digital.titulo", "Onde a marca foi vista"),
       site: {
         titulo: "Site institucional",
-        metricas: lista(respostas, "digital.site.metricas"),
+        metricas: metricasSitePreenchidas(respostas),
         leitura: texto(respostas, "digital.site.leitura"),
       },
       canais: canaisParaTemplate(respostas),
@@ -359,13 +374,9 @@ export async function montarDados(
     },
     imprensa: {
       titulo: texto(respostas, "imprensa.titulo", "Presença espontânea"),
-      insercoes: numero(respostas, "imprensa.insercoes"),
-      veiculos: numero(respostas, "imprensa.veiculos"),
-      alcanceEstimado: texto(respostas, "imprensa.alcanceEstimado"),
-      valorEquivalente: texto(respostas, "imprensa.valorEquivalente"),
-      porMes: serieOuNull(respostas, "imprensa.porMes"),
+      insercoes: numeroOuNull(respostas, "imprensa.insercoes"),
       leitura: texto(respostas, "imprensa.leitura"),
-      principais: lista(respostas, "imprensa.principais"),
+      principais: materiasPreenchidas(respostas),
     },
     rankings: {
       titulo: texto(respostas, "rankings.titulo", "Validação externa"),

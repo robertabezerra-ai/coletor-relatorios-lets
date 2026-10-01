@@ -247,18 +247,24 @@ em{font-style:italic;color:var(--red);font-weight:300}
 .tl-res{display:block;margin-top:1rem;font-size:.85rem;font-weight:500;
   border-left:2px solid var(--red);padding-left:.9rem;line-height:1.5}
 
-/* ══ IMPRENSA — sempre empilhado: o card fica numa coluna estreita ao lado
-   do gráfico, então uma grade de 3 colunas nunca sobra espaço suficiente
-   e desalinha o título quando ele quebra linha. ══ */
-.clip{display:flex;flex-direction:column;gap:.3rem;text-decoration:none;
-  padding:1.1rem 0;border-bottom:1px solid var(--ink-12);transition:.25s}
-.sec--ink .clip{border-color:var(--cream-20)}
-.clip:hover{background:rgba(209,10,17,.035);padding-inline:.75rem}
-.clip .v{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);
-  font-weight:700}
-.clip .t{font-size:1rem;font-weight:400;line-height:1.35}
-.clip .d{font-size:.75rem;color:var(--ink-45)}
+/* ══ IMPRENSA — matérias em cards logo depois da introdução: veículo em
+   destaque, título e, quando houver link, a chamada "Ler matéria". ══ */
+.imp-total{display:flex;align-items:baseline;gap:.9rem;margin-bottom:clamp(1.8rem,4vw,2.6rem)}
+.imp-total b{font-size:clamp(2.6rem,5vw,3.6rem);font-weight:300;letter-spacing:-.05em;line-height:.95;color:var(--red)}
+.imp-total span{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--ink-45)}
+.sec--ink .imp-total span{color:var(--cream-70)}
+.clips{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(285px,1fr))}
+.clip{display:flex;flex-direction:column;gap:.55rem;text-decoration:none;background:var(--white);
+  border:1px solid var(--ink-12);border-top:3px solid var(--red);padding:1.5rem 1.5rem 1.4rem;transition:.25s}
+.sec--cream .clip{background:var(--white)}
+.sec--ink .clip{background:rgba(238,231,214,.045);border-color:var(--cream-20);border-top-color:var(--red)}
+a.clip:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(29,29,27,.08)}
+.clip .v{font-size:.95rem;font-weight:600;letter-spacing:-.01em;color:var(--red)}
+.clip .t{font-size:1.08rem;font-weight:400;line-height:1.38}
+.clip .d{font-size:.75rem;color:var(--ink-45);margin-top:auto;padding-top:.4rem}
+.clip .l{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--ink)}
 .sec--ink .clip .d{color:var(--cream-70)}
+.sec--ink .clip .l{color:var(--cream)}
 
 /* ══ RANKINGS ══ */
 .rk{border-top:2px solid var(--red);padding-top:1.1rem;display:flex;flex-direction:column;gap:.38rem}
@@ -635,8 +641,7 @@ const DADOS = {
 
   /* --- 6. IMPRENSA ------------------------------------------------------ */
   imprensa: {
-    insercoes:96, veiculos:44, alcanceEstimado:"18,6 M", valorEquivalente:"R$ 1,4 mi",
-    porMes:[3,5,4,7,9,8,11,9,10,8,12,10],
+    insercoes:96,
     leitura:"O salto do segundo semestre acompanha o posicionamento do escritório como fonte recorrente em pautas de direito ambiental e tributário.",
     principais:[
       { veiculo:"Valor Econômico", titulo:"Novas regras de licenciamento ambiental mudam o cálculo de risco das empresas", data:"Novembro · 2026", url:"#" },
@@ -821,21 +826,21 @@ const REGISTRO = [
  {id:"digital", nav:"Digital", bg:"cream", build:n=>{const st=D.digital.site; return `
    ${head(n,"Performance digital",esc(D.digital.titulo),
      "Métricas de site e redes sociais, lado a lado.")}
-   <div class="card reveal" style="margin-bottom:1.5rem">
+   ${st.metricas.length||st.leitura?`<div class="card reveal" style="margin-bottom:1.5rem">
      <div class="card-h"><h3>${esc(st.titulo)}</h3></div>
-     <div class="kpi-grid tight" style="margin-top:1rem">${st.metricas.map(m=>`<div class="kpi">
+     ${st.metricas.length?`<div class="kpi-grid tight" style="margin-top:1rem">${st.metricas.map(m=>`<div class="kpi">
        <div class="kpi-label">${esc(m.label)}</div>
        <div class="kpi-val">${esc(m.valor)}</div>
-       ${delta(m.variacao)}</div>`).join("")}</div>
+       ${delta(m.variacao)}</div>`).join("")}</div>`:""}
      ${st.leitura?`<p class="kpi-note" style="margin-top:1.3rem">${esc(st.leitura)}</p>`:""}
-   </div>
-   <div class="grid g2 reveal">${D.digital.canais.map(c=>`<div class="card">
-     <div class="card-h"><h3>${esc(c.nome)}</h3></div>
-     <div class="kpi-grid tight" style="margin-top:1rem">${c.metricas.map(m=>`<div class="kpi">
+   </div>`:""}
+   ${D.digital.canais.length?`<div class="grid g2 reveal">${D.digital.canais.map(c=>`<div class="card">
+     ${c.nome?`<div class="card-h"><h3>${esc(c.nome)}</h3></div>`:""}
+     ${c.metricas.length?`<div class="kpi-grid tight" style="margin-top:1rem">${c.metricas.map(m=>`<div class="kpi">
        <div class="kpi-label">${esc(m.label)}</div>
        <div class="kpi-val">${m.valor===null?"–":nf(m.valor)}</div>
-       ${delta(m.variacao)}</div>`).join("")}</div>
-     ${c.leitura?`<p class="kpi-note" style="margin-top:1.1rem">${esc(c.leitura)}</p>`:""}</div>`).join("")}</div>`}},
+       ${delta(m.variacao)}</div>`).join("")}</div>`:""}
+     ${c.leitura?`<p class="kpi-note" style="margin-top:1.1rem">${esc(c.leitura)}</p>`:""}</div>`).join("")}</div>`:""}`}},
 
  {id:"traficoPago", nav:"Tráfego pago", bg:"cream", build:n=>{const tp=D.traficoPago; return `
    <div class="tp">
@@ -862,20 +867,15 @@ const REGISTRO = [
 
  {id:"imprensa", nav:"Imprensa", bg:"white", build:n=>{const ip=D.imprensa; return `
    ${head(n,"Assessoria de imprensa",esc(D.imprensa.titulo),ip.leitura)}
-   <div class="kpi-grid tight reveal" style="margin-bottom:clamp(2.4rem,5vw,3.4rem)">
-     <div class="kpi"><div class="kpi-label">Inserções</div><div class="kpi-val">${nf(ip.insercoes)}</div></div>
-     <div class="kpi"><div class="kpi-label">Veículos distintos</div><div class="kpi-val">${nf(ip.veiculos)}</div></div>
-     <div class="kpi"><div class="kpi-label">Alcance estimado</div><div class="kpi-val">${esc(ip.alcanceEstimado)}</div></div>
-     <div class="kpi"><div class="kpi-label">Valor equivalente</div><div class="kpi-val">${esc(ip.valorEquivalente)}</div></div>
-   </div>
-   <div class="grid ${ip.porMes?"g2":"g1"} reveal" style="gap:clamp(2rem,4.5vw,3.5rem);align-items:start">
-     ${ip.porMes?`<div class="card"><div class="card-h"><h3>Inserções por mês</h3></div>
-       <div class="chart-box"><canvas id="ch-imp"></canvas></div></div>`:""}
-     <div><div class="eyebrow">Destaques de cobertura</div>
-       ${ip.principais.map(c=>`<a class="clip" href="${esc(c.url)}" target="_blank" rel="noopener">
-         <span class="v">${esc(c.veiculo)}</span><span class="t">${esc(c.titulo)}</span>
-         <span class="d">${esc(c.data)}</span></a>`).join("")}</div>
-   </div>`}},
+   ${ip.insercoes!==null&&ip.insercoes!==undefined?`<div class="imp-total reveal">
+     <b>${nf(ip.insercoes)}</b><span>inserções na imprensa em ${D.cliente.ano}</span></div>`:""}
+   ${ip.principais.length?`<div class="clips reveal">${ip.principais.map(c=>{
+     const corpo=`${c.veiculo?`<span class="v">${esc(c.veiculo)}</span>`:""}
+       ${c.titulo?`<span class="t">${esc(c.titulo)}</span>`:""}
+       ${c.data?`<span class="d">${esc(c.data)}</span>`:""}
+       ${c.url?`<span class="l">Ler matéria ↗</span>`:""}`;
+     return c.url?`<a class="clip" href="${esc(c.url)}" target="_blank" rel="noopener">${corpo}</a>`
+                 :`<div class="clip">${corpo}</div>`;}).join("")}</div>`:""}`}},
 
  {id:"rankings", nav:"Rankings", bg:"ink", build:n=>`
    ${head(n,"Reconhecimentos",esc(D.rankings.titulo),
@@ -988,12 +988,6 @@ if(window.Chart){
             y:{grid:{color:grid(d)},border:{display:false},
                ticks:{color:tick(d),maxTicksLimit:5,
                  callback:v=>v>=1000?(v/1000).toLocaleString("pt-BR")+"k":v}}}});
-  if(SECOES.imprensa!==false && D.imprensa.porMes){
-    const d=escuro("imprensa");
-    new Chart(document.getElementById("ch-imp"),{type:"bar",
-      data:{labels:D.meses,datasets:[{data:D.imprensa.porMes,backgroundColor:RED,
-        hoverBackgroundColor:d?CREAM:INK,borderRadius:0,barPercentage:.6}]},options:opts(d)});
-  }
 }
 
 /* ---------- interações ---------- */
