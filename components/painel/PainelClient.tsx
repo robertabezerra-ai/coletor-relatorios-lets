@@ -6,7 +6,6 @@ import { NovoRelatorioModal } from "@/components/painel/NovoRelatorioModal";
 import { CardRelatorio } from "@/components/painel/CardRelatorio";
 import { SquadFolderCard } from "@/components/painel/SquadFolderCard";
 import { LogoutButton } from "@/app/logout-button";
-import { trocarPessoa } from "@/lib/actions/identidade";
 import { ROTULO_STATUS, STATUS_OPCOES } from "@/lib/status";
 import type { RelatorioPainel, RelatorioStatus, Squad } from "@/lib/types";
 
@@ -78,7 +77,7 @@ export function PainelClient({
           >
             Novo relatório
           </button>
-          <form action={trocarPessoa}>
+          <form method="post" action="/api/auth/trocar-pessoa">
             <button
               type="submit"
               className="rotulo border border-tinta/20 px-4 py-2 text-tinta hover:border-vermelho hover:text-vermelho"

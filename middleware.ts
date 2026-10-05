@@ -2,7 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { IDENTIDADE_COOKIE } from "@/lib/identidadeCookie";
 
-const ROTAS_PUBLICAS = ["/login", "/api/auth/login"];
+// /api/auth/ inteiro: sair e trocar pessoa precisam funcionar mesmo sem
+// sessão ou sem nome escolhido, senão o middleware redireciona o POST.
+const ROTAS_PUBLICAS = ["/login", "/api/auth/"];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });

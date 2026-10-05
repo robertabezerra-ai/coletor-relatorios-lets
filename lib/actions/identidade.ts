@@ -22,14 +22,3 @@ export async function definirIdentidade(nome: string) {
 
   redirect("/");
 }
-
-export async function limparIdentidade() {
-  const store = await cookies();
-  store.delete(IDENTIDADE_COOKIE);
-}
-
-export async function trocarPessoa() {
-  const store = await cookies();
-  store.delete(IDENTIDADE_COOKIE);
-  redirect("/escolher-nome");
-}
