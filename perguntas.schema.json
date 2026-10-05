@@ -176,13 +176,6 @@
           "formato": "Uma ou duas frases que resumem o ano. Aparece logo abaixo do título na capa."
         },
         {
-          "id": "cliente.inicioParceria",
-          "rotulo": "Início da parceria",
-          "tipo": "texto",
-          "nivel": "importante",
-          "formato": "Mês por extenso e ano. Ex.: Março de 2023"
-        },
-        {
           "id": "cliente.consultorResponsavel",
           "rotulo": "Consultor(a) responsável pela conta",
           "tipo": "selecaoEquipe",

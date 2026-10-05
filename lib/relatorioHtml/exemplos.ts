@@ -25,7 +25,6 @@ export const RESPOSTAS_EXEMPLO: Record<string, unknown> = {
   "cliente.ano": 2026,
   "cliente.subtitulo":
     "Um ano de construção de reputação, autoridade técnica e crescimento consistente da marca no mercado jurídico.",
-  "cliente.inicioParceria": "Março de 2023",
   "cliente.consultorResponsavel": "Nome do Consultor",
   "cliente.frentes": ["Marketing & Comunicação", "Imprensa", "Rankings"],
 
@@ -215,7 +214,7 @@ export type ExemploBloco = {
 export const EXEMPLO_POR_BLOCO: Record<string, ExemploBloco> = {
   b1: {
     recorte: { secao: "capa" },
-    legenda: "A capa do relatório: nome do cliente, frase de abertura, início da parceria, frentes ativas, consultor e logo.",
+    legenda: "A capa do relatório: nome do cliente, frase de abertura, frentes ativas, consultor e logo.",
   },
   b2: {
     recorte: { secao: "pilares" },

@@ -340,7 +340,6 @@ export async function montarDados(
       ano,
       anoAnterior: ano - 1,
       subtitulo: texto(respostas, "cliente.subtitulo"),
-      inicioParceria: texto(respostas, "cliente.inicioParceria"),
       frentes: [...lista<string>(respostas, "cliente.frentes"), texto(respostas, "cliente.frentesOutras")]
         .filter((frente) => frente.trim() !== "")
         .join(" · "),
