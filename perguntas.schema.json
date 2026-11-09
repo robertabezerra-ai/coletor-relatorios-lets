@@ -1031,7 +1031,6 @@
           "tipo": "tabela",
           "nivel": "importante",
           "min": 3,
-          "max": 6,
           "formato": "O resultado precisa conter pelo menos um número.",
           "colunas": [
             {
