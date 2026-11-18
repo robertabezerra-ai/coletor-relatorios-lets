@@ -31,7 +31,7 @@ export const EQUIPE_LETS: MembroEquipe[] = [
   { nome: "Elane Ribeiro", cargo: "Associada", foto: "2026/07/Elane.png" },
   { nome: "Felipe Albuquerque", cargo: "Associado", foto: "2026/04/FA-1.png" },
   { nome: "Gabriel Faleiros", cargo: "Associado", foto: "2026/04/GF-1.png" },
-  { nome: "Gabriela Grando", cargo: "Associada", foto: "" },
+  { nome: "Gabriela Grando", cargo: "Associada", foto: "2026/04/magnific_manter-a-foto-exatamente-_nTsLzyuYQD-768x768.png" },
   { nome: "Gabriela Melle", cargo: "Associada", foto: "2026/04/GM-1.png" },
   { nome: "Giovanna Rocha", cargo: "Associada", foto: "2026/05/GR.png" },
   { nome: "Jaqueline Amaral", cargo: "Associada", foto: "2026/05/JA.png" },
