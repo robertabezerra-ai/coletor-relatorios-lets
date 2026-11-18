@@ -1,4 +1,5 @@
 import { buscarBloco } from "@/lib/schema";
+import { buscarMembroEquipe, FOTO_BASE } from "@/lib/equipeLets";
 
 const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -313,6 +314,24 @@ function blocosDeFrase(respostas: Record<string, unknown>, id: string) {
     .filter((frase) => frase !== "");
 }
 
+// Resolve nome → foto/cargo aqui (e não só no template) pra tolerar
+// diferença de acento/maiúscula e pra o servidor poder embutir a foto no HTML.
+function timeComFoto(brutos: unknown[]) {
+  return brutos
+    .map((p) => (typeof p === "string" ? { nome: p } : ((p ?? {}) as Record<string, unknown>)))
+    .filter((p) => String(p.nome ?? "").trim() !== "")
+    .map((p) => {
+      const digitado = String(p.nome).trim();
+      const membro = buscarMembroEquipe(digitado);
+      const papelNaConta = String(p.papelNaConta ?? "").trim();
+      return {
+        nome: membro?.nome ?? digitado,
+        ...(papelNaConta ? { papelNaConta } : {}),
+        foto: membro?.foto ? FOTO_BASE + membro.foto : "",
+      };
+    });
+}
+
 export async function montarDados(
   respostas: Record<string, unknown>,
   relatorio: { cliente: string; ano: number },
@@ -369,7 +388,7 @@ export async function montarDados(
     valor: {
       titulo: texto(respostas, "valor.titulo", "O que a LETS executou"),
       entregas: lista(respostas, "valor.entregas"),
-      time: lista(respostas, "valor.time"),
+      time: timeComFoto(lista(respostas, "valor.time")),
     },
     imprensa: {
       titulo: texto(respostas, "imprensa.titulo", "Presença espontânea"),

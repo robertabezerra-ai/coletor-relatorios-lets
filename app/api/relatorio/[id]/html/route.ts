@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buscarRelatorio, buscarRespostas } from "@/lib/data/relatorios";
 import { obterSecoesSelecionadas } from "@/lib/schema";
 import { montarDados, secoesParaTemplate } from "@/lib/relatorioHtml/mapearDados";
-import { resolverImagemDataUri } from "@/lib/relatorioHtml/imagens";
+import { embutirFotosDoTime, resolverImagemDataUri } from "@/lib/relatorioHtml/imagens";
 import { injetarDados } from "@/lib/relatorioHtml/injetar";
 import { slug } from "@/lib/docx/estilo";
 
@@ -35,6 +35,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     { cliente: relatorio.cliente, ano: relatorio.ano },
     (valor) => resolverImagemDataUri(supabase, valor),
   );
+
+  dados.valor.time = await embutirFotosDoTime(dados.valor.time);
 
   const caminhoTemplate = path.join(process.cwd(), "lib/relatorioHtml/template.html");
   const template = await readFile(caminhoTemplate, "utf8");

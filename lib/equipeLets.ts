@@ -63,6 +63,19 @@ export const EQUIPE_LETS: MembroEquipe[] = [
   { nome: "Yanca Silva Suassui de Lima", cargo: "Colaboradora", foto: "2026/07/Yanca.png" },
 ];
 
+// Ignora maiúsculas, acentos e espaços sobrando — o nome vem de texto livre
+// com autocomplete, então "  roberta  bezerra" ou "Isabelle Brandao" ainda
+// precisam achar a pessoa (e a foto dela) no diretório.
+function normalizarNome(nome: string): string {
+  return nome
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
 export function buscarMembroEquipe(nome: string): MembroEquipe | undefined {
-  return EQUIPE_LETS.find((membro) => membro.nome.toLowerCase() === nome.trim().toLowerCase());
+  const alvo = normalizarNome(nome);
+  return EQUIPE_LETS.find((membro) => normalizarNome(membro.nome) === alvo);
 }
