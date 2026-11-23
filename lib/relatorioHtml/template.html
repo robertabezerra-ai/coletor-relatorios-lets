@@ -212,11 +212,13 @@ em{font-style:italic;color:var(--red);font-weight:300}
 .deliv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));
   gap:.25rem 2.5rem}
 .deliv{display:flex;align-items:baseline;gap:1.1rem;padding:1.05rem 0;
-  border-bottom:1px solid var(--cream-20)}
+  border-bottom:1px solid var(--ink-12)}
+.sec--ink .deliv{border-bottom-color:var(--cream-20)}
 .deliv b{font-size:clamp(1.9rem,3vw,2.4rem);font-weight:300;letter-spacing:-.05em;
   min-width:3.2em;text-align:right;flex-shrink:0;line-height:1}
 .deliv b i{font-style:italic;color:var(--red);font-size:.48em}
-.deliv span{color:var(--cream-70);font-size:.92rem;line-height:1.45}
+.deliv span{color:var(--ink-70);font-size:.92rem;line-height:1.45}
+.sec--ink .deliv span{color:var(--cream-70)}
 
 /* ══ PESSOAS (padrão do site) ══ */
 .team-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.6rem 1.3rem}
@@ -269,7 +271,8 @@ a.clip:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(29,29,27,.08
 /* ══ RANKINGS ══ */
 .rk{border-top:2px solid var(--red);padding-top:1.1rem;display:flex;flex-direction:column;gap:.38rem}
 .rk .n{font-weight:500;font-size:1.02rem;letter-spacing:-.01em}
-.rk .c{font-size:.85rem;color:var(--cream-70);line-height:1.4}
+.rk .c{font-size:.85rem;color:var(--ink-70);line-height:1.4}
+.sec--ink .rk .c{color:var(--cream-70)}
 .rk .lv{font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);
   font-weight:700;margin-top:.3rem}
 
