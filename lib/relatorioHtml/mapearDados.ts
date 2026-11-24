@@ -346,6 +346,7 @@ export async function montarDados(
       titulo: String(d.titulo ?? ""),
       descricao: String(d.descricao ?? ""),
       resultado: String(d.resultado ?? ""),
+      resultadoPrimeiro: d.ordem === "resultadoPrimeiro",
       imagem: await resolverImagem(d.imagem),
     })),
   );

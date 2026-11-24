@@ -1053,6 +1053,15 @@
               "rotulo": "Imagem",
               "tipo": "imagem",
               "dica": "Crie a arte no Canva com 800×600 px (proporção 4:3) e salve em PNG — outra proporção corta a imagem ao encaixar no espaço"
+            },
+            {
+              "id": "ordem",
+              "rotulo": "Ordem no relatório",
+              "tipo": "selecao",
+              "opcoes": [
+                { "valor": "", "rotulo": "Descrição → Resultado" },
+                { "valor": "resultadoPrimeiro", "rotulo": "Resultado → Descrição" }
+              ]
             }
           ]
         }

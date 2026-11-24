@@ -890,8 +890,9 @@ const REGISTRO = [
    <div class="tl reveal">${D.destaques.itens.map(d=>`<div class="tl-item">
      <div class="tl-body">
        <div><h3>${esc(d.titulo)}</h3>
-         <p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(d.descricao)}</p>
-         ${d.resultado?`<span class="tl-res">${esc(d.resultado)}</span>`:""}</div>
+         ${(()=>{const desc=`<p class="lead" style="margin-top:.8rem;font-size:1rem">${esc(d.descricao)}</p>`,
+           res=d.resultado?`<span class="tl-res">${esc(d.resultado)}</span>`:"";
+           return d.resultadoPrimeiro?res+desc:desc+res;})()}</div>
        <figure>${IMG(d.imagem,d.titulo,900,675)}</figure>
      </div></div>`).join("")}</div>`},
 
