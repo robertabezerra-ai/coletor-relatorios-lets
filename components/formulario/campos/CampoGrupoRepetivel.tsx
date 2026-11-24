@@ -90,6 +90,14 @@ function ListaDeItens({
     onChange([...itens, itemVazio(camposFilhos)]);
   }
 
+  function moverItem(indice: number, direcao: -1 | 1) {
+    const destino = indice + direcao;
+    if (destino < 0 || destino >= itens.length) return;
+    const novo = [...itens];
+    [novo[indice], novo[destino]] = [novo[destino], novo[indice]];
+    onChange(novo);
+  }
+
   function removerItem(indice: number) {
     onChange(itens.filter((_, i) => i !== indice));
   }
@@ -107,13 +115,29 @@ function ListaDeItens({
                 {ehFixo ? campo.itensFixos![indice] : `${campo.rotuloItem ?? "Item"} ${indice + 1}`}
               </p>
               {!ehFixo && (
-                <button
-                  type="button"
-                  onClick={() => removerItem(indice)}
-                  className="text-sm text-cinza hover:text-vermelho"
-                >
-                  Remover
-                </button>
+                <div className="flex items-center gap-3 text-sm text-cinza">
+                  <button
+                    type="button"
+                    onClick={() => moverItem(indice, -1)}
+                    disabled={indice === 0}
+                    aria-label="Mover para cima"
+                    className="hover:text-vermelho disabled:opacity-25 disabled:hover:text-cinza"
+                  >
+                    ↑ Subir
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moverItem(indice, 1)}
+                    disabled={indice === itens.length - 1}
+                    aria-label="Mover para baixo"
+                    className="hover:text-vermelho disabled:opacity-25 disabled:hover:text-cinza"
+                  >
+                    ↓ Descer
+                  </button>
+                  <button type="button" onClick={() => removerItem(indice)} className="hover:text-vermelho">
+                    Remover
+                  </button>
+                </div>
               )}
             </div>
 

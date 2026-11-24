@@ -65,6 +65,14 @@ export function TabelaInput({
     onChange([...valor, linhaVaziaTabela(colunas)]);
   }
 
+  function moverLinha(indice: number, direcao: -1 | 1) {
+    const destino = indice + direcao;
+    if (destino < 0 || destino >= valor.length) return;
+    const novo = [...valor];
+    [novo[indice], novo[destino]] = [novo[destino], novo[indice]];
+    onChange(novo);
+  }
+
   function removerLinha(indice: number) {
     onChange(valor.filter((_, i) => i !== indice));
   }
@@ -107,7 +115,25 @@ export function TabelaInput({
                     />
                   </td>
                 ))}
-                <td className="px-2 py-1.5">
+                <td className="whitespace-nowrap px-2 py-1.5">
+                  <button
+                    type="button"
+                    onClick={() => moverLinha(indiceLinha, -1)}
+                    disabled={indiceLinha === 0}
+                    aria-label="Mover linha para cima"
+                    className="px-1 text-cinza hover:text-vermelho disabled:opacity-25 disabled:hover:text-cinza"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moverLinha(indiceLinha, 1)}
+                    disabled={indiceLinha === valor.length - 1}
+                    aria-label="Mover linha para baixo"
+                    className="px-1 text-cinza hover:text-vermelho disabled:opacity-25 disabled:hover:text-cinza"
+                  >
+                    ↓
+                  </button>
                   <button
                     type="button"
                     onClick={() => removerLinha(indiceLinha)}
